@@ -1,0 +1,272 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEPS – Verificar código</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(145deg, #0d2f5e 0%, #1a5276 50%, #1e8449 100%);
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 20px;
+            padding: 48px 44px;
+            width: 100%;
+            max-width: 460px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+        }
+
+        .form-icon {
+            width: 56px;
+            height: 56px;
+            background: #eaf4f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+
+            .form-icon i {
+                font-size: 24px;
+                color: #1e8449;
+            }
+
+        .form-title {
+            font-size: 26px;
+            font-weight: 900;
+            color: #0d2f5e;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        .form-divider {
+            width: 36px;
+            height: 3px;
+            background: #4fc3a1;
+            border-radius: 2px;
+            margin: 0 auto 8px;
+        }
+
+        .form-subtitle {
+            font-size: 13px;
+            color: #aaa;
+            text-align: center;
+            margin-bottom: 28px;
+            line-height: 1.6;
+        }
+
+        .field-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .input-wrap {
+            position: relative;
+            margin-bottom: 6px;
+        }
+
+            .input-wrap i.icon-left {
+                position: absolute;
+                left: 14px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #bbb;
+                font-size: 16px;
+                pointer-events: none;
+            }
+
+            .input-wrap input {
+                width: 100%;
+                padding: 12px 40px;
+                border: 1.5px solid #e8e8e8;
+                border-radius: 10px;
+                font-size: 22px;
+                font-weight: 700;
+                letter-spacing: 10px;
+                text-align: center;
+                color: #0d2f5e;
+                background: #fafafa;
+                transition: border-color 0.2s, box-shadow 0.2s;
+            }
+
+                .input-wrap input:focus {
+                    outline: none;
+                    border-color: #1a5276;
+                    background: white;
+                    box-shadow: 0 0 0 3px rgba(26,82,118,0.08);
+                }
+
+                .input-wrap input.is-invalid {
+                    border-color: #dc3545;
+                    background: #fff8f8;
+                    box-shadow: 0 0 0 3px rgba(220,53,69,0.08);
+                }
+
+                .input-wrap input.is-valid {
+                    border-color: #198754;
+                    background: #f8fff8;
+                    box-shadow: 0 0 0 3px rgba(25,135,84,0.08);
+                }
+
+        .feedback-msg {
+            font-size: 12px;
+            color: #dc3545;
+            margin-top: 4px;
+            display: none;
+            text-align: center;
+        }
+
+        .btn-ingresar {
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(90deg, #0d2f5e 0%, #1a5276 60%, #1e8449 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.15s;
+            margin-top: 8px;
+        }
+
+            .btn-ingresar:hover {
+                opacity: 0.9;
+                transform: translateY(-1px);
+            }
+
+            .btn-ingresar:active {
+                transform: translateY(0);
+            }
+
+        .back-link {
+            text-align: center;
+            margin-top: 16px;
+        }
+
+            .back-link a {
+                font-size: 12px;
+                color: #1a5276;
+                text-decoration: none;
+            }
+
+                .back-link a:hover {
+                    text-decoration: underline;
+                }
+
+        .field-group {
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-card">
+
+        <div class="form-icon">
+            <i class="bi bi-envelope-check"></i>
+        </div>
+
+        <h1 class="form-title">Verificar código</h1>
+        <div class="form-divider"></div>
+        <p class="form-subtitle">
+            Ingresa el código de 6 dígitos que enviamos a tu correo. Expira en 10 minutos.
+        </p>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger"
+                 style="border-radius:10px; font-size:13px; padding:10px 14px; margin-bottom:16px;">
+                @ViewBag.Error
+            </div>
+        }
+
+        <form id="formCodigo" action="/Login/VerificarCodigo" method="post" novalidate>
+
+            @Html.AntiForgeryToken()
+
+            <div class="field-group">
+                <label class="field-label">Código de verificación</label>
+                <div class="input-wrap">
+                    <input type="text"
+                           id="inputCodigo"
+                           name="codigo"
+                           placeholder="000000"
+                           maxlength="6"
+                           autocomplete="off" />
+                </div>
+                <div id="codigoFeedback" class="feedback-msg"></div>
+            </div>
+
+            <button type="submit" class="btn-ingresar">
+                Verificar <i class="bi bi-check-lg"></i>
+            </button>
+
+        </form>
+
+        <div class="back-link">
+            <a href="/Login/OlvideContrasena">← Solicitar nuevo código</a>
+        </div>
+    </div>
+
+    <script>
+        const inputCodigo = document.getElementById("inputCodigo");
+        const codigoFeedback = document.getElementById("codigoFeedback");
+
+        inputCodigo.addEventListener("keypress", function (e) {
+            if (!/[0-9]/.test(e.key)) {
+                e.preventDefault();
+                inputCodigo.classList.add("is-invalid");
+                codigoFeedback.textContent = "⚠️ El código solo contiene números.";
+                codigoFeedback.style.display = "block";
+            }
+        });
+
+        inputCodigo.addEventListener("input", function () {
+            this.value = this.value.replace(/[^0-9]/g, "");
+            if (this.value.length === 6) {
+                this.classList.remove("is-invalid");
+                this.classList.add("is-valid");
+                codigoFeedback.style.display = "none";
+            } else {
+                this.classList.remove("is-valid");
+            }
+        });
+
+        document.getElementById("formCodigo").addEventListener("submit", function (e) {
+            if (inputCodigo.value.length !== 6) {
+                e.preventDefault();
+                inputCodigo.classList.add("is-invalid");
+                codigoFeedback.textContent = "⚠️ El código debe tener exactamente 6 dígitos.";
+                codigoFeedback.style.display = "block";
+                inputCodigo.focus();
+            }
+        });
+    </script>
+</body>
+</html>

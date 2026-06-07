@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32519.379
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GEPS", "GEPS.csproj", "{155F3282-DCE7-4C02-A7D2-1C1CF0E76AAB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{155F3282-DCE7-4C02-A7D2-1C1CF0E76AAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{155F3282-DCE7-4C02-A7D2-1C1CF0E76AAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{155F3282-DCE7-4C02-A7D2-1C1CF0E76AAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{155F3282-DCE7-4C02-A7D2-1C1CF0E76AAB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CC07EAC3-6CBA-4BA5-84FD-164627353C2A}
+	EndGlobalSection
+EndGlobal

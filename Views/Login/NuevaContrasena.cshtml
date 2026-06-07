@@ -1,0 +1,322 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEPS – Nueva contraseña</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(145deg, #0d2f5e 0%, #1a5276 50%, #1e8449 100%);
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 20px;
+            padding: 48px 44px;
+            width: 100%;
+            max-width: 460px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+        }
+
+        .form-icon {
+            width: 56px;
+            height: 56px;
+            background: #eaf4f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+
+            .form-icon i {
+                font-size: 24px;
+                color: #1e8449;
+            }
+
+        .form-title {
+            font-size: 26px;
+            font-weight: 900;
+            color: #0d2f5e;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        .form-divider {
+            width: 36px;
+            height: 3px;
+            background: #4fc3a1;
+            border-radius: 2px;
+            margin: 0 auto 8px;
+        }
+
+        .form-subtitle {
+            font-size: 13px;
+            color: #aaa;
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .field-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .input-wrap {
+            position: relative;
+            margin-bottom: 6px;
+        }
+
+            .input-wrap i.icon-left {
+                position: absolute;
+                left: 14px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #bbb;
+                font-size: 16px;
+                pointer-events: none;
+            }
+
+            .input-wrap input {
+                width: 100%;
+                padding: 12px 40px;
+                border: 1.5px solid #e8e8e8;
+                border-radius: 10px;
+                font-size: 14px;
+                color: #333;
+                background: #fafafa;
+                transition: border-color 0.2s, box-shadow 0.2s;
+            }
+
+                .input-wrap input:focus {
+                    outline: none;
+                    border-color: #1a5276;
+                    background: white;
+                    box-shadow: 0 0 0 3px rgba(26,82,118,0.08);
+                }
+
+                .input-wrap input.is-invalid {
+                    border-color: #dc3545;
+                    background: #fff8f8;
+                    box-shadow: 0 0 0 3px rgba(220,53,69,0.08);
+                }
+
+                .input-wrap input.is-valid {
+                    border-color: #198754;
+                    background: #f8fff8;
+                    box-shadow: 0 0 0 3px rgba(25,135,84,0.08);
+                }
+
+        .btn-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #bbb;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 0;
+        }
+
+            .btn-toggle:hover {
+                color: #666;
+            }
+
+        .feedback-msg {
+            font-size: 12px;
+            color: #dc3545;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .btn-ingresar {
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(90deg, #0d2f5e 0%, #1a5276 60%, #1e8449 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.15s;
+            margin-top: 8px;
+        }
+
+            .btn-ingresar:hover {
+                opacity: 0.9;
+                transform: translateY(-1px);
+            }
+
+            .btn-ingresar:active {
+                transform: translateY(0);
+            }
+
+        .back-link {
+            text-align: center;
+            margin-top: 16px;
+        }
+
+            .back-link a {
+                font-size: 12px;
+                color: #1a5276;
+                text-decoration: none;
+            }
+
+                .back-link a:hover {
+                    text-decoration: underline;
+                }
+
+        .field-group {
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-card">
+
+        <div class="form-icon">
+            <i class="bi bi-shield-lock"></i>
+        </div>
+
+        <h1 class="form-title">Nueva contraseña</h1>
+        <div class="form-divider"></div>
+        <p class="form-subtitle">Ingresa y confirma tu nueva contraseña.</p>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger"
+                 style="border-radius:10px; font-size:13px; padding:10px 14px; margin-bottom:16px;">
+                @ViewBag.Error
+            </div>
+        }
+
+        <form id="formNueva" action="/Login/NuevaContrasena" method="post" novalidate>
+
+            @Html.AntiForgeryToken()
+
+            <div class="field-group">
+                <label class="field-label">Nueva contraseña</label>
+                <div class="input-wrap">
+                    <i class="bi bi-lock icon-left"></i>
+                    <input type="password"
+                           id="inputClave"
+                           name="clave"
+                           placeholder="Ingresa tu nueva contraseña" />
+                    <button type="button" class="btn-toggle" onclick="toggleClave()">
+                        <i class="bi bi-eye" id="eyeClave"></i>
+                    </button>
+                </div>
+                <div id="claveFeedback" class="feedback-msg"></div>
+            </div>
+
+            <div class="field-group">
+                <label class="field-label">Confirmar contraseña</label>
+                <div class="input-wrap">
+                    <i class="bi bi-lock icon-left"></i>
+                    <input type="password"
+                           id="inputConfirmar"
+                           name="confirmarClave"
+                           placeholder="Confirma tu nueva contraseña" />
+                    <button type="button" class="btn-toggle" onclick="toggleConfirmar()">
+                        <i class="bi bi-eye" id="eyeConfirmar"></i>
+                    </button>
+                </div>
+                <div id="confirmarFeedback" class="feedback-msg"></div>
+            </div>
+
+            <button type="submit" class="btn-ingresar">
+                Guardar contraseña <i class="bi bi-check-lg"></i>
+            </button>
+
+        </form>
+
+        <div class="back-link">
+            <a href="/Login/Index">← Volver al inicio de sesión</a>
+        </div>
+    </div>
+
+    <script>
+        const inputClave = document.getElementById("inputClave");
+        const inputConfirmar = document.getElementById("inputConfirmar");
+        const claveFeedback = document.getElementById("claveFeedback");
+        const confirmarFeedback = document.getElementById("confirmarFeedback");
+
+        function toggleClave() {
+            const eye = document.getElementById("eyeClave");
+            if (inputClave.type === "password") {
+                inputClave.type = "text";
+                eye.classList.replace("bi-eye", "bi-eye-slash");
+            } else {
+                inputClave.type = "password";
+                eye.classList.replace("bi-eye-slash", "bi-eye");
+            }
+        }
+
+        function toggleConfirmar() {
+            const eye = document.getElementById("eyeConfirmar");
+            if (inputConfirmar.type === "password") {
+                inputConfirmar.type = "text";
+                eye.classList.replace("bi-eye", "bi-eye-slash");
+            } else {
+                inputConfirmar.type = "password";
+                eye.classList.replace("bi-eye-slash", "bi-eye");
+            }
+        }
+
+        inputConfirmar.addEventListener("input", function () {
+            if (this.value !== inputClave.value) {
+                this.classList.add("is-invalid");
+                this.classList.remove("is-valid");
+                confirmarFeedback.textContent = "⚠️ Las contraseñas no coinciden.";
+                confirmarFeedback.style.display = "block";
+            } else {
+                this.classList.remove("is-invalid");
+                this.classList.add("is-valid");
+                confirmarFeedback.style.display = "none";
+            }
+        });
+
+        document.getElementById("formNueva").addEventListener("submit", function (e) {
+            if (inputClave.value.trim() === "") {
+                e.preventDefault();
+                inputClave.classList.add("is-invalid");
+                claveFeedback.textContent = "⚠️ La contraseña no puede estar vacía.";
+                claveFeedback.style.display = "block";
+            }
+            if (inputConfirmar.value !== inputClave.value) {
+                e.preventDefault();
+                inputConfirmar.classList.add("is-invalid");
+                confirmarFeedback.textContent = "⚠️ Las contraseñas no coinciden.";
+                confirmarFeedback.style.display = "block";
+            }
+        });
+    </script>
+</body>
+</html>
+
