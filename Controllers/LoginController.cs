@@ -10,12 +10,12 @@ namespace GEPS.Controllers
     [AllowAnonymous]
     public class LoginController : Controller
     {
-        private IMongoCollection<Usuario> _usuarios;
+        private IMongoCollection<Usuario> usuarios;
 
         public LoginController()
         {
-            var db = ConexionMongo.ObtenerBD();
-            _usuarios = db.GetCollection<Usuario>("Usuarios");
+            IMongoDatabase db = ConexionMongo.ObtenerBD();
+            usuarios = db.GetCollection<Usuario>("Usuarios");
         }
 
         // GET: Login
@@ -49,7 +49,7 @@ namespace GEPS.Controllers
                 Builders<Usuario>.Filter.Eq("activo", true)
             );
 
-            var usuario = _usuarios.Find(filtro).FirstOrDefault();
+            var usuario = usuarios.Find(filtro).FirstOrDefault();
 
             if (usuario == null)
             {
@@ -109,7 +109,7 @@ namespace GEPS.Controllers
             }
 
             var filtro = Builders<Usuario>.Filter.Eq("cedula", cedula);
-            var usuario = _usuarios.Find(filtro).FirstOrDefault();
+            var usuario = usuarios.Find(filtro).FirstOrDefault();
 
             if (usuario == null)
             {
@@ -123,7 +123,7 @@ namespace GEPS.Controllers
             var update = Builders<Usuario>.Update
                 .Set("codigoRecuperacion", codigo)
                 .Set("codigoExpira", DateTime.Now.AddMinutes(10));
-            _usuarios.UpdateOne(filtro, update);
+            usuarios.UpdateOne(filtro, update);
 
             string cuerpo = $@"
 <!DOCTYPE html>
@@ -209,7 +209,7 @@ namespace GEPS.Controllers
                 return RedirectToAction("OlvideContrasena");
 
             var filtro = Builders<Usuario>.Filter.Eq("cedula", cedula);
-            var usuario = _usuarios.Find(filtro).FirstOrDefault();
+            var usuario = usuarios.Find(filtro).FirstOrDefault();
 
             if (usuario == null || usuario.CodigoRecuperacion != codigo)
             {
@@ -257,7 +257,7 @@ namespace GEPS.Controllers
                 .Unset("codigoRecuperacion")
                 .Unset("codigoExpira");
 
-            _usuarios.UpdateOne(filtro, update);
+            usuarios.UpdateOne(filtro, update);
 
             Session.Remove("CedulaRecuperacion");
             Session.Remove("CodigoVerificado");

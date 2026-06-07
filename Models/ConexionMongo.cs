@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using System.Configuration;
 
 namespace GEPS.Models
@@ -15,9 +11,9 @@ namespace GEPS.Models
         {
             if (BasedeDatos == null)
             {
-                string Conexion = ConfigurationManager.AppSettings["MongoConnectionString"];
-                string NombreBD = ConfigurationManager.AppSettings["MongoDatabaseName"];
-                var cliente = new MongoClient(Conexion);
+                string Conexion = ConfigurationManager.AppSettings["ConexionMongo"];
+                string NombreBD = ConfigurationManager.AppSettings["NombreBasedeDatosMongo"];
+                MongoClient cliente = new MongoClient(Conexion);
                 BasedeDatos = cliente.GetDatabase(NombreBD);
             }
             return BasedeDatos;
