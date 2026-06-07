@@ -14,7 +14,7 @@ namespace GEPS.Controllers
 
         public LoginController()
         {
-            var db = ConexionMongo.ObtenerDB();
+            var db = ConexionMongo.ObtenerBD();
             _usuarios = db.GetCollection<Usuario>("Usuarios");
         }
 

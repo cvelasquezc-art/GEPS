@@ -9,20 +9,18 @@ namespace GEPS.Models
 {
     public class ConexionMongo
     {
-        private static IMongoDatabase _database;
+        private static IMongoDatabase BasedeDatos;
 
-        public static IMongoDatabase ObtenerDB()
+        public static IMongoDatabase ObtenerBD()
         {
-            if (_database == null)
+            if (BasedeDatos == null)
             {
-                string connectionString = ConfigurationManager
-                    .AppSettings["MongoConnectionString"];
-                string databaseName = ConfigurationManager
-                    .AppSettings["MongoDatabaseName"];
-                var client = new MongoClient(connectionString);
-                _database = client.GetDatabase(databaseName);
+                string Conexion = ConfigurationManager.AppSettings["MongoConnectionString"];
+                string NombreBD = ConfigurationManager.AppSettings["MongoDatabaseName"];
+                var cliente = new MongoClient(Conexion);
+                BasedeDatos = cliente.GetDatabase(NombreBD);
             }
-            return _database;
+            return BasedeDatos;
         }
     }
 }
