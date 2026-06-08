@@ -1,0 +1,53 @@
+﻿@model GEPS.Models.Semillero
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewBag.Title = "Crear Semillero";
+}
+
+<div class="page-header">
+    <h2><i class="bi bi-plus-circle"></i> Crear Semillero</h2>
+    <p>Registrar un nuevo semillero de investigación</p>
+    <div class="divider"></div>
+</div>
+
+<div class="card-geps" style="max-width:600px;">
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert-geps-danger">
+            <i class="bi bi-exclamation-circle"></i> @ViewBag.Error
+        </div>
+    }
+
+    <form action="/Admin/CrearSemillero" method="post" class="form-geps" novalidate>
+        @Html.AntiForgeryToken()
+
+        <label>Nombre del semillero</label>
+        <input type="text"
+               name="Nombre"
+               placeholder="Ej: InvesTIC"
+               value="@(Model?.Nombre)" />
+
+        <label>Línea investigativa</label>
+        <input type="text"
+               name="LineaInvestigativa"
+               placeholder="Ej: Tecnología e Innovación"
+               value="@(Model?.LineaInvestigativa)" />
+
+        <label>Descripción</label>
+        <textarea name="Descripcion"
+                  rows="3"
+                  placeholder="Descripción del semillero...">@(Model?.Descripcion)</textarea>
+
+        <div style="display:flex; gap:12px; margin-top:8px;">
+            <button type="submit" class="btn-primary-geps">
+                <i class="bi bi-check-lg"></i> Crear semillero
+            </button>
+            <a href="/Admin/Semilleros" class="btn-danger-geps">
+                <i class="bi bi-x-lg"></i> Cancelar
+            </a>
+        </div>
+
+    </form>
+</div>
+

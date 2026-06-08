@@ -1,0 +1,458 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEPS – @ViewBag.Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f0f4f8;
+            min-height: 100vh;
+        }
+
+        /* ── NAVBAR ── */
+        .navbar-geps {
+            background: linear-gradient(90deg, #0d2f5e 0%, #1a5276 60%, #1e8449 100%);
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+            .navbar-brand .logo-circle {
+                width: 36px;
+                height: 36px;
+                background: rgba(255,255,255,0.15);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid rgba(255,255,255,0.25);
+            }
+
+                .navbar-brand .logo-circle i {
+                    font-size: 18px;
+                    color: #4fc3a1;
+                }
+
+            .navbar-brand .brand-text {
+                font-size: 20px;
+                font-weight: 900;
+                color: white;
+                letter-spacing: 2px;
+            }
+
+                .navbar-brand .brand-text span {
+                    color: #4fc3a1;
+                }
+
+        .navbar-menu {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            list-style: none;
+            margin: 0 auto;
+            padding: 0;
+        }
+
+            .navbar-menu a {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                padding: 8px 14px;
+                border-radius: 8px;
+                color: rgba(255,255,255,0.8);
+                text-decoration: none;
+                font-size: 13px;
+                font-weight: 500;
+                transition: background 0.2s, color 0.2s;
+                white-space: nowrap;
+            }
+
+                .navbar-menu a:hover {
+                    background: rgba(255,255,255,0.12);
+                    color: white;
+                }
+
+                .navbar-menu a.active {
+                    background: rgba(255,255,255,0.18);
+                    color: white;
+                }
+
+                .navbar-menu a i {
+                    font-size: 15px;
+                }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-avatar {
+            width: 34px;
+            height: 34px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+
+            .user-avatar i {
+                font-size: 16px;
+                color: white;
+            }
+
+        .user-name {
+            font-size: 13px;
+            color: rgba(255,255,255,0.85);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .btn-salir {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: rgba(255,255,255,0.85);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+
+            .btn-salir:hover {
+                background: rgba(220,53,69,0.5);
+                color: white;
+                border-color: transparent;
+            }
+
+            .btn-salir i {
+                font-size: 14px;
+            }
+
+        /* ── CONTENIDO ── */
+        .main-content {
+            padding: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ── CARDS ── */
+        .card-geps {
+            background: white;
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+            border: 1px solid #eee;
+        }
+
+        /* ── BOTONES ── */
+        .btn-primary-geps {
+            background: linear-gradient(90deg, #0d2f5e, #1a5276);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 9px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: opacity 0.2s, transform 0.15s;
+        }
+
+            .btn-primary-geps:hover {
+                opacity: 0.9;
+                transform: translateY(-1px);
+                color: white;
+            }
+
+        .btn-success-geps {
+            background: linear-gradient(90deg, #1e8449, #27ae60);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 9px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+            .btn-success-geps:hover {
+                opacity: 0.9;
+                color: white;
+            }
+
+        .btn-warning-geps {
+            background: linear-gradient(90deg, #b7770d, #d4ac0d);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 9px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+            .btn-warning-geps:hover {
+                opacity: 0.9;
+                color: white;
+            }
+
+        .btn-danger-geps {
+            background: linear-gradient(90deg, #922b21, #e74c3c);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 9px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+            .btn-danger-geps:hover {
+                opacity: 0.9;
+                color: white;
+            }
+
+        /* ── TABLA ── */
+        .table-geps {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+            .table-geps thead tr {
+                background: linear-gradient(90deg, #0d2f5e, #1a5276);
+                color: white;
+            }
+
+            .table-geps thead th {
+                padding: 12px 16px;
+                font-weight: 600;
+                font-size: 13px;
+                text-align: left;
+            }
+
+                .table-geps thead th:first-child {
+                    border-radius: 8px 0 0 0;
+                }
+
+                .table-geps thead th:last-child {
+                    border-radius: 0 8px 0 0;
+                }
+
+            .table-geps tbody tr {
+                border-bottom: 1px solid #f0f0f0;
+                transition: background 0.15s;
+            }
+
+                .table-geps tbody tr:hover {
+                    background: #f8fbff;
+                }
+
+            .table-geps tbody td {
+                padding: 12px 16px;
+                color: #333;
+                vertical-align: middle;
+            }
+
+        .badge-activo {
+            background: #d5f5e3;
+            color: #1e8449;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-inactivo {
+            background: #fde8e8;
+            color: #c0392b;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* ── FORMULARIOS ── */
+        .form-geps label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .form-geps input,
+        .form-geps select,
+        .form-geps textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #e8e8e8;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #333;
+            background: #fafafa;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            margin-bottom: 16px;
+        }
+
+            .form-geps input:focus,
+            .form-geps select:focus,
+            .form-geps textarea:focus {
+                outline: none;
+                border-color: #1a5276;
+                background: white;
+                box-shadow: 0 0 0 3px rgba(26,82,118,0.08);
+            }
+
+        /* ── ALERTAS ── */
+        .alert-geps-success {
+            background: #d5f5e3;
+            color: #1e8449;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            border-left: 4px solid #1e8449;
+        }
+
+        .alert-geps-danger {
+            background: #fde8e8;
+            color: #c0392b;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            border-left: 4px solid #c0392b;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar-geps">
+
+        <a href="/Admin/Index" class="navbar-brand">
+            <div class="logo-circle">
+                <i class="bi bi-flower2"></i>
+            </div>
+            <span class="brand-text">GEP<span>S</span></span>
+        </a>
+
+        <ul class="navbar-menu">
+            <li>
+                <a href="/Admin/Index"
+                   class="@(ViewContext.RouteData.Values["action"].ToString() == "Index" ? "active" : "")">
+                    <i class="bi bi-speedometer2"></i> Panel
+                </a>
+            </li>
+            <li>
+                <a href="/Admin/Semilleros"
+                   class="@(ViewContext.RouteData.Values["action"].ToString() == "Semilleros" ? "active" : "")">
+                    <i class="bi bi-diagram-3"></i> Semilleros
+                </a>
+            </li>
+            <li>
+                <a href="/Admin/Lideres"
+                   class="@(ViewContext.RouteData.Values["action"].ToString() == "Lideres" ? "active" : "")">
+                    <i class="bi bi-person-badge"></i> Líderes
+                </a>
+            </li>
+            <li>
+                <a href="/Admin/Reporte"
+                   class="@(ViewContext.RouteData.Values["action"].ToString() == "Reporte" ? "active" : "")">
+                    <i class="bi bi-file-earmark-pdf"></i> Reporte
+                </a>
+            </li>
+        </ul>
+
+        <div class="navbar-right">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="bi bi-person"></i>
+                </div>
+                <span class="user-name">@Session["Nombre"]</span>
+            </div>
+
+            <form id="formSalir" action="/Login/Salir" method="post" style="display:inline;">
+                @Html.AntiForgeryToken()
+                <button type="button" class="btn-salir" onclick="confirmarSalir()">
+                    <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+                </button>
+            </form>
+        </div>
+
+    </nav>
+
+    <!-- CONTENIDO -->
+    <div class="main-content">
+        @RenderBody()
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function confirmarSalir() {
+            if (confirm('¿Estás seguro que deseas cerrar sesión?')) {
+                document.getElementById('formSalir').submit();
+            }
+        }
+    </script>
+
+</body>
+</html>

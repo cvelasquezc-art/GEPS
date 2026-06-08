@@ -1,0 +1,55 @@
+﻿@model GEPS.Models.Semillero
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewBag.Title = "Editar Semillero";
+}
+
+<div class="page-header">
+    <h2><i class="bi bi-pencil"></i> Editar Semillero</h2>
+    <p>Modificar datos del semillero</p>
+    <div class="divider"></div>
+</div>
+
+<div class="card-geps" style="max-width:600px;">
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert-geps-danger">
+            <i class="bi bi-exclamation-circle"></i> @ViewBag.Error
+        </div>
+    }
+
+    <form action="/Admin/EditarSemillero" method="post" class="form-geps" novalidate>
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" name="Id" value="@Model.Id" />
+
+        <label>Nombre del semillero</label>
+        <input type="text"
+               name="Nombre"
+               placeholder="Ej: InvesTIC"
+               value="@Model.Nombre" />
+
+        <label>Línea investigativa</label>
+        <input type="text"
+               name="LineaInvestigativa"
+               placeholder="Ej: Tecnología e Innovación"
+               value="@Model.LineaInvestigativa" />
+
+        <label>Descripción</label>
+        <textarea name="Descripcion"
+                  rows="3"
+                  placeholder="Descripción del semillero...">@Model.Descripcion</textarea>
+
+        <div style="display:flex; gap:12px; margin-top:8px;">
+            <button type="submit" class="btn-primary-geps">
+                <i class="bi bi-check-lg"></i> Guardar cambios
+            </button>
+            <a href="/Admin/Semilleros" class="btn-danger-geps">
+                <i class="bi bi-x-lg"></i> Cancelar
+            </a>
+        </div>
+
+    </form>
+</div>
+

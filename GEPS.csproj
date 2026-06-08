@@ -222,6 +222,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\ConexionMongo.cs" />
+    <Compile Include="Models\Semillero.cs" />
     <Compile Include="Models\ServicioCorreo.cs" />
     <Compile Include="Models\Usuario.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -266,6 +267,12 @@
     <Content Include="Views\Login\OlvideContrasena.cshtml" />
     <Content Include="Views\Login\VerificarCodigo.cshtml" />
     <Content Include="Views\Login\NuevaContrasena.cshtml" />
+    <Content Include="Views\Shared\_LayoutAdmin.cshtml" />
+    <Content Include="Views\Admin\Semilleros.cshtml" />
+    <Content Include="Views\Admin\CrearSemillero.cshtml" />
+    <Content Include="Views\Admin\EditarSemillero.cshtml" />
+    <Content Include="Views\Admin\Lideres.cshtml" />
+    <Content Include="Views\Admin\CrearLider.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
