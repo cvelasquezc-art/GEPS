@@ -111,12 +111,15 @@
                             <td style="padding:14px 16px; text-align:center;">
                                 <div style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap;">
 
-                                    <!-- Asignar semillero -->
-                                    <button data-id="@lider.Id" data-nombre="@lider.Nombre"
-                                            onclick="abrirAsignar(this.dataset.id, this.dataset.nombre)"
-                                            style="background:linear-gradient(90deg,#0d2f5e,#1a5276); color:white; border:none; border-radius:7px; padding:6px 10px; font-size:12px; font-weight:600; display:inline-flex; align-items:center; gap:4px; cursor:pointer;">
-                                        <i class="bi bi-link-45deg"></i> Asignar
-                                    </button>
+                                    <!-- Asignar semillero — solo si está activo -->
+                                    @if (lider.Activo)
+                                    {
+                                        <button data-id="@lider.Id" data-nombre="@lider.Nombre"
+                                                onclick="abrirAsignar(this.dataset.id, this.dataset.nombre)"
+                                                style="background:linear-gradient(90deg,#0d2f5e,#1a5276); color:white; border:none; border-radius:7px; padding:6px 10px; font-size:12px; font-weight:600; display:inline-flex; align-items:center; gap:4px; cursor:pointer;">
+                                            <i class="bi bi-link-45deg"></i> Asignar
+                                        </button>
+                                    }
 
                                     <!-- Editar -->
                                     <a href="/Admin/EditarLider/@lider.Id"
