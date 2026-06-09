@@ -207,6 +207,17 @@ namespace GEPS.Controllers
                 return View();
             }
 
+            // Verificar que el correo no esté registrado
+            var correoExiste = _usuarios.Find(
+                Builders<Usuario>.Filter.Eq("correo", correo)
+            ).FirstOrDefault();
+
+            if (correoExiste != null)
+            {
+                ViewBag.Error = "Ya existe un usuario registrado con ese correo electrónico.";
+                return View();
+            }
+
             // Generar clave automática: GEPS + últimos 4 dígitos de la cédula
             string clave = "GEPS" + cedula.Substring(cedula.Length - 4);
 
