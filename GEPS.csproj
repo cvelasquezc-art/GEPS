@@ -222,6 +222,10 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\ConexionMongo.cs" />
+    <Compile Include="Models\Evento.cs" />
+    <Compile Include="Models\Proyecto.cs" />
+    <Compile Include="Models\Reunion.cs" />
+    <Compile Include="Models\Semillero.cs" />
     <Compile Include="Models\ServicioCorreo.cs" />
     <Compile Include="Models\Usuario.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

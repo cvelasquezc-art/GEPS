@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Web;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -32,7 +31,7 @@ namespace GEPS.Models
         public string Rol { get; set; }
 
         [BsonElement("fechaNacimiento")]
-        public DateTime? FechaNacimiento { get; set; }
+        public DateTime FechaNacimiento { get; set; }
 
         [BsonElement("genero")]
         public string Genero { get; set; }
@@ -44,6 +43,7 @@ namespace GEPS.Models
         public string Programa { get; set; }
 
         [BsonElement("idSemillero")]
+        [BsonRepresentation(BsonType.ObjectId)]
         public string IdSemillero { get; set; }
 
         [BsonElement("activo")]
@@ -53,6 +53,6 @@ namespace GEPS.Models
         public string CodigoRecuperacion { get; set; }
 
         [BsonElement("codigoExpira")]
-        public DateTime? CodigoExpira { get; set; }
+        public DateTime CodigoExpira { get; set; }
     }
 }
