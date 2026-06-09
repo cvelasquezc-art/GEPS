@@ -71,6 +71,18 @@ namespace GEPS.Controllers
                 return View(semillero);
             }
 
+            // Verificar que no exista otro semillero con el mismo nombre
+            var semilleroExiste = _semilleros.Find(
+                Builders<Semillero>.Filter.Regex("nombre",
+                    new MongoDB.Bson.BsonRegularExpression(semillero.Nombre, "i"))
+            ).FirstOrDefault();
+
+            if (semilleroExiste != null)
+            {
+                ViewBag.Error = "Ya existe un semillero con ese nombre.";
+                return View(semillero);
+            }
+
             semillero.FechaCreacion = DateTime.Now;
             semillero.Activo = true;
 
@@ -78,6 +90,8 @@ namespace GEPS.Controllers
 
             TempData["Exito"] = "Semillero creado correctamente.";
             return RedirectToAction("Semilleros");
+
+
         }
 
         //  SEMILLEROS — EDITAR
@@ -111,6 +125,21 @@ namespace GEPS.Controllers
                 .Set("nombre", semillero.Nombre)
                 .Set("lineaInvestigativa", semillero.LineaInvestigativa)
                 .Set("descripcion", semillero.Descripcion);
+
+            // Verificar que no exista otro semillero con el mismo nombre
+            var semilleroExiste = _semilleros.Find(
+                Builders<Semillero>.Filter.And(
+                    Builders<Semillero>.Filter.Regex("nombre",
+                        new MongoDB.Bson.BsonRegularExpression(semillero.Nombre, "i")),
+                    Builders<Semillero>.Filter.Ne("_id", MongoDB.Bson.ObjectId.Parse(semillero.Id))
+                )
+            ).FirstOrDefault();
+
+            if (semilleroExiste != null)
+            {
+                ViewBag.Error = "Ya existe un semillero con ese nombre.";
+                return View(semillero);
+            }
 
             _semilleros.UpdateOne(filtro, update);
 
