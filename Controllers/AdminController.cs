@@ -207,28 +207,64 @@ namespace GEPS.Controllers
             _usuarios.InsertOne(lider);
 
             // Enviar correo con credenciales
-            string cuerpo = $@"
-            <div style='font-family:Arial;max-width:500px;margin:auto;'>
-                <div style='background:#0d2f5e;padding:20px;text-align:center;border-radius:8px 8px 0 0;'>
-                    <h2 style='color:white;margin:0;'>GEPS</h2>
-                    <p style='color:#ccc;margin:4px 0 0;'>Gestión Eficiente para Semilleros</p>
-                </div>
-                <div style='padding:24px;border:1px solid #ddd;border-radius:0 0 8px 8px;'>
-                    <p>Hola <strong>{nombre}</strong>,</p>
-                    <p>El administrador ha creado tus credenciales de acceso al sistema GEPS.</p>
-                    <table style='width:100%;margin:16px 0;border-collapse:collapse;'>
-                        <tr>
-                            <td style='padding:8px;background:#f5f5f5;font-weight:bold;'>Cédula:</td>
-                            <td style='padding:8px;'>{cedula}</td>
-                        </tr>
-                        <tr>
-                            <td style='padding:8px;background:#f5f5f5;font-weight:bold;'>Contraseña:</td>
-                            <td style='padding:8px;'>{clave}</td>
-                        </tr>
-                    </table>
-                    <p style='color:#888;font-size:13px;'>Por seguridad te recomendamos cambiar tu contraseña al iniciar sesión por primera vez.</p>
-                </div>
-            </div>";
+            string cuerpo = $@"<!DOCTYPE html>
+<html lang='es'>
+<head><meta charset='utf-8'></head>
+<body style='margin:0;padding:0;background:#f0f4f8;font-family:Segoe UI,Arial,sans-serif;'>
+  <table width='100%' cellpadding='0' cellspacing='0' style='background:#f0f4f8;padding:32px 16px;'>
+    <tr><td align='center'>
+      <table width='500' cellpadding='0' cellspacing='0' style='background:white;border-radius:16px;overflow:hidden;border:1px solid #e0e0e0;'>
+        <!-- HEADER -->
+        <tr>
+          <td style='background:linear-gradient(135deg,#0d2f5e 0%,#1a5276 55%,#1e8449 100%);padding:32px;text-align:center;'>
+            <div style='font-size:30px;font-weight:900;color:white;letter-spacing:3px;'>GEP<span style='color:#4fc3a1;'>S</span></div>
+            <div style='color:rgba(255,255,255,0.65);font-size:12px;margin-top:5px;letter-spacing:0.5px;'>Gestión Eficiente para Semilleros</div>
+            <div style='width:36px;height:3px;background:#4fc3a1;border-radius:2px;margin:14px auto 0;'></div>
+          </td>
+        </tr>
+        <!-- BODY -->
+        <tr>
+          <td style='padding:32px;'>
+            <p style='font-size:15px;color:#333;margin:0 0 6px;'>Hola <strong style='color:#0d2f5e;'>{nombre}</strong>,</p>
+            <p style='font-size:14px;color:#666;margin:0 0 24px;'>El administrador ha creado tus credenciales de acceso al sistema GEPS. A continuación encontrarás tus datos de ingreso:</p>
+            <!-- CREDENCIALES -->
+            <table width='100%' cellpadding='0' cellspacing='0' style='background:linear-gradient(135deg,#f0f7ff,#e8f5ee);border:1.5px solid #4fc3a1;border-radius:12px;margin-bottom:20px;'>
+              <tr><td style='padding:24px 16px;text-align:center;'>
+                <div style='font-size:11px;font-weight:700;letter-spacing:2px;color:#1a5276;text-transform:uppercase;margin-bottom:16px;'>Credenciales de acceso</div>
+                <table width='100%' cellpadding='0' cellspacing='0'>
+                  <tr>
+                    <td style='padding:8px 16px;text-align:right;width:45%;font-size:13px;font-weight:700;color:#1a5276;'>Cédula:</td>
+                    <td style='padding:8px 16px;text-align:left;font-size:15px;font-weight:900;color:#0d2f5e;letter-spacing:2px;font-family:monospace;'>{cedula}</td>
+                  </tr>
+                  <tr>
+                    <td style='padding:8px 16px;text-align:right;font-size:13px;font-weight:700;color:#1a5276;'>Contraseña:</td>
+                    <td style='padding:8px 16px;text-align:left;font-size:15px;font-weight:900;color:#0d2f5e;letter-spacing:2px;font-family:monospace;'>{clave}</td>
+                  </tr>
+                </table>
+              </td></tr>
+            </table>
+            <!-- RECOMENDACION -->
+            <table width='100%' cellpadding='0' cellspacing='0' style='background:#fff8e1;border-left:3px solid #f59e0b;border-radius:0 8px 8px 0;margin-bottom:24px;'>
+              <tr><td style='padding:10px 14px;font-size:12px;color:#92400e;'>
+                ⚠️ Por seguridad cambia tu contraseña al iniciar sesión por primera vez usando la opción <strong>¿Olvidaste tu contraseña?</strong>
+              </td></tr>
+            </table>
+            <p style='font-size:13px;color:#aaa;text-align:center;margin:0;'>Este es un correo automático, no respondas a este mensaje.</p>
+          </td>
+        </tr>
+        <!-- FOOTER -->
+        <tr>
+          <td style='border-top:1px solid #eee;padding:18px 32px;text-align:center;background:#fafafa;'>
+            <div style='font-size:12px;font-weight:700;color:#1a5276;letter-spacing:1px;'>GEPS</div>
+            <p style='font-size:11px;color:#aaa;line-height:1.6;margin:4px 0 0;'>Gestión Eficiente para Semilleros<br>© 2025 — Todos los derechos reservados</p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>";
+
 
             ServicioCorreo.Enviar(correo, "Credenciales de acceso – GEPS", cuerpo);
 
