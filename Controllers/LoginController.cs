@@ -91,7 +91,7 @@ namespace GEPS.Controllers
             return RedirectToAction("Index", "Login");
         }
 
-        // ── PASO 1: Olvidé contraseña ──
+        // PASO 1: Olvidé contraseña
         public ActionResult OlvideContrasena()
         {
             return View();
@@ -192,7 +192,7 @@ namespace GEPS.Controllers
             return RedirectToAction("VerificarCodigo");
         }
 
-        // ── PASO 2: Verificar código ──
+        // PASO 2: Verificar código
         public ActionResult VerificarCodigo()
         {
             if (Session["CedulaRecuperacion"] == null)
@@ -227,7 +227,7 @@ namespace GEPS.Controllers
             return RedirectToAction("NuevaContrasena");
         }
 
-        // ── PASO 3: Nueva contraseña ──
+        // PASO 3: Nueva contraseña
         public ActionResult NuevaContrasena()
         {
             if (Session["CedulaRecuperacion"] == null ||
