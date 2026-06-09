@@ -1,0 +1,80 @@
+﻿@model GEPS.Models.Evento
+@{
+    Layout = "~/Views/Shared/_LayoutLider.cshtml";
+    ViewBag.Title = "Editar Evento";
+}
+
+<div style="padding: 8px 0 24px;">
+
+    <div style="margin-bottom:28px;">
+        <h2 style="font-size:22px; font-weight:700; color:#0d2f5e; margin-bottom:4px;">
+            <i class="bi bi-pencil"></i> Editar evento
+        </h2>
+        <p style="font-size:13px; color:#888; margin:0;">Modificar datos del evento</p>
+        <div style="width:40px; height:3px; background:#4fc3a1; border-radius:2px; margin-top:10px;"></div>
+    </div>
+
+    <div style="background:white; border-radius:16px; padding:32px; box-shadow:0 2px 16px rgba(0,0,0,0.07); border:1px solid #eee; max-width:600px;">
+
+        <form action="/Lider/EditarEvento/@Model.Id" method="post" class="form-geps">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Id" />
+
+            <label>Nombre del evento</label>
+            <input type="text" name="Nombre" value="@Model.Nombre"
+                   placeholder="Nombre del evento" />
+
+            <label>Proyecto relacionado</label>
+            <select name="idProyecto">
+                <option value="">-- Selecciona un proyecto --</option>
+                @foreach (var p in ViewBag.Proyectos as List<GEPS.Models.Proyecto>)
+                {
+                    <option value="@p.Id"
+                            @(Model.Proyectos.Contains(p.Id) ? "selected" : "")>
+                        @p.Titulo
+                    </option>
+                }
+            </select>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div>
+                    <label>Fecha</label>
+                    <input type="date" name="Fecha"
+                           value="@Model.Fecha.ToString("yyyy-MM-dd")" />
+                </div>
+                <div>
+                    <label>Tipo</label>
+                    <select name="Tipo">
+                        <option value="">-- Selecciona --</option>
+                        <option value="Ponencia" @(Model.Tipo == "Ponencia" ? "selected" : "")>Ponencia</option>
+                        <option value="Exposición" @(Model.Tipo == "Exposición" ? "selected" : "")>Exposición</option>
+                        <option value="Congreso" @(Model.Tipo == "Congreso" ? "selected" : "")>Congreso</option>
+                        <option value="Seminario" @(Model.Tipo == "Seminario" ? "selected" : "")>Seminario</option>
+                        <option value="Taller" @(Model.Tipo == "Taller" ? "selected" : "")>Taller</option>
+                        <option value="Otro" @(Model.Tipo == "Otro" ? "selected" : "")>Otro</option>
+                    </select>
+                </div>
+            </div>
+
+            <label>Lugar</label>
+            <input type="text" name="Lugar" value="@Model.Lugar"
+                   placeholder="Lugar del evento" />
+
+            <label>Nombre del organizador</label>
+            <input type="text" name="NombreOrganizador"
+                   value="@Model.NombreOrganizador"
+                   placeholder="Nombre del organizador" />
+
+            <div style="display:flex; gap:12px; margin-top:8px;">
+                <button type="submit"
+                        style="background:linear-gradient(90deg,#b7770d,#d4ac0d); color:white; border:none; border-radius:8px; padding:10px 20px; font-size:13px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                    <i class="bi bi-check-lg"></i> Guardar cambios
+                </button>
+                <a href="/Lider/Eventos"
+                   style="background:white; color:#555; border:1.5px solid #e8e8e8; border-radius:8px; padding:10px 20px; font-size:13px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                    <i class="bi bi-x-lg"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>

@@ -228,6 +228,9 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\ConexionMongo.cs" />
+    <Compile Include="Models\Evento.cs" />
+    <Compile Include="Models\Proyecto.cs" />
+    <Compile Include="Models\Reunion.cs" />
     <Compile Include="Models\Semillero.cs" />
     <Compile Include="Models\ServicioCorreo.cs" />
     <Compile Include="Models\Usuario.cs" />
@@ -281,6 +284,22 @@
     <Content Include="Views\Admin\CrearLider.cshtml" />
     <Content Include="Views\Admin\Reporte.cshtml" />
     <Content Include="Views\Admin\EditarLider.cshtml" />
+    <Content Include="Views\Shared\_LayoutLider.cshtml" />
+    <Content Include="Views\Lider\Investigadores.cshtml" />
+    <Content Include="Views\Lider\CrearInvestigador.cshtml" />
+    <Content Include="Views\Lider\EditarInvestigador.cshtml" />
+    <Content Include="Views\Lider\Proyectos.cshtml" />
+    <Content Include="Views\Lider\CrearProyecto.cshtml" />
+    <Content Include="Views\Lider\EditarProyecto.cshtml" />
+    <Content Include="Views\Lider\DetalleProyecto.cshtml" />
+    <Content Include="Views\Lider\AgregarFase.cshtml" />
+    <Content Include="Views\Lider\Reuniones.cshtml" />
+    <Content Include="Views\Lider\CrearReunion.cshtml" />
+    <Content Include="Views\Lider\EditarReunion.cshtml" />
+    <Content Include="Views\Lider\Eventos.cshtml" />
+    <Content Include="Views\Lider\CrearEvento.cshtml" />
+    <Content Include="Views\Lider\EditarEvento.cshtml" />
+    <Content Include="Views\Lider\Reporte.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -18,8 +18,8 @@ namespace GEPS.Controllers
         public AdminController()
         {
             var db = ConexionMongo.ObtenerDB();
-            _usuarios = db.GetCollection<Usuario>("Usuarios");
-            _semilleros = db.GetCollection<Semillero>("Semilleros");
+            _usuarios = db.GetCollection<Usuario>("usuarios");
+            _semilleros = db.GetCollection<Semillero>("semilleros");
         }
 
         // ── Verificar rol ──
@@ -28,10 +28,21 @@ namespace GEPS.Controllers
             return Session["Rol"]?.ToString() == "Administrador";
         }
 
-        //  PANEL PRINCIPAL
+        // PANEL PRINCIPAL
         public ActionResult Index()
         {
-            if (!EsAdmin()) return RedirectToAction("Index", "Login");
+            if (!EsAdmin())
+            {
+                // 1. Cerramos la autenticación de ASP.NET (destruye la cookie)
+                FormsAuthentication.SignOut();
+
+                // 2. Limpiamos por completo cualquier residuo de la sesión
+                Session.Abandon();
+                Session.Clear();
+
+                // 3. Ahora sí, redirigimos de forma segura al Login
+                return RedirectToAction("Index", "Login");
+            }
 
             ViewBag.TotalSemilleros = _semilleros.CountDocuments(Builders<Semillero>.Filter.Empty);
             ViewBag.SemillerosActivos = _semilleros.CountDocuments(Builders<Semillero>.Filter.Eq("activo", true));
@@ -341,7 +352,7 @@ namespace GEPS.Controllers
                 Builders<Usuario>.Filter.And(
                     Builders<Usuario>.Filter.Eq("rol", "Lider"),
                     Builders<Usuario>.Filter.Eq("idSemillero", idSemillero),
-                    Builders<Usuario>.Filter.Ne("_id", MongoDB.Bson.ObjectId.Parse(idLider))
+                    Builders<Usuario>.Filter.Ne("_id", ObjectId.Parse(idLider))
                 )
             ).FirstOrDefault();
 
@@ -352,7 +363,7 @@ namespace GEPS.Controllers
             }
 
             // Asignar el nuevo líder
-            var filtroUsuario = Builders<Usuario>.Filter.Eq("_id", MongoDB.Bson.ObjectId.Parse(idLider));
+            var filtroUsuario = Builders<Usuario>.Filter.Eq("_id", ObjectId.Parse(idLider));
             var updateUsuario = Builders<Usuario>.Update.Set("idSemillero", idSemillero);
             _usuarios.UpdateOne(filtroUsuario, updateUsuario);
 

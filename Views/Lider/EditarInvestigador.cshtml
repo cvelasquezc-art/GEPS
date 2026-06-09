@@ -1,0 +1,120 @@
+﻿@model GEPS.Models.Usuario
+@{
+    Layout = "~/Views/Shared/_LayoutLider.cshtml";
+    ViewBag.Title = "Editar Investigador";
+}
+
+<div style="padding: 8px 0 24px;">
+
+    <div style="margin-bottom:28px;">
+        <h2 style="font-size:22px; font-weight:700; color:#0d2f5e; margin-bottom:4px;">
+            <i class="bi bi-pencil"></i> Editar investigador
+        </h2>
+        <p style="font-size:13px; color:#888; margin:0;">Modificar datos del investigador</p>
+        <div style="width:40px; height:3px; background:#4fc3a1; border-radius:2px; margin-top:10px;"></div>
+    </div>
+
+    <div style="background:white; border-radius:16px; padding:32px; box-shadow:0 2px 16px rgba(0,0,0,0.07); border:1px solid #eee; max-width:600px;">
+
+        @if (ViewBag.Error != null)
+        {
+            <div style="background:#fde8e8; color:#c0392b; border-radius:10px; padding:12px 16px; font-size:13px; margin-bottom:20px; border-left:4px solid #c0392b;">
+                <i class="bi bi-exclamation-circle"></i> @ViewBag.Error
+            </div>
+        }
+
+        <form action="/Lider/EditarInvestigador" method="post" class="form-geps" novalidate>
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Id" />
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div>
+                    <label>Nombre completo *</label>
+                    <input type="text" name="nombre" id="inputNombre"
+                           placeholder="Nombre completo" value="@Model.Nombre" />
+                    <div id="nombreFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
+                </div>
+                <div>
+                    <label>Cédula</label>
+                    <input type="text" value="@Model.Cedula" disabled
+                           style="background:#f5f5f5; color:#999; cursor:not-allowed;" />
+                    <small style="font-size:11px; color:#aaa; display:block; margin-top:-12px; margin-bottom:16px;">
+                        La cédula no se puede modificar.
+                    </small>
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div>
+                    <label>Correo electrónico *</label>
+                    <input type="email" name="correo" id="inputCorreo"
+                           placeholder="correo@gmail.com" value="@Model.Correo" />
+                    <div id="correoFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
+                </div>
+                <div>
+                    <label>Celular</label>
+                    <input type="text" name="celular"
+                           placeholder="Ej: 3001234567" value="@Model.Celular" />
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div>
+                    <label>Fecha de nacimiento</label>
+                    <input type="date" name="fechaNacimiento"
+                           value="@(Model.FechaNacimiento.HasValue ? Model.FechaNacimiento.Value.ToString("yyyy-MM-dd") : "")" />
+                </div>
+                <div>
+                    <label>Género</label>
+                    <select name="genero">
+                        <option value="">-- Selecciona --</option>
+                        <option value="Masculino" @(Model.Genero == "Masculino" ? "selected" : "")>Masculino</option>
+                        <option value="Femenino" @(Model.Genero == "Femenino" ? "selected" : "")>Femenino</option>
+                        <option value="Otro" @(Model.Genero == "Otro" ? "selected" : "")>Otro</option>
+                    </select>
+                </div>
+            </div>
+
+            <label>Programa académico</label>
+            <input type="text" name="programa"
+                   placeholder="Ej: Ingeniería de Sistemas" value="@Model.Programa" />
+
+            <div style="display:flex; gap:12px; margin-top:8px;">
+                <button type="submit"
+                        style="background:linear-gradient(90deg,#b7770d,#d4ac0d); color:white; border:none; border-radius:8px; padding:10px 20px; font-size:13px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                    <i class="bi bi-check-lg"></i> Guardar cambios
+                </button>
+                <a href="/Lider/Investigadores"
+                   style="background:white; color:#555; border:1.5px solid #e8e8e8; border-radius:8px; padding:10px 20px; font-size:13px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                    <i class="bi bi-x-lg"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.querySelector('form').addEventListener('submit', function(e) {
+        var nombre   = document.getElementById('inputNombre');
+        var nombreFb = document.getElementById('nombreFeedback');
+        var correo   = document.getElementById('inputCorreo');
+        var correoFb = document.getElementById('correoFeedback');
+        var at       = String.fromCharCode(64);
+
+        if (nombre.value.trim() === '') {
+            e.preventDefault();
+            nombreFb.textContent = 'El nombre es obligatorio.';
+            nombreFb.style.display = 'block';
+        } else {
+            nombreFb.style.display = 'none';
+        }
+
+        if (correo.value.trim() === '' || correo.value.indexOf(at) === -1) {
+            e.preventDefault();
+            correoFb.textContent = 'Ingresa un correo válido.';
+            correoFb.style.display = 'block';
+        } else {
+            correoFb.style.display = 'none';
+        }
+    });
+</script>

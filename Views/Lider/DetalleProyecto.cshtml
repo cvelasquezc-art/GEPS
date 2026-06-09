@@ -1,0 +1,195 @@
+﻿@model GEPS.Models.Proyecto
+@{
+    Layout = "~/Views/Shared/_LayoutLider.cshtml";
+    ViewBag.Title = "Detalle Proyecto";
+}
+
+<div style="padding: 8px 0 24px;">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; flex-wrap:wrap; gap:12px;">
+        <div>
+            <h2 style="font-size:22px; font-weight:700; color:#0d2f5e; margin-bottom:4px;">
+                <i class="bi bi-kanban"></i> @Model.Titulo
+            </h2>
+            <p style="font-size:13px; color:#888; margin:0;">Detalle del proyecto — fases y actividades</p>
+            <div style="width:40px; height:3px; background:#4fc3a1; border-radius:2px; margin-top:10px;"></div>
+        </div>
+        <div style="display:flex; gap:10px;">
+            <a href="/Lider/Proyectos"
+               style="background:white; color:#555; border:1.5px solid #e8e8e8; border-radius:8px; padding:9px 16px; font-size:13px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+            <a href="/Lider/AgregarFase/@Model.Id"
+               style="background:linear-gradient(90deg,#0d2f5e,#1a5276); color:white; border:none; border-radius:8px; padding:9px 16px; font-size:13px; font-weight:600; display:inline-flex; align-items:center; gap:6px; text-decoration:none;">
+                <i class="bi bi-plus-circle"></i> Agregar fase
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Exito"] != null)
+    {
+        <div style="background:#d5f5e3; color:#1e8449; border-radius:10px; padding:12px 16px; font-size:13px; margin-bottom:20px; border-left:4px solid #1e8449;">
+            <i class="bi bi-check-circle"></i> @TempData["Exito"]
+        </div>
+    }
+
+    <!-- Info del proyecto -->
+    <div style="background:white; border-radius:16px; padding:24px 28px; box-shadow:0 2px 16px rgba(0,0,0,0.07); border:1px solid #eee; margin-bottom:20px;">
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:20px;">
+            <div>
+                <div style="font-size:11px; font-weight:700; color:#aaa; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Objetivo</div>
+                <div style="font-size:13px; color:#333;">@Model.Objetivo</div>
+            </div>
+            <div>
+                <div style="font-size:11px; font-weight:700; color:#aaa; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Duración</div>
+                <div style="font-size:13px; color:#333;">@Model.DuracionMeses mes(es)</div>
+            </div>
+            <div>
+                <div style="font-size:11px; font-weight:700; color:#aaa; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Fecha inicio</div>
+                <div style="font-size:13px; color:#333;">@Model.FechaInicio.ToString("dd/MM/yyyy")</div>
+            </div>
+            <div>
+                <div style="font-size:11px; font-weight:700; color:#aaa; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Estado</div>
+                @if (Model.Estado == "En ejecución")
+                {
+                    <span style="background:#d5f5e3; color:#1e8449; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600;">
+                        <i class="bi bi-play-circle"></i> En ejecución
+                    </span>
+                }
+                else
+                {
+                    <span style="background:#fde8e8; color:#c0392b; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600;">
+                        <i class="bi bi-check-circle"></i> Terminado
+                    </span>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Fases y actividades -->
+    @if (Model.Fases.Count == 0)
+    {
+        <div style="background:white; border-radius:16px; padding:60px 20px; box-shadow:0 2px 16px rgba(0,0,0,0.07); border:1px solid #eee; text-align:center; color:#aaa;">
+            <i class="bi bi-diagram-2" style="font-size:48px; display:block; margin-bottom:12px;"></i>
+            <p style="font-size:14px;">No hay fases registradas aún.</p>
+            <a href="/Lider/AgregarFase/@Model.Id"
+               style="background:linear-gradient(90deg,#0d2f5e,#1a5276); color:white; border:none; border-radius:8px; padding:9px 18px; font-size:13px; font-weight:600; display:inline-flex; align-items:center; gap:6px; text-decoration:none; margin-top:12px;">
+                <i class="bi bi-plus-circle"></i> Agregar primera fase
+            </a>
+        </div>
+    }
+    else
+    {
+        for (int i = 0; i < Model.Fases.Count; i++)
+        {
+            var fase = Model.Fases[i];
+            <div style="background:white; border-radius:16px; padding:24px 28px; box-shadow:0 2px 16px rgba(0,0,0,0.07); border:1px solid #eee; margin-bottom:16px;">
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <div style="width:32px; height:32px; background:#0d2f5e; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                            <span style="color:white; font-size:13px; font-weight:700;">@(i+1)</span>
+                        </div>
+                        <div>
+                            <div style="font-size:15px; font-weight:700; color:#0d2f5e;">@fase.Nombre</div>
+                            <div style="font-size:12px; color:#888;">@fase.DuracionMeses mes(es)</div>
+                        </div>
+                    </div>
+                    <button onclick="abrirAgregarActividad('@Model.Id', @i, '@fase.Nombre')"
+                            style="background:linear-gradient(90deg,#1e8449,#27ae60); color:white; border:none; border-radius:8px; padding:7px 14px; font-size:12px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+                        <i class="bi bi-plus-circle"></i> Agregar actividad
+                    </button>
+                </div>
+
+                @if (fase.Actividades.Count == 0)
+                {
+                    <div style="text-align:center; padding:20px; color:#ccc; font-size:13px; background:#f9f9f9; border-radius:8px;">
+                        <i class="bi bi-list-task"></i> No hay actividades en esta fase.
+                    </div>
+                }
+                else
+                {
+                    <table style="width:100%; border-collapse:collapse; font-size:13px;">
+                        <thead>
+                            <tr style="background:#f0f4f8;">
+                                <th style="padding:10px 14px; color:#555; font-weight:600; text-align:left; border-radius:8px 0 0 0;">Actividad</th>
+                                <th style="padding:10px 14px; color:#555; font-weight:600; text-align:center;">Duración</th>
+                                <th style="padding:10px 14px; color:#555; font-weight:600; text-align:center; border-radius:0 8px 0 0;">Fecha entrega</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var act in fase.Actividades)
+                            {
+                                <tr style="border-bottom:1px solid #f5f5f5;">
+                                    <td style="padding:10px 14px; color:#333;">@act.Nombre</td>
+                                    <td style="padding:10px 14px; color:#555; text-align:center;">@act.DuracionDias día(s)</td>
+                                    <td style="padding:10px 14px; color:#555; text-align:center;">@act.FechaEntrega.ToString("dd/MM/yyyy")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        }
+    }
+</div>
+
+<!-- Modal agregar actividad -->
+<div id="modalActividad" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:white; border-radius:16px; padding:32px; width:100%; max-width:480px; box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h5 style="font-size:16px; font-weight:700; color:#0d2f5e; margin:0;">
+                <i class="bi bi-plus-circle"></i> Agregar actividad
+            </h5>
+            <button onclick="cerrarModalActividad()" style="background:none; border:none; font-size:20px; color:#aaa; cursor:pointer;">
+                <i class="bi bi-x"></i>
+            </button>
+        </div>
+
+        <p id="modalActividadTexto" style="font-size:13px; color:#888; margin-bottom:20px;"></p>
+
+        <form action="/Lider/AgregarActividad" method="post" class="form-geps">
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="hiddenIdProyecto" name="idProyecto" />
+            <input type="hidden" id="hiddenIndiceFase" name="indiceFase" />
+
+            <label>Nombre de la actividad</label>
+            <input type="text" name="nombreActividad" placeholder="Ej: Levantamiento de requisitos" />
+
+            <label>Duración (días)</label>
+            <input type="number" name="duracionDias" min="1" placeholder="Ej: 5" />
+
+            <label>Fecha de entrega</label>
+            <input type="date" name="fechaEntrega" />
+
+            <div style="display:flex; gap:12px; margin-top:8px;">
+                <button type="submit"
+                        style="background:linear-gradient(90deg,#1e8449,#27ae60); color:white; border:none; border-radius:8px; padding:10px 20px; font-size:13px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                    <i class="bi bi-check-lg"></i> Agregar
+                </button>
+                <button type="button" onclick="cerrarModalActividad()"
+                        style="background:white; color:#555; border:1.5px solid #e8e8e8; border-radius:8px; padding:10px 20px; font-size:13px; font-weight:600; cursor:pointer;">
+                    Cancelar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function abrirAgregarActividad(idProyecto, indiceFase, nombreFase) {
+        document.getElementById('hiddenIdProyecto').value  = idProyecto;
+        document.getElementById('hiddenIndiceFase').value  = indiceFase;
+        document.getElementById('modalActividadTexto').textContent = 'Fase: ' + nombreFase;
+        document.getElementById('modalActividad').style.display = 'flex';
+    }
+
+    function cerrarModalActividad() {
+        document.getElementById('modalActividad').style.display = 'none';
+    }
+
+    window.addEventListener('click', function(e) {
+        if (e.target === document.getElementById('modalActividad')) cerrarModalActividad();
+    });
+</script>

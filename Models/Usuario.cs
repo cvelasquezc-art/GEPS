@@ -44,6 +44,7 @@ namespace GEPS.Models
         public string Programa { get; set; }
 
         [BsonElement("idSemillero")]
+        [BsonRepresentation(BsonType.ObjectId)]
         public string IdSemillero { get; set; }
 
         [BsonElement("activo")]

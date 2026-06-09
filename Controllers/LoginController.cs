@@ -11,11 +11,11 @@ namespace GEPS.Controllers
     public class LoginController : Controller
     {
         private IMongoCollection<Usuario> _usuarios;
-
+ 
         public LoginController()
         {
             var db = ConexionMongo.ObtenerDB();
-            _usuarios = db.GetCollection<Usuario>("Usuarios");
+            _usuarios = db.GetCollection<Usuario>("usuarios");
         }
 
         // GET: Login
@@ -82,14 +82,13 @@ namespace GEPS.Controllers
         public ActionResult Salir()
         {
             FormsAuthentication.SignOut();
+            Session.Clear();
             Session.Abandon();
-
-            var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, "");
-            cookie.Expires = DateTime.Now.AddYears(-1);
-            Response.Cookies.Add(cookie);
 
             return RedirectToAction("Index", "Login");
         }
+
+
 
         // PASO 1: Olvidé contraseña
         public ActionResult OlvideContrasena()
