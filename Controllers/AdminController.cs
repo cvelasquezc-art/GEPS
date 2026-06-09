@@ -279,10 +279,24 @@ namespace GEPS.Controllers
         {
             if (!EsAdmin()) return RedirectToAction("Index", "Login");
 
-            // Solo actualiza idSemillero en el usuario líder
-            var filtroUsuario = Builders<Usuario>.Filter.Eq("_id", ObjectId.Parse(idLider));
-            var updateUsuario = Builders<Usuario>.Update
-                .Set("idSemillero", idSemillero);
+            // Verificar si el semillero ya tiene un líder asignado
+            var liderExistente = _usuarios.Find(
+                Builders<Usuario>.Filter.And(
+                    Builders<Usuario>.Filter.Eq("rol", "Lider"),
+                    Builders<Usuario>.Filter.Eq("idSemillero", idSemillero),
+                    Builders<Usuario>.Filter.Ne("_id", MongoDB.Bson.ObjectId.Parse(idLider))
+                )
+            ).FirstOrDefault();
+
+            if (liderExistente != null)
+            {
+                TempData["Error"] = $"El semillero ya tiene asignado al líder {liderExistente.Nombre}. Desactívalo primero antes de asignar otro.";
+                return RedirectToAction("Lideres");
+            }
+
+            // Asignar el nuevo líder
+            var filtroUsuario = Builders<Usuario>.Filter.Eq("_id", MongoDB.Bson.ObjectId.Parse(idLider));
+            var updateUsuario = Builders<Usuario>.Update.Set("idSemillero", idSemillero);
             _usuarios.UpdateOne(filtroUsuario, updateUsuario);
 
             TempData["Exito"] = "Líder asignado al semillero correctamente.";
