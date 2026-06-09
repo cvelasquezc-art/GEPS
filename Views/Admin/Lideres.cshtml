@@ -60,7 +60,7 @@
                         <th style="padding:12px 16px; color:white; font-weight:600; text-align:left;">Cédula</th>
                         <th style="padding:12px 16px; color:white; font-weight:600; text-align:left;">Correo</th>
                         <th style="padding:12px 16px; color:white; font-weight:600; text-align:center;">Estado</th>
-                        <th style="padding:12px 16px; color:white; font-weight:600; text-align:center;">Semillero asignado</th>
+                        <th style="padding:12px 16px; color:white; font-weight:600; text-align:center;">Semillero</th>
                         <th style="padding:12px 16px; color:white; font-weight:600; text-align:center; border-radius:0 8px 0 0;">Acciones</th>
                     </tr>
                 </thead>
@@ -109,10 +109,30 @@
                                 }
                             </td>
                             <td style="padding:14px 16px; text-align:center;">
-                                <button onclick="abrirAsignar('@lider.Id', '@lider.Nombre')"
-                                        style="background:linear-gradient(90deg,#0d2f5e,#1a5276); color:white; border:none; border-radius:7px; padding:6px 12px; font-size:12px; font-weight:600; display:inline-flex; align-items:center; gap:4px; cursor:pointer;">
-                                    <i class="bi bi-link-45deg"></i> Asignar semillero
-                                </button>
+                                <div style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap;">
+
+                                    <!-- Asignar semillero -->
+                                    <button data-id="@lider.Id" data-nombre="@lider.Nombre"
+                                            onclick="abrirAsignar(this.dataset.id, this.dataset.nombre)"
+                                            style="background:linear-gradient(90deg,#0d2f5e,#1a5276); color:white; border:none; border-radius:7px; padding:6px 10px; font-size:12px; font-weight:600; display:inline-flex; align-items:center; gap:4px; cursor:pointer;">
+                                        <i class="bi bi-link-45deg"></i> Asignar
+                                    </button>
+
+                                    <!-- Editar -->
+                                    <a href="/Admin/EditarLider/@lider.Id"
+                                       style="background:linear-gradient(90deg,#b7770d,#d4ac0d); color:white; border:none; border-radius:7px; padding:6px 10px; font-size:12px; font-weight:600; display:inline-flex; align-items:center; gap:4px; text-decoration:none;">
+                                        <i class="bi bi-pencil"></i> Editar
+                                    </a>
+
+                                    <!-- Desactivar / Activar -->
+                                    <a href="/Admin/CambiarEstadoLider/@lider.Id"
+                                       style="background:@(lider.Activo ? "linear-gradient(90deg,#922b21,#e74c3c)" : "linear-gradient(90deg,#1e8449,#27ae60)"); color:white; border:none; border-radius:7px; padding:6px 10px; font-size:12px; font-weight:600; display:inline-flex; align-items:center; gap:4px; text-decoration:none;"
+                                       onclick="return confirm('@(lider.Activo ? "¿Desactivar este líder?" : "¿Activar este líder?")')">
+                                        <i class="bi @(lider.Activo ? "bi-person-dash" : "bi-person-check")"></i>
+                                        @(lider.Activo ? "Desactivar" : "Activar")
+                                    </a>
+
+                                </div>
                             </td>
                         </tr>
                     }
@@ -175,7 +195,7 @@
         document.getElementById('modalAsignar').style.display = 'none';
     }
 
-    window.addEventListener('click', function(e) {
+    window.addEventListener('click', function (e) {
         const modal = document.getElementById('modalAsignar');
         if (e.target === modal) cerrarModal();
     });

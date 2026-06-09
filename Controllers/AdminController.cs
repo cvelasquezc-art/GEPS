@@ -543,8 +543,73 @@ namespace GEPS.Controllers
                 }
             }
         }
+
+        // EDITAR LÍDER
+        public ActionResult EditarLider(string id)
+        {
+            if (!EsAdmin()) return RedirectToAction("Index", "Login");
+
+            var lider = _usuarios.Find(
+                Builders<Usuario>.Filter.Eq("_id", MongoDB.Bson.ObjectId.Parse(id))
+            ).FirstOrDefault();
+
+            if (lider == null) return RedirectToAction("Lideres");
+            return View(lider);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditarLider(string id, string nombre, string correo)
+        {
+            if (!EsAdmin()) return RedirectToAction("Index", "Login");
+
+            if (string.IsNullOrEmpty(nombre) || string.IsNullOrEmpty(correo))
+            {
+                ViewBag.Error = "El nombre y el correo son obligatorios.";
+                var lider = _usuarios.Find(
+                    Builders<Usuario>.Filter.Eq("_id", MongoDB.Bson.ObjectId.Parse(id))
+                ).FirstOrDefault();
+                return View(lider);
+            }
+
+            var filtro = Builders<Usuario>.Filter.Eq("_id", MongoDB.Bson.ObjectId.Parse(id));
+            var update = Builders<Usuario>.Update
+                .Set("nombre", nombre)
+                .Set("correo", correo);
+
+            _usuarios.UpdateOne(filtro, update);
+
+            TempData["Exito"] = "Líder actualizado correctamente.";
+            return RedirectToAction("Lideres");
+        }
+
+        // DESACTIVAR LIDER
+        public ActionResult CambiarEstadoLider(string id)
+        {
+            if (!EsAdmin()) return RedirectToAction("Index", "Login");
+
+            var filtro = Builders<Usuario>.Filter.Eq("_id", MongoDB.Bson.ObjectId.Parse(id));
+            var lider = _usuarios.Find(filtro).FirstOrDefault();
+
+            if (lider != null)
+            {
+                var update = Builders<Usuario>.Update
+                    .Set("activo", !lider.Activo);
+                _usuarios.UpdateOne(filtro, update);
+
+                TempData["Exito"] = lider.Activo
+                    ? "Líder desactivado correctamente."
+                    : "Líder activado correctamente.";
+            }
+
+            return RedirectToAction("Lideres");
+        }
     }
 }
+
+        
+    
+
     
 
 
