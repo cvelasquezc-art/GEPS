@@ -3,6 +3,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using System.Web.Security;
 
@@ -149,14 +150,30 @@ namespace GEPS.Controllers
                 Builders<Usuario>.Filter.Eq("rol", "Lider")
             ).ToList();
 
-            var semilleros = _semilleros.Find(
+            // Solo semilleros activos SIN líder asignado
+            var todosLosSemilleros = _semilleros.Find(
                 Builders<Semillero>.Filter.Eq("activo", true)
             ).ToList();
 
-            ViewBag.Semilleros = semilleros;
+            // Obtener IDs de semilleros que ya tienen líder
+            var semillerosConLider = _usuarios.Find(
+                Builders<Usuario>.Filter.And(
+                    Builders<Usuario>.Filter.Eq("rol", "Lider"),
+                    Builders<Usuario>.Filter.Ne("idSemillero", BsonNull.Value),
+                    Builders<Usuario>.Filter.Ne("idSemillero", "")
+                )
+            ).ToList().Select(l => l.IdSemillero).ToList();
+
+            // Filtrar semilleros disponibles — activos y sin líder
+            var semillerosDisponibles = todosLosSemilleros
+                .Where(s => !semillerosConLider.Contains(s.Id))
+                .ToList();
+
+            ViewBag.Semilleros = todosLosSemilleros; // para mostrar nombre en tabla
+            ViewBag.SemillerosDisponibles = semillerosDisponibles; // para el dropdown del modal
+
             return View(lista);
         }
-
 
         //  LÍDERES — CREAR CREDENCIALES
         public ActionResult CrearLider()
@@ -607,12 +624,26 @@ namespace GEPS.Controllers
 
             if (lider != null)
             {
-                var update = Builders<Usuario>.Update
-                    .Set("activo", !lider.Activo);
+                UpdateDefinition<Usuario> update;
+
+                if (lider.Activo)
+                {
+                    // Al desactivar — quitar el semillero asignado
+                    update = Builders<Usuario>.Update
+                        .Set("activo", false)
+                        .Set("idSemillero", BsonNull.Value);
+                }
+                else
+                {
+                    // Al activar — solo cambiar estado
+                    update = Builders<Usuario>.Update
+                        .Set("activo", true);
+                }
+
                 _usuarios.UpdateOne(filtro, update);
 
                 TempData["Exito"] = lider.Activo
-                    ? "Líder desactivado correctamente."
+                    ? "Líder desactivado correctamente. El semillero quedó disponible."
                     : "Líder activado correctamente.";
             }
 

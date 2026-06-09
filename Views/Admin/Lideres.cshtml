@@ -162,13 +162,22 @@
             <input type="hidden" id="hiddenIdLider" name="idLider" />
 
             <label>Seleccionar semillero</label>
-            <select name="idSemillero" id="selectSemillero">
+            <select name="idSemillero" id="selectSemillero"
+                    @(!(ViewBag.SemillerosDisponibles as List<GEPS.Models.Semillero>).Any() ? "disabled" : "")
+                    style="width:100%; padding:10px 14px; border:1.5px solid #e8e8e8; border-radius:8px; font-size:13px; color:#333; background:#fafafa;">
                 <option value="">-- Selecciona un semillero --</option>
-                @foreach (var s in ViewBag.Semilleros as List<GEPS.Models.Semillero>)
+                @foreach (var s in ViewBag.SemillerosDisponibles as List<GEPS.Models.Semillero>)
                 {
                     <option value="@s.Id">@s.Nombre — @s.LineaInvestigativa</option>
                 }
             </select>
+
+            @if (!(ViewBag.SemillerosDisponibles as List<GEPS.Models.Semillero>).Any())
+            {
+                <div style="font-size:12px; color:#d4ac0d; margin-top:8px; padding:8px 12px; background:#fef9e7; border-radius:8px; border-left:3px solid #d4ac0d;">
+                    <i class="bi bi-exclamation-triangle"></i> No hay semilleros disponibles. Todos tienen un líder asignado o no hay semilleros activos.
+                </div>
+            }
 
             <div style="display:flex; gap:12px; margin-top:8px;">
                 <button type="submit"
