@@ -267,8 +267,6 @@
     </Content>
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Login\Index.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Investigador\Index.cshtml" />
@@ -300,6 +298,13 @@
     <Content Include="Views\Lider\CrearEvento.cshtml" />
     <Content Include="Views\Lider\EditarEvento.cshtml" />
     <Content Include="Views\Lider\Reporte.cshtml" />
+    <Content Include="Views\Investigador\Semillero.cshtml" />
+    <Content Include="Views\Investigador\Proyectos.cshtml" />
+    <Content Include="Views\Investigador\DetalleProyecto.cshtml" />
+    <Content Include="Views\Investigador\Reuniones.cshtml" />
+    <Content Include="Views\Investigador\Eventos.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Shared\_LayoutInvestigador.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

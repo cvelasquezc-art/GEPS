@@ -1,0 +1,83 @@
+﻿@model List<GEPS.Models.Proyecto>
+@{
+    Layout = "~/Views/Shared/_LayoutInvestigador.cshtml";
+    ViewBag.Title = "Proyectos";
+}
+
+<div style="padding: 8px 0 24px;">
+
+    <div style="margin-bottom:28px;">
+        <h2 style="font-size:22px; font-weight:700; color:#0d2f5e; margin-bottom:4px;">
+            <i class="bi bi-kanban"></i> Proyectos
+        </h2>
+        <p style="font-size:13px; color:#888; margin:0;">Proyectos de investigación de tu semillero</p>
+        <div style="width:40px; height:3px; background:#4fc3a1; border-radius:2px; margin-top:10px;"></div>
+    </div>
+
+    <div style="background:white; border-radius:16px; padding:24px; box-shadow:0 2px 16px rgba(0,0,0,0.07); border:1px solid #eee;">
+
+        @if (Model.Count == 0)
+        {
+            <div style="text-align:center; padding:60px 20px;">
+                <div style="width:64px; height:64px; background:#f0f4f8; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
+                    <i class="bi bi-kanban" style="font-size:28px; color:#aaa;"></i>
+                </div>
+                <p style="font-size:14px; color:#aaa; margin:0;">No hay proyectos registrados en tu semillero.</p>
+            </div>
+        }
+        else
+        {
+            <table style="width:100%; border-collapse:collapse; font-size:13px;">
+                <thead>
+                    <tr style="background:linear-gradient(90deg,#0d2f5e,#1a5276); color:white;">
+                        <th style="padding:12px 16px; font-weight:600; border-radius:8px 0 0 0;">Título</th>
+                        <th style="padding:12px 16px; font-weight:600;">Objetivo</th>
+                        <th style="padding:12px 16px; font-weight:600;">Duración</th>
+                        <th style="padding:12px 16px; font-weight:600;">Inicio</th>
+                        <th style="padding:12px 16px; font-weight:600;">Estado</th>
+                        <th style="padding:12px 16px; font-weight:600; border-radius:0 8px 0 0;">Detalle</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model)
+                    {
+                        <tr style="border-bottom:1px solid #f0f0f0;">
+                            <td style="padding:12px 16px; color:#0d2f5e; font-weight:700;">@p.Titulo</td>
+                            <td style="padding:12px 16px; color:#555; max-width:260px;">
+                                @(p.Objetivo.Length > 80 ? p.Objetivo.Substring(0, 80) + "..." : p.Objetivo)
+                            </td>
+                            <td style="padding:12px 16px; color:#666;">@p.DuracionMeses mes(es)</td>
+                            <td style="padding:12px 16px; color:#666;">@p.FechaInicio.ToString("dd/MM/yyyy")</td>
+                            <td style="padding:12px 16px;">
+                                @if (p.Estado == "En ejecución")
+                                {
+                                    <span style="background:#d5f5e3; color:#1e8449; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:600;">
+                                        <i class="bi bi-play-circle"></i> @p.Estado
+                                    </span>
+                                }
+                                else if (p.Estado == "Finalizado")
+                                {
+                                    <span style="background:#e8f4fd; color:#1a5276; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:600;">
+                                        <i class="bi bi-check-circle"></i> @p.Estado
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span style="background:#fde8e8; color:#c0392b; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:600;">
+                                        <i class="bi bi-pause-circle"></i> @p.Estado
+                                    </span>
+                                }
+                            </td>
+                            <td style="padding:12px 16px;">
+                                <a href="/Investigador/DetalleProyecto/@p.Id"
+                                   style="background:linear-gradient(90deg,#0d2f5e,#1a5276); color:white; border:none; border-radius:7px; padding:7px 14px; font-size:12px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:5px;">
+                                    <i class="bi bi-eye"></i> Ver
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>

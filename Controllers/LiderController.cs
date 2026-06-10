@@ -13,20 +13,20 @@ namespace GEPS.Controllers
         [Authorize]
         public class LiderController : Controller
         {
-            private IMongoCollection<Usuario> _usuarios;
-            private IMongoCollection<Semillero> _semilleros;
-            private IMongoCollection<Proyecto> _proyectos;
-            private IMongoCollection<Reunion> _reuniones;
-            private IMongoCollection<Evento> _eventos;
+            private IMongoCollection<Usuario> usuarios;
+            private IMongoCollection<Semillero> semilleros;
+            private IMongoCollection<Proyecto> proyectos;
+            private IMongoCollection<Reunion> reuniones;
+            private IMongoCollection<Evento> eventos;
 
             public LiderController()
             {
                 var db = ConexionMongo.ObtenerDB();
-                _usuarios = db.GetCollection<Usuario>("Usuarios");
-                _semilleros = db.GetCollection<Semillero>("Semilleros");
-                _proyectos = db.GetCollection<Proyecto>("Proyectos");
-                _reuniones = db.GetCollection<Reunion>("Reuniones");
-                _eventos = db.GetCollection<Evento>("Eventos");
+                usuarios = db.GetCollection<Usuario>("Usuarios");
+                semilleros = db.GetCollection<Semillero>("Semilleros");
+                proyectos = db.GetCollection<Proyecto>("Proyectos");
+                reuniones = db.GetCollection<Reunion>("Reuniones");
+                eventos = db.GetCollection<Evento>("Eventos");
             }
 
             // ── Verificar rol ──
@@ -39,7 +39,7 @@ namespace GEPS.Controllers
             private Usuario ObtenerLiderActual()
             {
                 string cedula = Session["Cedula"]?.ToString();
-                return _usuarios.Find(
+                return usuarios.Find(
                     Builders<Usuario>.Filter.Eq("cedula", cedula)
                 ).FirstOrDefault();
             }
@@ -58,37 +58,37 @@ namespace GEPS.Controllers
                     return View();
                 }
 
-                var semillero = _semilleros.Find(
+                var semillero = semilleros.Find(
                     Builders<Semillero>.Filter.Eq("_id", ObjectId.Parse(lider.IdSemillero))
                 ).FirstOrDefault();
 
-                var totalProyectos = _proyectos.CountDocuments(
-                    Builders<Proyecto>.Filter.Eq("idSemillero", lider.IdSemillero)
+                var totalProyectos = proyectos.CountDocuments(
+                    Builders<Proyecto>.Filter.Eq("idSemillero", ObjectId.Parse(lider.IdSemillero))
                 );
 
-                var proyectosActivos = _proyectos.CountDocuments(
+                var proyectosActivos = proyectos.CountDocuments(
                     Builders<Proyecto>.Filter.And(
-                        Builders<Proyecto>.Filter.Eq("idSemillero", lider.IdSemillero),
+                        Builders<Proyecto>.Filter.Eq("idSemillero", ObjectId.Parse(lider.IdSemillero)),
                         Builders<Proyecto>.Filter.Eq("estado", "En ejecución")
                     )
                 );
 
-                var idsProyectos = _proyectos.Find(
-                    Builders<Proyecto>.Filter.Eq("idSemillero", lider.IdSemillero)
-                ).ToList().Select(p => p.Id).ToList();
+                var idsProyectos = proyectos.Find(
+                    Builders<Proyecto>.Filter.Eq("idSemillero", ObjectId.Parse(lider.IdSemillero))
+                ).ToList().Select(p => ObjectId.Parse(p.Id)).ToList();
 
-                var totalReuniones = _reuniones.CountDocuments(
+                var totalReuniones = reuniones.CountDocuments(
                     Builders<Reunion>.Filter.In("idProyecto", idsProyectos)
                 );
 
-                var totalEventos = _eventos.CountDocuments(
+                var totalEventos = eventos.CountDocuments(
                     Builders<Evento>.Filter.AnyIn("proyectos", idsProyectos)
                 );
 
-                var totalInvestigadores = _usuarios.CountDocuments(
+                var totalInvestigadores = usuarios.CountDocuments(
                     Builders<Usuario>.Filter.And(
                         Builders<Usuario>.Filter.Eq("rol", "Investigador"),
-                        Builders<Usuario>.Filter.Eq("idSemillero", lider.IdSemillero),
+                        Builders<Usuario>.Filter.Eq("idSemillero", ObjectId.Parse(lider.IdSemillero)),
                         Builders<Usuario>.Filter.Eq("activo", true)
                     )
                 );
@@ -111,10 +111,10 @@ namespace GEPS.Controllers
                 if (!EsLider()) return RedirectToAction("Index", "Login");
 
                 var lider = ObtenerLiderActual();
-                var lista = _usuarios.Find(
+                var lista = usuarios.Find(
                     Builders<Usuario>.Filter.And(
                         Builders<Usuario>.Filter.Eq("rol", "Investigador"),
-                        Builders<Usuario>.Filter.Eq("idSemillero", lider.IdSemillero)
+                        Builders<Usuario>.Filter.Eq("idSemillero", ObjectId.Parse(lider.IdSemillero))
                     )
                 ).ToList();
 
@@ -146,7 +146,7 @@ namespace GEPS.Controllers
                 }
 
                 // Verificar cédula duplicada
-                var cedulaExiste = _usuarios.Find(
+                var cedulaExiste = usuarios.Find(
                     Builders<Usuario>.Filter.Eq("cedula", cedula)
                 ).FirstOrDefault();
 
@@ -157,7 +157,7 @@ namespace GEPS.Controllers
                 }
 
                 // Verificar correo duplicado
-                var correoExiste = _usuarios.Find(
+                var correoExiste = usuarios.Find(
                     Builders<Usuario>.Filter.Eq("correo", correo)
                 ).FirstOrDefault();
 
@@ -187,7 +187,7 @@ namespace GEPS.Controllers
                     Activo = true
                 };
 
-                _usuarios.InsertOne(investigador);
+                usuarios.InsertOne(investigador);
 
                 // Enviar correo con credenciales
                 string cuerpo = $@"<!DOCTYPE html>
@@ -256,7 +256,7 @@ namespace GEPS.Controllers
             {
                 if (!EsLider()) return RedirectToAction("Index", "Login");
 
-                var investigador = _usuarios.Find(
+                var investigador = usuarios.Find(
                     Builders<Usuario>.Filter.Eq("_id", ObjectId.Parse(id))
                 ).FirstOrDefault();
 
@@ -274,7 +274,7 @@ namespace GEPS.Controllers
                 if (string.IsNullOrEmpty(nombre) || string.IsNullOrEmpty(correo))
                 {
                     ViewBag.Error = "El nombre y el correo son obligatorios.";
-                    var inv = _usuarios.Find(
+                    var inv = usuarios.Find(
                         Builders<Usuario>.Filter.Eq("_id", ObjectId.Parse(id))
                     ).FirstOrDefault();
                     return View(inv);
@@ -291,7 +291,7 @@ namespace GEPS.Controllers
                 if (!string.IsNullOrEmpty(fechaNacimiento))
                     update = update.Set("fechaNacimiento", DateTime.Parse(fechaNacimiento));
 
-                _usuarios.UpdateOne(filtro, update);
+                usuarios.UpdateOne(filtro, update);
 
                 TempData["Exito"] = "Investigador actualizado correctamente.";
                 return RedirectToAction("Investigadores");
@@ -305,7 +305,7 @@ namespace GEPS.Controllers
                 if (!EsLider()) return RedirectToAction("Index", "Login");
 
                 var filtro = Builders<Usuario>.Filter.Eq("_id", ObjectId.Parse(id));
-                var investigador = _usuarios.Find(filtro).FirstOrDefault();
+                var investigador = usuarios.Find(filtro).FirstOrDefault();
 
                 if (investigador != null)
                 {
@@ -321,10 +321,10 @@ namespace GEPS.Controllers
                         var lider = ObtenerLiderActual();
                         update = Builders<Usuario>.Update
                             .Set("activo", true)
-                            .Set("idSemillero", lider.IdSemillero);
+                            .Set("idSemillero", ObjectId.Parse(lider.IdSemillero));
                     }
 
-                    _usuarios.UpdateOne(filtro, update);
+                    usuarios.UpdateOne(filtro, update);
 
                     TempData["Exito"] = investigador.Activo
                         ? "Investigador desactivado correctamente."
@@ -345,8 +345,8 @@ namespace GEPS.Controllers
                 if (lider == null || string.IsNullOrEmpty(lider.IdSemillero))
                     return RedirectToAction("Index");
 
-                var lista = _proyectos.Find(
-                    Builders<Proyecto>.Filter.Eq("idSemillero", lider.IdSemillero)
+                var lista = proyectos.Find(
+                    Builders<Proyecto>.Filter.Eq("idSemillero", ObjectId.Parse(lider.IdSemillero))
                 ).SortByDescending(p => p.FechaInicio).ToList();
 
                 return View(lista);
@@ -380,7 +380,7 @@ namespace GEPS.Controllers
                 proyecto.Estado = "En ejecución";
                 proyecto.Fases = new List<Fase>();
 
-                _proyectos.InsertOne(proyecto);
+                proyectos.InsertOne(proyecto);
 
                 TempData["Exito"] = "Proyecto creado correctamente.";
                 return RedirectToAction("Proyectos");
@@ -393,7 +393,7 @@ namespace GEPS.Controllers
             {
                 if (!EsLider()) return RedirectToAction("Index", "Login");
 
-                var proyecto = _proyectos.Find(
+                var proyecto = proyectos.Find(
                     Builders<Proyecto>.Filter.Eq("_id", ObjectId.Parse(id))
                 ).FirstOrDefault();
 
@@ -410,7 +410,7 @@ namespace GEPS.Controllers
                 if (string.IsNullOrEmpty(titulo) || string.IsNullOrEmpty(objetivo))
                 {
                     ViewBag.Error = "El título y el objetivo son obligatorios.";
-                    var proyecto = _proyectos.Find(
+                    var proyecto = proyectos.Find(
                         Builders<Proyecto>.Filter.Eq("_id", ObjectId.Parse(id))
                     ).FirstOrDefault();
                     return View(proyecto);
@@ -422,7 +422,7 @@ namespace GEPS.Controllers
                     .Set("objetivo", objetivo)
                     .Set("duracionMeses", duracionMeses);
 
-                _proyectos.UpdateOne(filtro, update);
+                proyectos.UpdateOne(filtro, update);
 
                 TempData["Exito"] = "Proyecto actualizado correctamente.";
                 return RedirectToAction("Proyectos");
@@ -439,7 +439,7 @@ namespace GEPS.Controllers
 
                 var filtro = Builders<Proyecto>.Filter.Eq("_id", ObjectId.Parse(id));
                 var update = Builders<Proyecto>.Update.Set("estado", estado);
-                _proyectos.UpdateOne(filtro, update);
+                proyectos.UpdateOne(filtro, update);
 
                 TempData["Exito"] = "Estado del proyecto actualizado correctamente.";
                 return RedirectToAction("Proyectos");
@@ -452,7 +452,7 @@ namespace GEPS.Controllers
             {
                 if (!EsLider()) return RedirectToAction("Index", "Login");
 
-                var proyecto = _proyectos.Find(
+                var proyecto = proyectos.Find(
                     Builders<Proyecto>.Filter.Eq("_id", ObjectId.Parse(id))
                 ).FirstOrDefault();
 
@@ -492,7 +492,7 @@ namespace GEPS.Controllers
 
                 var filtro = Builders<Proyecto>.Filter.Eq("_id", ObjectId.Parse(idProyecto));
                 var update = Builders<Proyecto>.Update.Push("fases", fase);
-                _proyectos.UpdateOne(filtro, update);
+                proyectos.UpdateOne(filtro, update);
 
                 TempData["Exito"] = "Fase agregada correctamente.";
                 return RedirectToAction("DetalleProyecto", new { id = idProyecto });
@@ -518,7 +518,7 @@ namespace GEPS.Controllers
                 var filtro = Builders<Proyecto>.Filter.Eq("_id", ObjectId.Parse(idProyecto));
                 var update = Builders<Proyecto>.Update.Push(
                     $"fases.{indiceFase}.actividades", actividad);
-                _proyectos.UpdateOne(filtro, update);
+                proyectos.UpdateOne(filtro, update);
 
                 TempData["Exito"] = "Actividad agregada correctamente.";
                 return RedirectToAction("DetalleProyecto", new { id = idProyecto });
@@ -532,16 +532,16 @@ namespace GEPS.Controllers
                 if (!EsLider()) return RedirectToAction("Index", "Login");
 
                 var lider = ObtenerLiderActual();
-                var idsProyectos = _proyectos.Find(
-                    Builders<Proyecto>.Filter.Eq("idSemillero", lider.IdSemillero)
-                ).ToList().Select(p => p.Id).ToList();
+                var idsProyectos = proyectos.Find(
+                    Builders<Proyecto>.Filter.Eq("idSemillero", ObjectId.Parse(lider.IdSemillero))
+                ).ToList().Select(p => ObjectId.Parse(p.Id)).ToList();
 
-                var lista = _reuniones.Find(
+                var lista = reuniones.Find(
                     Builders<Reunion>.Filter.In("idProyecto", idsProyectos)
                 ).SortByDescending(r => r.Fecha).ToList();
 
-                ViewBag.Proyectos = _proyectos.Find(
-                    Builders<Proyecto>.Filter.Eq("idSemillero", lider.IdSemillero)
+                ViewBag.Proyectos = proyectos.Find(
+                    Builders<Proyecto>.Filter.Eq("idSemillero", ObjectId.Parse(lider.IdSemillero))
                 ).ToList();
 
                 return View(lista);
@@ -555,8 +555,8 @@ namespace GEPS.Controllers
                 if (!EsLider()) return RedirectToAction("Index", "Login");
 
                 var lider = ObtenerLiderActual();
-                ViewBag.Proyectos = _proyectos.Find(
-                    Builders<Proyecto>.Filter.Eq("idSemillero", lider.IdSemillero)
+                ViewBag.Proyectos = proyectos.Find(
+                    Builders<Proyecto>.Filter.Eq("idSemillero", ObjectId.Parse(lider.IdSemillero))
                 ).ToList();
                 return View();
             }
@@ -572,13 +572,13 @@ namespace GEPS.Controllers
                 {
                     ViewBag.Error = "El motivo y el proyecto son obligatorios.";
                     var lider2 = ObtenerLiderActual();
-                    ViewBag.Proyectos = _proyectos.Find(
-                        Builders<Proyecto>.Filter.Eq("idSemillero", lider2.IdSemillero)
+                    ViewBag.Proyectos = proyectos.Find(
+                        Builders<Proyecto>.Filter.Eq("idSemillero", ObjectId.Parse(lider2.IdSemillero))
                     ).ToList();
                     return View(reunion);
                 }
 
-                _reuniones.InsertOne(reunion);
+                reuniones.InsertOne(reunion);
 
                 TempData["Exito"] = "Reunión creada correctamente.";
                 return RedirectToAction("Reuniones");
@@ -591,15 +591,15 @@ namespace GEPS.Controllers
             {
                 if (!EsLider()) return RedirectToAction("Index", "Login");
 
-                var reunion = _reuniones.Find(
+                var reunion = reuniones.Find(
                     Builders<Reunion>.Filter.Eq("_id", ObjectId.Parse(id))
                 ).FirstOrDefault();
 
                 if (reunion == null) return RedirectToAction("Reuniones");
 
                 var lider = ObtenerLiderActual();
-                ViewBag.Proyectos = _proyectos.Find(
-                    Builders<Proyecto>.Filter.Eq("idSemillero", lider.IdSemillero)
+                ViewBag.Proyectos = proyectos.Find(
+                    Builders<Proyecto>.Filter.Eq("idSemillero", ObjectId.Parse(lider.IdSemillero))
                 ).ToList();
 
                 return View(reunion);
@@ -620,7 +620,7 @@ namespace GEPS.Controllers
                     .Set("motivo", reunion.Motivo)
                     .Set("idProyecto", reunion.IdProyecto);
 
-                _reuniones.UpdateOne(filtro, update);
+                reuniones.UpdateOne(filtro, update);
 
                 TempData["Exito"] = "Reunión actualizada correctamente.";
                 return RedirectToAction("Reuniones");
@@ -634,12 +634,12 @@ namespace GEPS.Controllers
                 if (!EsLider()) return RedirectToAction("Index", "Login");
 
                 var filtro = Builders<Reunion>.Filter.Eq("_id", ObjectId.Parse(id));
-                var reunion = _reuniones.Find(filtro).FirstOrDefault();
+                var reunion = reuniones.Find(filtro).FirstOrDefault();
 
                 if (reunion != null)
                 {
                     var update = Builders<Reunion>.Update.Set("activo", !reunion.Activo);
-                    _reuniones.UpdateOne(filtro, update);
+                    reuniones.UpdateOne(filtro, update);
 
                 TempData["Exito"] = reunion.Activo
                         ? "Reunión deshabilitada correctamente."
@@ -657,16 +657,16 @@ namespace GEPS.Controllers
                 if (!EsLider()) return RedirectToAction("Index", "Login");
 
                 var lider = ObtenerLiderActual();
-                var idsProyectos = _proyectos.Find(
-                    Builders<Proyecto>.Filter.Eq("idSemillero", lider.IdSemillero)
-                ).ToList().Select(p => p.Id).ToList();
+                var idsProyectos = proyectos.Find(
+                    Builders<Proyecto>.Filter.Eq("idSemillero", ObjectId.Parse(lider.IdSemillero))
+                ).ToList().Select(p => ObjectId.Parse(p.Id)).ToList();
 
-                var lista = _eventos.Find(
+                var lista = eventos.Find(
                     Builders<Evento>.Filter.AnyIn("proyectos", idsProyectos)
                 ).SortByDescending(e => e.Fecha).ToList();
 
-                ViewBag.Proyectos = _proyectos.Find(
-                    Builders<Proyecto>.Filter.Eq("idSemillero", lider.IdSemillero)
+                ViewBag.Proyectos = proyectos.Find(
+                    Builders<Proyecto>.Filter.Eq("idSemillero", ObjectId.Parse(lider.IdSemillero))
                 ).ToList();
 
                 return View(lista);
@@ -680,8 +680,8 @@ namespace GEPS.Controllers
                 if (!EsLider()) return RedirectToAction("Index", "Login");
 
                 var lider = ObtenerLiderActual();
-                ViewBag.Proyectos = _proyectos.Find(
-                    Builders<Proyecto>.Filter.Eq("idSemillero", lider.IdSemillero)
+                ViewBag.Proyectos = proyectos.Find(
+                    Builders<Proyecto>.Filter.Eq("idSemillero", ObjectId.Parse(lider.IdSemillero))
                 ).ToList();
                 return View();
             }
@@ -696,14 +696,14 @@ namespace GEPS.Controllers
                 {
                     ViewBag.Error = "El nombre y el proyecto son obligatorios.";
                     var lider2 = ObtenerLiderActual();
-                    ViewBag.Proyectos = _proyectos.Find(
-                        Builders<Proyecto>.Filter.Eq("idSemillero", lider2.IdSemillero)
+                    ViewBag.Proyectos = proyectos.Find(
+                        Builders<Proyecto>.Filter.Eq("idSemillero", ObjectId.Parse(lider2.IdSemillero))
                     ).ToList();
                     return View(evento);
                 }
 
                 evento.Proyectos = new List<string> { idProyecto };
-                _eventos.InsertOne(evento);
+                eventos.InsertOne(evento);
 
                 TempData["Exito"] = "Evento creado correctamente.";
                 return RedirectToAction("Eventos");
@@ -716,15 +716,15 @@ namespace GEPS.Controllers
             {
                 if (!EsLider()) return RedirectToAction("Index", "Login");
 
-                var evento = _eventos.Find(
+                var evento = eventos.Find(
                     Builders<Evento>.Filter.Eq("_id", ObjectId.Parse(id))
                 ).FirstOrDefault();
 
                 if (evento == null) return RedirectToAction("Eventos");
 
                 var lider = ObtenerLiderActual();
-                ViewBag.Proyectos = _proyectos.Find(
-                    Builders<Proyecto>.Filter.Eq("idSemillero", lider.IdSemillero)
+                ViewBag.Proyectos = proyectos.Find(
+                    Builders<Proyecto>.Filter.Eq("idSemillero", ObjectId.Parse(lider.IdSemillero))
                 ).ToList();
 
                 return View(evento);
@@ -745,7 +745,7 @@ namespace GEPS.Controllers
                     .Set("nombreOrganizador", evento.NombreOrganizador)
                     .Set("proyectos", new List<string> { idProyecto });
 
-                _eventos.UpdateOne(filtro, update);
+                eventos.UpdateOne(filtro, update);
 
                 TempData["Exito"] = "Evento actualizado correctamente.";
                 return RedirectToAction("Eventos");
@@ -759,12 +759,12 @@ namespace GEPS.Controllers
                 if (!EsLider()) return RedirectToAction("Index", "Login");
 
                 var filtro = Builders<Evento>.Filter.Eq("_id", ObjectId.Parse(id));
-                var evento = _eventos.Find(filtro).FirstOrDefault();
+                var evento = eventos.Find(filtro).FirstOrDefault();
 
                 if (evento != null)
                 {
                     var update = Builders<Evento>.Update.Set("activo", !evento.Activo);
-                    _eventos.UpdateOne(filtro, update);
+                    eventos.UpdateOne(filtro, update);
 
                     TempData["Exito"] = evento.Activo
                         ? "Evento deshabilitado correctamente."
@@ -782,35 +782,35 @@ namespace GEPS.Controllers
             if (!EsLider()) return RedirectToAction("Index", "Login");
 
             var lider = ObtenerLiderActual();
-            var semillero = _semilleros.Find(
+            var semillero = semilleros.Find(
                 Builders<Semillero>.Filter.Eq("_id", ObjectId.Parse(lider.IdSemillero))
             ).FirstOrDefault();
 
-            var proyectos = _proyectos.Find(
-                Builders<Proyecto>.Filter.Eq("idSemillero", lider.IdSemillero)
+            var _proyectos = proyectos.Find(
+                Builders<Proyecto>.Filter.Eq("idSemillero", ObjectId.Parse(lider.IdSemillero))
             ).ToList();
 
-            var idsProyectos = proyectos.Select(p => p.Id).ToList();
+            var idsProyectos = _proyectos.Select(p => ObjectId.Parse(p.Id)).ToList();
 
-            var reuniones = _reuniones.Find(
+            var _reuniones = reuniones.Find(
                 Builders<Reunion>.Filter.In("idProyecto", idsProyectos)
             ).ToList();
 
-            var eventos = _eventos.Find(
+            var _eventos = eventos.Find(
                 Builders<Evento>.Filter.AnyIn("proyectos", idsProyectos)
             ).ToList();
 
-            var investigadores = _usuarios.Find(
+            var investigadores = usuarios.Find(
                 Builders<Usuario>.Filter.And(
                     Builders<Usuario>.Filter.Eq("rol", "Investigador"),
-                    Builders<Usuario>.Filter.Eq("idSemillero", lider.IdSemillero)
+                    Builders<Usuario>.Filter.Eq("idSemillero", ObjectId.Parse(lider.IdSemillero))
                 )
             ).ToList();
 
             ViewBag.Semillero = semillero;
-            ViewBag.Proyectos = proyectos;
-            ViewBag.Reuniones = reuniones;
-            ViewBag.Eventos = eventos;
+            ViewBag.Proyectos = _proyectos;
+            ViewBag.Reuniones = _reuniones;
+            ViewBag.Eventos = _eventos;
             ViewBag.Investigadores = investigadores;
 
             return View();
@@ -822,28 +822,28 @@ namespace GEPS.Controllers
 
             var lider = ObtenerLiderActual();
 
-            var semillero = _semilleros.Find(
+            var semillero = semilleros.Find(
                 Builders<Semillero>.Filter.Eq("_id", ObjectId.Parse(lider.IdSemillero))
             ).FirstOrDefault();
 
-            var proyectos = _proyectos.Find(
-                Builders<Proyecto>.Filter.Eq("idSemillero", lider.IdSemillero)
+            var _proyectos = proyectos.Find(
+                Builders<Proyecto>.Filter.Eq("idSemillero", ObjectId.Parse(lider.IdSemillero))
             ).ToList();
 
-            var idsProyectos = proyectos.Select(p => p.Id).ToList();
+            var idsProyectos = _proyectos.Select(p => ObjectId.Parse(p.Id)).ToList();
 
-            var reuniones = _reuniones.Find(
+            var _reuniones = reuniones.Find(
                 Builders<Reunion>.Filter.In("idProyecto", idsProyectos)
             ).ToList();
 
-            var eventos = _eventos.Find(
+            var _eventos = eventos.Find(
                 Builders<Evento>.Filter.AnyIn("proyectos", idsProyectos)
             ).ToList();
 
-            var investigadores = _usuarios.Find(
+            var investigadores = usuarios.Find(
                 Builders<Usuario>.Filter.And(
                     Builders<Usuario>.Filter.Eq("rol", "Investigador"),
-                    Builders<Usuario>.Filter.Eq("idSemillero", lider.IdSemillero)
+                    Builders<Usuario>.Filter.Eq("idSemillero", ObjectId.Parse(lider.IdSemillero))
                 )
             ).ToList();
 
@@ -958,8 +958,8 @@ namespace GEPS.Controllers
                 }
 
                 // ── PROYECTOS ──
-                AgregarSeccionPDF(document, $"Proyectos ({proyectos.Count})", colorAzul, colorMenta, fHeader);
-                foreach (var p in proyectos)
+                AgregarSeccionPDF(document, $"Proyectos ({_proyectos.Count})", colorAzul, colorMenta, fHeader);
+                foreach (var p in _proyectos)
                 {
                     var tProyecto = new iTextSharp.text.pdf.PdfPTable(2);
                     tProyecto.WidthPercentage = 100; tProyecto.SetWidths(new float[] { 35f, 65f }); tProyecto.SpacingAfter = 12;
@@ -978,8 +978,8 @@ namespace GEPS.Controllers
                 }
 
                 // ── REUNIONES ──
-                AgregarSeccionPDF(document, $"Reuniones ({reuniones.Count})", colorAzul, colorMenta, fHeader);
-                if (reuniones.Count == 0)
+                AgregarSeccionPDF(document, $"Reuniones ({_reuniones.Count})", colorAzul, colorMenta, fHeader);
+                if (_reuniones.Count == 0)
                 {
                     document.Add(new iTextSharp.text.Paragraph("No hay reuniones registradas.", fVal) { SpacingAfter = 12 });
                 }
@@ -989,7 +989,7 @@ namespace GEPS.Controllers
                     t.WidthPercentage = 100; t.SetWidths(new float[] { 35f, 20f, 20f, 25f }); t.SpacingAfter = 16;
                     AgregarHeaderFilaPDF(t, new[] { "Motivo", "Fecha", "Hora", "Lugar" }, colorAzulMedio, fHeader);
                     bool alt = false;
-                    foreach (var r in reuniones)
+                    foreach (var r in _reuniones)
                     {
                         var color = alt ? colorFilaPar : iTextSharp.text.BaseColor.WHITE;
                         AgregarCeldaPDF(t, r.Motivo, fVal, color);
@@ -1002,8 +1002,8 @@ namespace GEPS.Controllers
                 }
 
                 // ── EVENTOS ──
-                AgregarSeccionPDF(document, $"Eventos ({eventos.Count})", colorAzul, colorMenta, fHeader);
-                if (eventos.Count == 0)
+                AgregarSeccionPDF(document, $"Eventos ({_eventos.Count})", colorAzul, colorMenta, fHeader);
+                if (_eventos.Count == 0)
                 {
                     document.Add(new iTextSharp.text.Paragraph("No hay eventos registrados.", fVal) { SpacingAfter = 12 });
                 }
@@ -1013,7 +1013,7 @@ namespace GEPS.Controllers
                     t.WidthPercentage = 100; t.SetWidths(new float[] { 35f, 20f, 20f, 25f }); t.SpacingAfter = 16;
                     AgregarHeaderFilaPDF(t, new[] { "Nombre", "Fecha", "Tipo", "Lugar" }, colorAzulMedio, fHeader);
                     bool alt = false;
-                    foreach (var ev in eventos)
+                    foreach (var ev in _eventos)
                     {
                         var color = alt ? colorFilaPar : iTextSharp.text.BaseColor.WHITE;
                         AgregarCeldaPDF(t, ev.Nombre, fVal, color);

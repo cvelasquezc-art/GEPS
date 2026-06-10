@@ -1,0 +1,131 @@
+﻿@model GEPS.Models.Semillero
+@{
+    Layout = "~/Views/Shared/_LayoutInvestigador.cshtml";
+    ViewBag.Title = "Semillero";
+    var lider = ViewBag.Lider as GEPS.Models.Usuario;
+    var compañeros = ViewBag.Compañeros as List<GEPS.Models.Usuario>;
+}
+
+<div style="padding: 8px 0 24px;">
+
+    <!-- Encabezado -->
+    <div style="margin-bottom:28px;">
+        <h2 style="font-size:22px; font-weight:700; color:#0d2f5e; margin-bottom:4px;">
+            <i class="bi bi-diagram-3"></i> Mi Semillero
+        </h2>
+        <p style="font-size:13px; color:#888; margin:0;">Información general de tu semillero de investigación</p>
+        <div style="width:40px; height:3px; background:#4fc3a1; border-radius:2px; margin-top:10px;"></div>
+    </div>
+
+    <!-- Info del semillero -->
+    <div style="background:white; border-radius:16px; padding:28px; box-shadow:0 2px 16px rgba(0,0,0,0.07); border:1px solid #eee; margin-bottom:24px;">
+        <div style="display:flex; align-items:center; gap:16px; margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid #f0f0f0;">
+            <div style="width:56px; height:56px; background:linear-gradient(135deg,#0d2f5e,#1a5276); border-radius:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <i class="bi bi-flower2" style="font-size:26px; color:#4fc3a1;"></i>
+            </div>
+            <div>
+                <div style="font-size:20px; font-weight:800; color:#0d2f5e;">@Model.Nombre</div>
+                <div style="font-size:13px; color:#888; margin-top:2px;">@Model.LineaInvestigativa</div>
+            </div>
+            <div style="margin-left:auto;">
+                @if (Model.Activo)
+                {
+                    <span style="background:#d5f5e3; color:#1e8449; padding:6px 14px; border-radius:20px; font-size:12px; font-weight:700;">
+                        <i class="bi bi-check-circle"></i> Activo
+                    </span>
+                }
+                else
+                {
+                    <span style="background:#fde8e8; color:#c0392b; padding:6px 14px; border-radius:20px; font-size:12px; font-weight:700;">
+                        <i class="bi bi-x-circle"></i> Inactivo
+                    </span>
+                }
+            </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;">
+            <div>
+                <div style="font-size:11px; font-weight:700; color:#aaa; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px;">Descripción</div>
+                <div style="font-size:14px; color:#333;">@(string.IsNullOrEmpty(Model.Descripcion) ? "Sin descripción registrada." : Model.Descripcion)</div>
+            </div>
+            <div>
+                <div style="font-size:11px; font-weight:700; color:#aaa; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px;">Línea Investigativa</div>
+                <div style="font-size:14px; color:#333;">@Model.LineaInvestigativa</div>
+            </div>
+            <div>
+                <div style="font-size:11px; font-weight:700; color:#aaa; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px;">Fecha de Creación</div>
+                <div style="font-size:14px; color:#333;">@Model.FechaCreacion.ToString("dd/MM/yyyy")</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Líder -->
+    <div style="background:white; border-radius:16px; padding:24px 28px; box-shadow:0 2px 16px rgba(0,0,0,0.07); border:1px solid #eee; margin-bottom:24px;">
+        <h5 style="font-size:15px; font-weight:700; color:#0d2f5e; margin-bottom:16px;">
+            <i class="bi bi-person-badge"></i> Líder del Semillero
+        </h5>
+        @if (lider != null)
+        {
+            <div style="display:flex; align-items:center; gap:16px;">
+                <div style="width:48px; height:48px; background:#e8f4fd; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <i class="bi bi-person-badge" style="font-size:22px; color:#1a5276;"></i>
+                </div>
+                <div>
+                    <div style="font-size:15px; font-weight:700; color:#0d2f5e;">@lider.Nombre</div>
+                    <div style="font-size:12px; color:#888; margin-top:3px;">
+                        <i class="bi bi-envelope"></i> @lider.Correo
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <p style="font-size:13px; color:#888; margin:0;"><i class="bi bi-info-circle"></i> Sin líder asignado.</p>
+        }
+    </div>
+
+    <!-- Compañeros investigadores -->
+    <div style="background:white; border-radius:16px; padding:24px 28px; box-shadow:0 2px 16px rgba(0,0,0,0.07); border:1px solid #eee;">
+        <h5 style="font-size:15px; font-weight:700; color:#0d2f5e; margin-bottom:16px;">
+            <i class="bi bi-people"></i> Integrantes del Semillero
+            <span style="background:#e8f4fd; color:#1a5276; font-size:12px; font-weight:700; padding:3px 10px; border-radius:20px; margin-left:8px;">@compañeros.Count</span>
+        </h5>
+
+        @if (compañeros.Count == 0)
+        {
+            <p style="font-size:13px; color:#888; margin:0;"><i class="bi bi-info-circle"></i> No hay otros investigadores en este semillero.</p>
+        }
+        else
+        {
+            <table style="width:100%; border-collapse:collapse; font-size:13px;">
+                <thead>
+                    <tr style="background:linear-gradient(90deg,#0d2f5e,#1a5276); color:white;">
+                        <th style="padding:11px 16px; font-weight:600; border-radius:8px 0 0 0;">Nombre</th>
+                        <th style="padding:11px 16px; font-weight:600;">Cédula</th>
+                        <th style="padding:11px 16px; font-weight:600;">Programa</th>
+                        <th style="padding:11px 16px; font-weight:600; border-radius:0 8px 0 0;">Correo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var inv in compañeros)
+                    {
+                        <tr style="border-bottom:1px solid #f0f0f0;">
+                            <td style="padding:12px 16px; color:#333; font-weight:600;">
+                                <div style="display:flex; align-items:center; gap:10px;">
+                                    <div style="width:32px; height:32px; background:#e8f4fd; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                        <i class="bi bi-person" style="font-size:14px; color:#1a5276;"></i>
+                                    </div>
+                                    @inv.Nombre
+                                </div>
+                            </td>
+                            <td style="padding:12px 16px; color:#666;">@inv.Cedula</td>
+                            <td style="padding:12px 16px; color:#666;">@(string.IsNullOrEmpty(inv.Programa) ? "—" : inv.Programa)</td>
+                            <td style="padding:12px 16px; color:#666;">@inv.Correo</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+
+</div>

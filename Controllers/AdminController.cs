@@ -12,14 +12,14 @@ namespace GEPS.Controllers
     [Authorize]
     public class AdminController : Controller
     {
-        private IMongoCollection<Usuario> _usuarios;
-        private IMongoCollection<Semillero> _semilleros;
+        private IMongoCollection<Usuario> usuarios;
+        private IMongoCollection<Semillero> semilleros;
 
         public AdminController()
         {
             var db = ConexionMongo.ObtenerDB();
-            _usuarios = db.GetCollection<Usuario>("usuarios");
-            _semilleros = db.GetCollection<Semillero>("semilleros");
+            usuarios = db.GetCollection<Usuario>("Usuarios");
+            semilleros = db.GetCollection<Semillero>("Semilleros");
         }
 
         // ── Verificar rol ──
@@ -44,9 +44,9 @@ namespace GEPS.Controllers
                 return RedirectToAction("Index", "Login");
             }
 
-            ViewBag.TotalSemilleros = _semilleros.CountDocuments(Builders<Semillero>.Filter.Empty);
-            ViewBag.SemillerosActivos = _semilleros.CountDocuments(Builders<Semillero>.Filter.Eq("activo", true));
-            ViewBag.TotalLideres = _usuarios.CountDocuments(Builders<Usuario>.Filter.Eq("rol", "Lider"));
+            ViewBag.TotalSemilleros = semilleros.CountDocuments(Builders<Semillero>.Filter.Empty);
+            ViewBag.SemillerosActivos = semilleros.CountDocuments(Builders<Semillero>.Filter.Eq("activo", true));
+            ViewBag.TotalLideres = usuarios.CountDocuments(Builders<Usuario>.Filter.Eq("rol", "Lider"));
 
             return View();
         }
@@ -56,7 +56,7 @@ namespace GEPS.Controllers
         {
             if (!EsAdmin()) return RedirectToAction("Index", "Login");
 
-            var lista = _semilleros.Find(Builders<Semillero>.Filter.Empty)
+            var lista = semilleros.Find(Builders<Semillero>.Filter.Empty)
                                    .SortByDescending(s => s.FechaCreacion)
                                    .ToList();
             return View(lista);
@@ -83,9 +83,9 @@ namespace GEPS.Controllers
             }
 
             // Verificar que no exista otro semillero con el mismo nombre
-            var semilleroExiste = _semilleros.Find(
+            var semilleroExiste = semilleros.Find(
                 Builders<Semillero>.Filter.Regex("nombre",
-                    new MongoDB.Bson.BsonRegularExpression(semillero.Nombre, "i"))
+                    new BsonRegularExpression(semillero.Nombre, "i"))
             ).FirstOrDefault();
 
             if (semilleroExiste != null)
@@ -97,11 +97,10 @@ namespace GEPS.Controllers
             semillero.FechaCreacion = DateTime.Now;
             semillero.Activo = true;
 
-            _semilleros.InsertOne(semillero);
+            semilleros.InsertOne(semillero);
 
             TempData["Exito"] = "Semillero creado correctamente.";
             return RedirectToAction("Semilleros");
-
 
         }
 
@@ -110,7 +109,7 @@ namespace GEPS.Controllers
         {
             if (!EsAdmin()) return RedirectToAction("Index", "Login");
 
-            var semillero = _semilleros.Find(
+            var semillero = semilleros.Find(
                 Builders<Semillero>.Filter.Eq("_id", ObjectId.Parse(id))
             ).FirstOrDefault();
 
@@ -138,11 +137,11 @@ namespace GEPS.Controllers
                 .Set("descripcion", semillero.Descripcion);
 
             // Verificar que no exista otro semillero con el mismo nombre
-            var semilleroExiste = _semilleros.Find(
+            var semilleroExiste = semilleros.Find(
                 Builders<Semillero>.Filter.And(
                     Builders<Semillero>.Filter.Regex("nombre",
-                        new MongoDB.Bson.BsonRegularExpression(semillero.Nombre, "i")),
-                    Builders<Semillero>.Filter.Ne("_id", MongoDB.Bson.ObjectId.Parse(semillero.Id))
+                        new BsonRegularExpression(semillero.Nombre, "i")),
+                    Builders<Semillero>.Filter.Ne("_id", ObjectId.Parse(semillero.Id))
                 )
             ).FirstOrDefault();
 
@@ -152,7 +151,7 @@ namespace GEPS.Controllers
                 return View(semillero);
             }
 
-            _semilleros.UpdateOne(filtro, update);
+            semilleros.UpdateOne(filtro, update);
 
             TempData["Exito"] = "Semillero actualizado correctamente.";
             return RedirectToAction("Semilleros");
@@ -164,13 +163,13 @@ namespace GEPS.Controllers
             if (!EsAdmin()) return RedirectToAction("Index", "Login");
 
             var filtro = Builders<Semillero>.Filter.Eq("_id", ObjectId.Parse(id));
-            var semillero = _semilleros.Find(filtro).FirstOrDefault();
+            var semillero = semilleros.Find(filtro).FirstOrDefault();
 
             if (semillero != null)
             {
                 var update = Builders<Semillero>.Update
                     .Set("activo", !semillero.Activo);
-                _semilleros.UpdateOne(filtro, update);
+                semilleros.UpdateOne(filtro, update);
 
                 TempData["Exito"] = semillero.Activo
                     ? "Semillero deshabilitado correctamente."
@@ -186,17 +185,17 @@ namespace GEPS.Controllers
         {
             if (!EsAdmin()) return RedirectToAction("Index", "Login");
 
-            var lista = _usuarios.Find(
+            var lista = usuarios.Find(
                 Builders<Usuario>.Filter.Eq("rol", "Lider")
             ).ToList();
 
             // Solo semilleros activos SIN líder asignado
-            var todosLosSemilleros = _semilleros.Find(
+            var todosLosSemilleros = semilleros.Find(
                 Builders<Semillero>.Filter.Eq("activo", true)
             ).ToList();
 
             // Obtener IDs de semilleros que ya tienen líder
-            var semillerosConLider = _usuarios.Find(
+            var semillerosConLider = usuarios.Find(
                 Builders<Usuario>.Filter.And(
                     Builders<Usuario>.Filter.Eq("rol", "Lider"),
                     Builders<Usuario>.Filter.Ne("idSemillero", BsonNull.Value),
@@ -237,7 +236,7 @@ namespace GEPS.Controllers
             }
 
             // Verificar que la cédula no exista
-            var existe = _usuarios.Find(
+            var existe = usuarios.Find(
                 Builders<Usuario>.Filter.Eq("cedula", cedula)
             ).FirstOrDefault();
 
@@ -248,7 +247,7 @@ namespace GEPS.Controllers
             }
 
             // Verificar que el correo no esté registrado
-            var correoExiste = _usuarios.Find(
+            var correoExiste = usuarios.Find(
                 Builders<Usuario>.Filter.Eq("correo", correo)
             ).FirstOrDefault();
 
@@ -272,7 +271,7 @@ namespace GEPS.Controllers
                 IdSemillero = null
             };
 
-            _usuarios.InsertOne(lider);
+            usuarios.InsertOne(lider);
 
             // Enviar correo con credenciales
             string cuerpo = $@"<!DOCTYPE html>
@@ -348,7 +347,7 @@ namespace GEPS.Controllers
             if (!EsAdmin()) return RedirectToAction("Index", "Login");
 
             // Verificar si el semillero ya tiene un líder asignado
-            var liderExistente = _usuarios.Find(
+            var liderExistente = usuarios.Find(
                 Builders<Usuario>.Filter.And(
                     Builders<Usuario>.Filter.Eq("rol", "Lider"),
                     Builders<Usuario>.Filter.Eq("idSemillero", idSemillero),
@@ -365,7 +364,7 @@ namespace GEPS.Controllers
             // Asignar el nuevo líder
             var filtroUsuario = Builders<Usuario>.Filter.Eq("_id", ObjectId.Parse(idLider));
             var updateUsuario = Builders<Usuario>.Update.Set("idSemillero", idSemillero);
-            _usuarios.UpdateOne(filtroUsuario, updateUsuario);
+            usuarios.UpdateOne(filtroUsuario, updateUsuario);
 
             TempData["Exito"] = "Líder asignado al semillero correctamente.";
             return RedirectToAction("Lideres");
@@ -385,28 +384,28 @@ namespace GEPS.Controllers
         {
             if (!EsAdmin()) return RedirectToAction("Index", "Login");
 
-            var semilleros = _semilleros.Find(
+            var _semilleros = semilleros.Find(
                 Builders<Semillero>.Filter.Empty
             ).SortByDescending(s => s.FechaCreacion).ToList();
 
-            return View(semilleros);
+            return View(_semilleros);
         }
 
         public ActionResult DescargarReporte(string idSemillero, bool descargar = false)
         {
             if (!EsAdmin()) return RedirectToAction("Index", "Login");
 
-            List<Semillero> semilleros;
+            List<Semillero> _semilleros;
 
             if (!string.IsNullOrEmpty(idSemillero))
             {
-                semilleros = _semilleros.Find(
+                _semilleros = semilleros.Find(
                     Builders<Semillero>.Filter.Eq("_id", MongoDB.Bson.ObjectId.Parse(idSemillero))
                 ).ToList();
             }
             else
             {
-                semilleros = _semilleros.Find(
+                _semilleros = semilleros.Find(
                     Builders<Semillero>.Filter.Empty
                 ).SortByDescending(s => s.FechaCreacion).ToList();
             }
@@ -494,13 +493,13 @@ namespace GEPS.Controllers
 
                 document.Add(tablaInfo);
 
-                if (semilleros.Count == 0)
+                if (_semilleros.Count == 0)
                 {
                     document.Add(new iTextSharp.text.Paragraph("No se encontraron semilleros.", fuenteVal));
                 }
                 else
                 {
-                    foreach (var s in semilleros)
+                    foreach (var s in _semilleros)
                     {
                         var tabla = new iTextSharp.text.pdf.PdfPTable(2);
                         tabla.WidthPercentage = 100;
@@ -525,7 +524,7 @@ namespace GEPS.Controllers
                         tabla.AddCell(celdaLinea);
 
                         // Buscar líder
-                        var lider = _usuarios.Find(
+                        var lider = usuarios.Find(
                             Builders<Usuario>.Filter.And(
                                 Builders<Usuario>.Filter.Eq("rol", "Lider"),
                                 Builders<Usuario>.Filter.Eq("idSemillero", s.Id)
@@ -600,7 +599,7 @@ namespace GEPS.Controllers
                 celdaPie.Padding = 10;
                 celdaPie.HorizontalAlignment = iTextSharp.text.Element.ALIGN_CENTER;
                 celdaPie.AddElement(new iTextSharp.text.Paragraph(
-                    $"GEPS – Reporte generado automáticamente  |  Total semilleros: {semilleros.Count}  |  {DateTime.Now:dd/MM/yyyy}",
+                    $"GEPS – Reporte generado automáticamente  |  Total semilleros: {_semilleros.Count}  |  {DateTime.Now:dd/MM/yyyy}",
                     iTextSharp.text.FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.NORMAL,
                         new iTextSharp.text.BaseColor(200, 220, 240))
                 )
@@ -631,7 +630,7 @@ namespace GEPS.Controllers
         {
             if (!EsAdmin()) return RedirectToAction("Index", "Login");
 
-            var lider = _usuarios.Find(
+            var lider = usuarios.Find(
                 Builders<Usuario>.Filter.Eq("_id", MongoDB.Bson.ObjectId.Parse(id))
             ).FirstOrDefault();
 
@@ -648,7 +647,7 @@ namespace GEPS.Controllers
             if (string.IsNullOrEmpty(nombre) || string.IsNullOrEmpty(correo))
             {
                 ViewBag.Error = "El nombre y el correo son obligatorios.";
-                var lider = _usuarios.Find(
+                var lider = usuarios.Find(
                     Builders<Usuario>.Filter.Eq("_id", MongoDB.Bson.ObjectId.Parse(id))
                 ).FirstOrDefault();
                 return View(lider);
@@ -659,7 +658,7 @@ namespace GEPS.Controllers
                 .Set("nombre", nombre)
                 .Set("correo", correo);
 
-            _usuarios.UpdateOne(filtro, update);
+            usuarios.UpdateOne(filtro, update);
 
             TempData["Exito"] = "Líder actualizado correctamente.";
             return RedirectToAction("Lideres");
@@ -671,7 +670,7 @@ namespace GEPS.Controllers
             if (!EsAdmin()) return RedirectToAction("Index", "Login");
 
             var filtro = Builders<Usuario>.Filter.Eq("_id", MongoDB.Bson.ObjectId.Parse(id));
-            var lider = _usuarios.Find(filtro).FirstOrDefault();
+            var lider = usuarios.Find(filtro).FirstOrDefault();
 
             if (lider != null)
             {
@@ -691,7 +690,7 @@ namespace GEPS.Controllers
                         .Set("activo", true);
                 }
 
-                _usuarios.UpdateOne(filtro, update);
+                usuarios.UpdateOne(filtro, update);
 
                 TempData["Exito"] = lider.Activo
                     ? "Líder desactivado correctamente. El semillero quedó disponible."
