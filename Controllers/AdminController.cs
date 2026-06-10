@@ -672,25 +672,81 @@ namespace GEPS.Controllers
             return View(lider);
         }
 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EditarLider(string id, string nombre, string correo)
+        public ActionResult EditarLider(string id, string nombre, string correo,
+            string fechaNacimiento, string genero, string celular, string programa)
         {
             if (!EsAdmin()) return RedirectToAction("Index", "Login");
 
+            // Validar campos obligatorios
             if (string.IsNullOrEmpty(nombre) || string.IsNullOrEmpty(correo))
             {
                 ViewBag.Error = "El nombre y el correo son obligatorios.";
                 var lider = usuarios.Find(
-                    Builders<Usuario>.Filter.Eq("_id", MongoDB.Bson.ObjectId.Parse(id))
+                    Builders<Usuario>.Filter.Eq("_id", ObjectId.Parse(id))
                 ).FirstOrDefault();
                 return View(lider);
             }
 
-            var filtro = Builders<Usuario>.Filter.Eq("_id", MongoDB.Bson.ObjectId.Parse(id));
+            // Validar celular — solo si se ingresó
+            if (!string.IsNullOrEmpty(celular))
+            {
+                if (celular.Length != 10 || !celular.All(char.IsDigit))
+                {
+                    ViewBag.Error = "El celular debe tener exactamente 10 dígitos numéricos.";
+                    var lider = usuarios.Find(
+                        Builders<Usuario>.Filter.Eq("_id", ObjectId.Parse(id))
+                    ).FirstOrDefault();
+                    return View(lider);
+                }
+
+                // Verificar celular duplicado — excluir el mismo usuario
+                var celularExiste = usuarios.Find(
+                    Builders<Usuario>.Filter.And(
+                        Builders<Usuario>.Filter.Eq("celular", celular),
+                        Builders<Usuario>.Filter.Ne("_id", ObjectId.Parse(id))
+                    )
+                ).FirstOrDefault();
+
+                if (celularExiste != null)
+                {
+                    ViewBag.Error = "Ya existe un usuario registrado con ese número de celular.";
+                    var lider = usuarios.Find(
+                        Builders<Usuario>.Filter.Eq("_id", ObjectId.Parse(id))
+                    ).FirstOrDefault();
+                    return View(lider);
+                }
+            }
+
+            // Verificar correo duplicado — excluir el mismo usuario
+            var correoExiste = usuarios.Find(
+                Builders<Usuario>.Filter.And(
+                    Builders<Usuario>.Filter.Eq("correo", correo),
+                    Builders<Usuario>.Filter.Ne("_id", ObjectId.Parse(id))
+                )
+            ).FirstOrDefault();
+
+            if (correoExiste != null)
+            {
+                ViewBag.Error = "Ya existe un usuario registrado con ese correo.";
+                var liderActual = usuarios.Find(
+                    Builders<Usuario>.Filter.Eq("_id", ObjectId.Parse(id))
+                ).FirstOrDefault();
+                return View(liderActual);
+            }
+
+            var filtro = Builders<Usuario>.Filter.Eq("_id", ObjectId.Parse(id));
             var update = Builders<Usuario>.Update
                 .Set("nombre", nombre)
-                .Set("correo", correo);
+                .Set("correo", correo)
+                .Set("genero", genero)
+                .Set("celular", celular)
+                .Set("programa", programa);
+
+            if (!string.IsNullOrEmpty(fechaNacimiento))
+                update = update.Set("fechaNacimiento", DateTime.Parse(fechaNacimiento));
 
             usuarios.UpdateOne(filtro, update);
 
