@@ -13,7 +13,7 @@
         <div style="width:40px; height:3px; background:#4fc3a1; border-radius:2px; margin-top:10px;"></div>
     </div>
 
-    <div style="background:white; border-radius:16px; padding:32px; box-shadow:0 2px 16px rgba(0,0,0,0.07); border:1px solid #eee; max-width:560px;">
+    <div style="background:white; border-radius:16px; padding:32px; box-shadow:0 2px 16px rgba(0,0,0,0.07); border:1px solid #eee; max-width:640px;">
 
         @if (ViewBag.Error != null)
         {
@@ -30,30 +30,57 @@
         <form action="/Admin/CrearLider" method="post" class="form-geps" novalidate>
             @Html.AntiForgeryToken()
 
-            <label>Nombre completo</label>
-            <input type="text"
-                   name="nombre"
-                   placeholder="Ej: Ana García"
-                   id="inputNombre" />
-            <div id="nombreFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
-
-            <label>Cédula</label>
-            <input type="text"
-                   name="cedula"
-                   placeholder="10 dígitos"
-                   maxlength="10"
-                   id="inputCedula" />
-            <div id="cedulaFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
-            <div style="font-size:11px; color:#bbb; margin-top:-12px; margin-bottom:12px; text-align:right;">
-                <span id="contador">0</span>/10 dígitos
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div>
+                    <label>Nombre completo *</label>
+                    <input type="text" name="nombre" id="inputNombre"
+                           placeholder="Ej: Ana García" />
+                    <div id="nombreFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
+                </div>
+                <div>
+                    <label>Cédula *</label>
+                    <input type="text" name="cedula" id="inputCedula"
+                           placeholder="10 dígitos" maxlength="10" />
+                    <div id="cedulaFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:4px; display:none;"></div>
+                    <div style="font-size:11px; color:#bbb; margin-bottom:12px; text-align:right;">
+                        <span id="contador">0</span>/10 dígitos
+                    </div>
+                </div>
             </div>
 
-            <label>Correo electrónico</label>
-            <input type="email"
-                   name="correo"
-                   placeholder="Ej: ana@gmail.com"
-                   id="inputCorreo" />
-            <div id="correoFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div>
+                    <label>Correo electrónico *</label>
+                    <input type="email" name="correo" id="inputCorreo"
+                           placeholder="Ej: ana@gmail.com" />
+                    <div id="correoFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
+                </div>
+                <div>
+                    <label>Celular</label>
+                    <input type="text" name="celular"
+                           placeholder="Ej: 3001234567" />
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div>
+                    <label>Fecha de nacimiento</label>
+                    <input type="date" name="fechaNacimiento" />
+                </div>
+                <div>
+                    <label>Género</label>
+                    <select name="genero">
+                        <option value="">-- Selecciona --</option>
+                        <option value="Masculino">Masculino</option>
+                        <option value="Femenino">Femenino</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+            </div>
+
+            <label>Programa académico</label>
+            <input type="text" name="programa"
+                   placeholder="Ej: Ingeniería de Sistemas" />
 
             <div style="display:flex; gap:12px; margin-top:8px;">
                 <button type="submit"
@@ -104,9 +131,12 @@
 
     document.querySelector('form').addEventListener('submit', function (e) {
         var valido = true;
-
         var nombre = document.getElementById('inputNombre');
         var nombreFb = document.getElementById('nombreFeedback');
+        var correo = document.getElementById('inputCorreo');
+        var correoFb = document.getElementById('correoFeedback');
+        var at = String.fromCharCode(64);
+
         if (nombre.value.trim() === '') {
             e.preventDefault();
             nombreFb.textContent = 'El nombre es obligatorio.';
@@ -123,9 +153,6 @@
             valido = false;
         }
 
-        var correo = document.getElementById('inputCorreo');
-        var correoFb = document.getElementById('correoFeedback');
-        var at = String.fromCharCode(64);
         if (correo.value.trim() === '' || correo.value.indexOf(at) === -1) {
             e.preventDefault();
             correoFb.textContent = 'Ingresa un correo valido.';
@@ -135,6 +162,5 @@
             correoFb.style.display = 'none';
         }
     });
-</script>   
+</script>
 
-    

@@ -223,41 +223,70 @@ namespace GEPS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CrearLider(string nombre, string cedula, string correo)
+        public ActionResult CrearLider(string nombre, string cedula, string correo,
+    string fechaNacimiento, string genero, string celular, string programa)
         {
             if (!EsAdmin()) return RedirectToAction("Index", "Login");
 
+            // Validar campos obligatorios
             if (string.IsNullOrEmpty(nombre) ||
                 string.IsNullOrEmpty(cedula) ||
                 string.IsNullOrEmpty(correo))
             {
-                ViewBag.Error = "Todos los campos son obligatorios.";
+                ViewBag.Error = "Nombre, cédula y correo son obligatorios.";
                 return View();
             }
 
-            // Verificar que la cédula no exista
-            var existe = usuarios.Find(
+            // Validar cédula 10 dígitos numéricos
+            if (cedula.Length != 10 || !cedula.All(char.IsDigit))
+            {
+                ViewBag.Error = "La cédula debe tener exactamente 10 dígitos numéricos.";
+                return View();
+            }
+
+            // Validar celular — solo si se ingresó
+            if (!string.IsNullOrEmpty(celular))
+            {
+                if (celular.Length != 10 || !celular.All(char.IsDigit))
+                {
+                    ViewBag.Error = "El celular debe tener exactamente 10 dígitos numéricos.";
+                    return View();
+                }
+
+                var celularExiste = usuarios.Find(
+                    Builders<Usuario>.Filter.Eq("celular", celular)
+                ).FirstOrDefault();
+
+                if (celularExiste != null)
+                {
+                    ViewBag.Error = "Ya existe un usuario registrado con ese número de celular.";
+                    return View();
+                }
+            }
+
+            // Verificar cédula duplicada
+            var cedulaExiste = usuarios.Find(
                 Builders<Usuario>.Filter.Eq("cedula", cedula)
             ).FirstOrDefault();
 
-            if (existe != null)
+            if (cedulaExiste != null)
             {
                 ViewBag.Error = "Ya existe un usuario con esa cédula.";
                 return View();
             }
 
-            // Verificar que el correo no esté registrado
+            // Verificar correo duplicado
             var correoExiste = usuarios.Find(
                 Builders<Usuario>.Filter.Eq("correo", correo)
             ).FirstOrDefault();
 
             if (correoExiste != null)
             {
-                ViewBag.Error = "Ya existe un usuario registrado con ese correo electrónico.";
+                ViewBag.Error = "Ya existe un usuario registrado con ese correo.";
                 return View();
             }
 
-            // Generar clave automática: GEPS + últimos 4 dígitos de la cédula
+            // Generar clave automática
             string clave = "GEPS" + cedula.Substring(cedula.Length - 4);
 
             var lider = new Usuario
@@ -267,9 +296,14 @@ namespace GEPS.Controllers
                 Correo = correo,
                 Clave = clave,
                 Rol = "Lider",
-                Activo = true,
-                IdSemillero = null
+                FechaNacimiento = string.IsNullOrEmpty(fechaNacimiento) ? (DateTime?)null : DateTime.Parse(fechaNacimiento),
+                Genero = genero,
+                Celular = celular,
+                Programa = programa,
+                IdSemillero = null,
+                Activo = true
             };
+
 
             usuarios.InsertOne(lider);
 
