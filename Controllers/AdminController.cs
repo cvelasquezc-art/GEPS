@@ -450,7 +450,7 @@ namespace GEPS.Controllers
                 var writer = iTextSharp.text.pdf.PdfWriter.GetInstance(document, ms);
                 document.Open();
 
-                // ── Colores del aplicativo ──
+                // Colores del aplicativo
                 var colorAzulOscuro = new iTextSharp.text.BaseColor(13, 47, 94);
                 var colorAzulMedio = new iTextSharp.text.BaseColor(26, 82, 118);
                 var colorVerde = new iTextSharp.text.BaseColor(30, 132, 73);
@@ -461,7 +461,7 @@ namespace GEPS.Controllers
                 var colorGrisTexto = new iTextSharp.text.BaseColor(100, 100, 100);
                 var colorGrisPie = new iTextSharp.text.BaseColor(150, 150, 150);
 
-                // ── Fuentes ──
+                // Fuentes
                 var fuenteTitulo = iTextSharp.text.FontFactory.GetFont("Arial", 20, iTextSharp.text.Font.BOLD, colorAzulOscuro);
                 var fuenteSubtitulo = iTextSharp.text.FontFactory.GetFont("Arial", 11, iTextSharp.text.Font.NORMAL, colorAzulMedio);
                 var fuenteInfo = iTextSharp.text.FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.NORMAL, colorGrisTexto);
@@ -472,7 +472,7 @@ namespace GEPS.Controllers
                 var fuenteActivo = iTextSharp.text.FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.BOLD, colorVerde);
                 var fuenteInactivo = iTextSharp.text.FontFactory.GetFont("Arial", 9, iTextSharp.text.Font.BOLD, colorRojo);
 
-                // ── ENCABEZADO ──
+                // ENCABEZADO
                 var tablaHeader = new iTextSharp.text.pdf.PdfPTable(1);
                 tablaHeader.WidthPercentage = 100;
                 tablaHeader.SpacingAfter = 0;
@@ -622,7 +622,7 @@ namespace GEPS.Controllers
                     }
                 }
 
-                // ── PIE DE PÁGINA ──
+                // PIE DE PÁGINA 
                 var tablaPie = new iTextSharp.text.pdf.PdfPTable(1);
                 tablaPie.WidthPercentage = 100;
                 tablaPie.SpacingBefore = 10;
