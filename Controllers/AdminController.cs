@@ -384,7 +384,7 @@ namespace GEPS.Controllers
             var liderExistente = usuarios.Find(
                 Builders<Usuario>.Filter.And(
                     Builders<Usuario>.Filter.Eq("rol", "Lider"),
-                    Builders<Usuario>.Filter.Eq("idSemillero", idSemillero),
+                    Builders<Usuario>.Filter.Eq("idSemillero", ObjectId.Parse(idSemillero)),
                     Builders<Usuario>.Filter.Ne("_id", ObjectId.Parse(idLider))
                 )
             ).FirstOrDefault();
@@ -397,7 +397,7 @@ namespace GEPS.Controllers
 
             // Asignar el nuevo líder
             var filtroUsuario = Builders<Usuario>.Filter.Eq("_id", ObjectId.Parse(idLider));
-            var updateUsuario = Builders<Usuario>.Update.Set("idSemillero", idSemillero);
+            var updateUsuario = Builders<Usuario>.Update.Set("idSemillero", ObjectId.Parse(idSemillero));
             usuarios.UpdateOne(filtroUsuario, updateUsuario);
 
             TempData["Exito"] = "Líder asignado al semillero correctamente.";
@@ -434,7 +434,7 @@ namespace GEPS.Controllers
             if (!string.IsNullOrEmpty(idSemillero))
             {
                 _semilleros = semilleros.Find(
-                    Builders<Semillero>.Filter.Eq("_id", MongoDB.Bson.ObjectId.Parse(idSemillero))
+                    Builders<Semillero>.Filter.Eq("_id", ObjectId.Parse(idSemillero))
                 ).ToList();
             }
             else
