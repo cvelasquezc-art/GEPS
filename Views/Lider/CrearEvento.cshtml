@@ -22,32 +22,35 @@
             </div>
         }
 
+        @Html.ValidationSummary(true, "Por favor completa todos los campos requeridos:", new { @class = "validation-summary", style = "background:#fde8e8; color:#c0392b; border-radius:10px; padding:12px 16px; font-size:13px; margin-bottom:20px; border-left:4px solid #c0392b;" })
+
         <form action="/Lider/CrearEvento" method="post" class="form-geps" novalidate>
             @Html.AntiForgeryToken()
 
             <label>Nombre del evento *</label>
             <input type="text" name="Nombre" id="inputNombre"
-                   placeholder="Ej: Congreso TIC 2026" />
-            <div id="nombreFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
+                   placeholder="Ej: Congreso TIC 2026" required />
+            @Html.ValidationMessageFor(m => m.Nombre)
 
             <label>Proyecto relacionado *</label>
-            <select name="idProyecto" id="inputProyecto">
+            <select name="idProyecto" id="inputProyecto" required>
                 <option value="">-- Selecciona un proyecto --</option>
                 @foreach (var p in ViewBag.Proyectos as List<GEPS.Models.Proyecto>)
                 {
                     <option value="@p.Id">@p.Titulo</option>
                 }
             </select>
-            <div id="proyectoFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
+            @Html.ValidationMessageFor(m => m.Proyectos)
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                 <div>
-                    <label>Fecha</label>
-                    <input type="date" name="Fecha" />
+                    <label>Fecha *</label>
+                    <input type="date" name="Fecha" required />
+                    @Html.ValidationMessageFor(m => m.Fecha)
                 </div>
                 <div>
-                    <label>Tipo</label>
-                    <select name="Tipo">
+                    <label>Tipo *</label>
+                    <select name="Tipo" required>
                         <option value="">-- Selecciona --</option>
                         <option value="Ponencia">Ponencia</option>
                         <option value="Exposición">Exposición</option>
@@ -56,15 +59,18 @@
                         <option value="Taller">Taller</option>
                         <option value="Otro">Otro</option>
                     </select>
+                    @Html.ValidationMessageFor(m => m.Tipo)
                 </div>
             </div>
 
-            <label>Lugar</label>
-            <input type="text" name="Lugar" placeholder="Ej: Bogotá, Auditorio SENA" />
+            <label>Lugar *</label>
+            <input type="text" name="Lugar" placeholder="Ej: Bogotá, Auditorio SENA" required />
+            @Html.ValidationMessageFor(m => m.Lugar)
 
-            <label>Nombre del organizador</label>
+            <label>Nombre del organizador *</label>
             <input type="text" name="NombreOrganizador"
-                   placeholder="Ej: Universidad Nacional" />
+                   placeholder="Ej: Universidad Nacional" required />
+            @Html.ValidationMessageFor(m => m.NombreOrganizador)
 
             <div style="display:flex; gap:12px; margin-top:8px;">
                 <button type="submit"
@@ -81,26 +87,5 @@
 </div>
 
 <script>
-    document.querySelector('form').addEventListener('submit', function(e) {
-        var nombre     = document.getElementById('inputNombre');
-        var nombreFb   = document.getElementById('nombreFeedback');
-        var proyecto   = document.getElementById('inputProyecto');
-        var proyectoFb = document.getElementById('proyectoFeedback');
-
-        if (nombre.value.trim() === '') {
-            e.preventDefault();
-            nombreFb.textContent = 'El nombre es obligatorio.';
-            nombreFb.style.display = 'block';
-        } else {
-            nombreFb.style.display = 'none';
-        }
-
-        if (proyecto.value === '') {
-            e.preventDefault();
-            proyectoFb.textContent = 'Selecciona un proyecto.';
-            proyectoFb.style.display = 'block';
-        } else {
-            proyectoFb.style.display = 'none';
-        }
-    });
+    // Validación HTML5 nativa más ModelState del servidor manejan la validación
 </script>

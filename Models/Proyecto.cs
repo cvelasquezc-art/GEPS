@@ -2,6 +2,7 @@
 using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace GEPS.Models
 {
@@ -12,15 +13,19 @@ namespace GEPS.Models
         public string Id { get; set; }
 
         [BsonElement("titulo")]
+        [Required(ErrorMessage = "El título es obligatorio.")]
         public string Titulo { get; set; }
 
         [BsonElement("duracionMeses")]
+        [Required(ErrorMessage = "La duración en meses es obligatoria.")]
         public int DuracionMeses { get; set; }
 
         [BsonElement("objetivo")]
+        [Required(ErrorMessage = "El objetivo es obligatorio.")]
         public string Objetivo { get; set; }
 
         [BsonElement("fechaInicio")]
+        [Required(ErrorMessage = "La fecha de inicio es obligatoria.")]
         public DateTime FechaInicio { get; set; }
 
         [BsonElement("estado")]
@@ -36,9 +41,11 @@ namespace GEPS.Models
         public class Fase
         {
             [BsonElement("nombre")]
+            [Required(ErrorMessage = "El nombre de la fase es obligatorio.")]
             public string Nombre { get; set; }
 
             [BsonElement("duracionMeses")]
+            [Required(ErrorMessage = "La duración en meses es obligatoria.")]
             public int DuracionMeses { get; set; }
 
             [BsonElement("actividades")]
@@ -48,12 +55,15 @@ namespace GEPS.Models
         public class Actividad
         {
             [BsonElement("nombre")]
+            [Required(ErrorMessage = "El nombre de la actividad es obligatorio.")]
             public string Nombre { get; set; }
 
             [BsonElement("duracionDias")]
+            [Required(ErrorMessage = "La duración en días es obligatoria.")]
             public int DuracionDias { get; set; }
 
             [BsonElement("fechaEntrega")]
+            [Required(ErrorMessage = "La fecha de entrega es obligatoria.")]
             public DateTime FechaEntrega { get; set; }
         }
     }

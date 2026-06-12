@@ -367,10 +367,10 @@ namespace GEPS.Controllers
             {
                 if (!EsLider()) return RedirectToAction("Index", "Login");
 
-                if (string.IsNullOrEmpty(proyecto.Titulo) ||
-                    string.IsNullOrEmpty(proyecto.Objetivo))
+                if (!ModelState.IsValid)
                 {
-                    ViewBag.Error = "El título y el objetivo son obligatorios.";
+                    var errors = ModelState.Values.SelectMany(v => v.Errors);
+                    ViewBag.Error = errors.FirstOrDefault()?.ErrorMessage ?? "Hay errores en el formulario.";
                     return View(proyecto);
                 }
 
@@ -403,24 +403,22 @@ namespace GEPS.Controllers
 
             [HttpPost]
             [ValidateAntiForgeryToken]
-            public ActionResult EditarProyecto(string id, string titulo, string objetivo, int duracionMeses)
+            public ActionResult EditarProyecto(string id, Proyecto proyecto)
             {
                 if (!EsLider()) return RedirectToAction("Index", "Login");
 
-                if (string.IsNullOrEmpty(titulo) || string.IsNullOrEmpty(objetivo))
+                if (!ModelState.IsValid)
                 {
-                    ViewBag.Error = "El título y el objetivo son obligatorios.";
-                    var proyecto = proyectos.Find(
-                        Builders<Proyecto>.Filter.Eq("_id", ObjectId.Parse(id))
-                    ).FirstOrDefault();
+                    var errors = ModelState.Values.SelectMany(v => v.Errors);
+                    ViewBag.Error = errors.FirstOrDefault()?.ErrorMessage ?? "Hay errores en el formulario.";
                     return View(proyecto);
                 }
 
                 var filtro = Builders<Proyecto>.Filter.Eq("_id", ObjectId.Parse(id));
                 var update = Builders<Proyecto>.Update
-                    .Set("titulo", titulo)
-                    .Set("objetivo", objetivo)
-                    .Set("duracionMeses", duracionMeses);
+                    .Set("titulo", proyecto.Titulo)
+                    .Set("objetivo", proyecto.Objetivo)
+                    .Set("duracionMeses", proyecto.DuracionMeses);
 
                 proyectos.UpdateOne(filtro, update);
 
@@ -567,10 +565,10 @@ namespace GEPS.Controllers
             {
                 if (!EsLider()) return RedirectToAction("Index", "Login");
 
-                if (string.IsNullOrEmpty(reunion.Motivo) ||
-                    string.IsNullOrEmpty(reunion.IdProyecto))
+                if (!ModelState.IsValid)
                 {
-                    ViewBag.Error = "El motivo y el proyecto son obligatorios.";
+                    var errors = ModelState.Values.SelectMany(v => v.Errors);
+                    ViewBag.Error = errors.FirstOrDefault()?.ErrorMessage ?? "Hay errores en el formulario.";
                     var lider2 = ObtenerLiderActual();
                     ViewBag.Proyectos = proyectos.Find(
                         Builders<Proyecto>.Filter.Eq("idSemillero", ObjectId.Parse(lider2.IdSemillero))
@@ -610,6 +608,17 @@ namespace GEPS.Controllers
             public ActionResult EditarReunion(string id, Reunion reunion)
             {
                 if (!EsLider()) return RedirectToAction("Index", "Login");
+
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors);
+                    ViewBag.Error = errors.FirstOrDefault()?.ErrorMessage ?? "Hay errores en el formulario.";
+                    var lider = ObtenerLiderActual();
+                    ViewBag.Proyectos = proyectos.Find(
+                        Builders<Proyecto>.Filter.Eq("idSemillero", ObjectId.Parse(lider.IdSemillero))
+                    ).ToList();
+                    return View(reunion);
+                }
 
                 var filtro = Builders<Reunion>.Filter.Eq("_id", ObjectId.Parse(id));
                 var update = Builders<Reunion>.Update
@@ -692,9 +701,10 @@ namespace GEPS.Controllers
             {
                 if (!EsLider()) return RedirectToAction("Index", "Login");
 
-                if (string.IsNullOrEmpty(evento.Nombre) || string.IsNullOrEmpty(idProyecto))
+                if (!ModelState.IsValid)
                 {
-                    ViewBag.Error = "El nombre y el proyecto son obligatorios.";
+                    var errors = ModelState.Values.SelectMany(v => v.Errors);
+                    ViewBag.Error = errors.FirstOrDefault()?.ErrorMessage ?? "Hay errores en el formulario.";
                     var lider2 = ObtenerLiderActual();
                     ViewBag.Proyectos = proyectos.Find(
                         Builders<Proyecto>.Filter.Eq("idSemillero", ObjectId.Parse(lider2.IdSemillero))
@@ -735,6 +745,17 @@ namespace GEPS.Controllers
             public ActionResult EditarEvento(string id, Evento evento, string idProyecto)
             {
                 if (!EsLider()) return RedirectToAction("Index", "Login");
+
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors);
+                    ViewBag.Error = errors.FirstOrDefault()?.ErrorMessage ?? "Hay errores en el formulario.";
+                    var lider = ObtenerLiderActual();
+                    ViewBag.Proyectos = proyectos.Find(
+                        Builders<Proyecto>.Filter.Eq("idSemillero", ObjectId.Parse(lider.IdSemillero))
+                    ).ToList();
+                    return View(evento);
+                }
 
                 var filtro = Builders<Evento>.Filter.Eq("_id", ObjectId.Parse(id));
                 var update = Builders<Evento>.Update

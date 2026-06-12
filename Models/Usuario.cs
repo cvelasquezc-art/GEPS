@@ -17,9 +17,11 @@ namespace GEPS.Models
         public string Cedula { get; set; }
 
         [BsonElement("nombre")]
+        [Required(ErrorMessage = "El nombre es obligatorio.")]
         public string Nombre { get; set; }
 
         [BsonElement("correo")]
+        [Required(ErrorMessage = "El correo es obligatorio.")]
         [EmailAddress(ErrorMessage = "El correo no tiene un formato válido.")]
         public string Correo { get; set; }
 
@@ -37,9 +39,12 @@ namespace GEPS.Models
         public string Genero { get; set; }
 
         [BsonElement("celular")]
+        [RegularExpression(@"^\d{10}$", ErrorMessage = "El número de celular debe tener exactamente 10 dígitos numéricos.")]
+        [Required(ErrorMessage = "El número de celular es obligatorio.")]
         public string Celular { get; set; }
 
         [BsonElement("programa")]
+        [Required(ErrorMessage = "El programa es obligatorio.")]
         public string Programa { get; set; }
 
         [BsonElement("idSemillero")]
