@@ -75,8 +75,10 @@ namespace GEPS.Controllers
         {
             if (!EsAdmin()) return RedirectToAction("Index", "Login");
 
-            if (!ModelState.IsValid)
+            if (string.IsNullOrEmpty(semillero.Nombre) ||
+                string.IsNullOrEmpty(semillero.LineaInvestigativa))
             {
+                ViewBag.Error = "El nombre y la línea investigativa son obligatorios.";
                 return View(semillero);
             }
 
@@ -221,75 +223,89 @@ namespace GEPS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CrearLider(Usuario usuario)
+        public ActionResult CrearLider(string nombre, string cedula, string correo,
+    string fechaNacimiento, string genero, string celular, string programa)
         {
             if (!EsAdmin()) return RedirectToAction("Index", "Login");
 
-            if (!ModelState.IsValid)
+            // Validar campos obligatorios
+            if (string.IsNullOrEmpty(nombre) ||
+                string.IsNullOrEmpty(cedula) ||
+                string.IsNullOrEmpty(correo))
             {
-                var errors = ModelState.Values.SelectMany(v => v.Errors);
-                ViewBag.Error = errors.FirstOrDefault()?.ErrorMessage ?? "Hay errores en el formulario.";
-                return View(usuario);
+                ViewBag.Error = "Nombre, cédula y correo son obligatorios.";
+                return View();
             }
 
             // Validar cédula 10 dígitos numéricos
-            if (usuario.Cedula.Length != 10 || !usuario.Cedula.All(char.IsDigit))
+            if (cedula.Length != 10 || !cedula.All(char.IsDigit))
             {
                 ViewBag.Error = "La cédula debe tener exactamente 10 dígitos numéricos.";
-                return View(usuario);
+                return View();
             }
 
             // Validar celular — solo si se ingresó
-            if (!string.IsNullOrEmpty(usuario.Celular))
+            if (!string.IsNullOrEmpty(celular))
             {
-                if (usuario.Celular.Length != 10 || !usuario.Celular.All(char.IsDigit))
+                if (celular.Length != 10 || !celular.All(char.IsDigit))
                 {
                     ViewBag.Error = "El celular debe tener exactamente 10 dígitos numéricos.";
-                    return View(usuario);
+                    return View();
                 }
 
                 var celularExiste = usuarios.Find(
-                    Builders<Usuario>.Filter.Eq("celular", usuario.Celular)
+                    Builders<Usuario>.Filter.Eq("celular", celular)
                 ).FirstOrDefault();
 
                 if (celularExiste != null)
                 {
                     ViewBag.Error = "Ya existe un usuario registrado con ese número de celular.";
-                    return View(usuario);
+                    return View();
                 }
             }
 
             // Verificar cédula duplicada
             var cedulaExiste = usuarios.Find(
-                Builders<Usuario>.Filter.Eq("cedula", usuario.Cedula)
+                Builders<Usuario>.Filter.Eq("cedula", cedula)
             ).FirstOrDefault();
 
             if (cedulaExiste != null)
             {
                 ViewBag.Error = "Ya existe un usuario con esa cédula.";
-                return View(usuario);
+                return View();
             }
 
             // Verificar correo duplicado
             var correoExiste = usuarios.Find(
-                Builders<Usuario>.Filter.Eq("correo", usuario.Correo)
+                Builders<Usuario>.Filter.Eq("correo", correo)
             ).FirstOrDefault();
 
             if (correoExiste != null)
             {
                 ViewBag.Error = "Ya existe un usuario registrado con ese correo.";
-                return View(usuario);
+                return View();
             }
 
             // Generar clave automática
-            string clave = "GEPS" + usuario.Cedula.Substring(usuario.Cedula.Length - 4);
+            string clave = "GEPS" + cedula.Substring(cedula.Length - 4);
 
-            usuario.Clave = clave;
-            usuario.Rol = "Lider";
-            usuario.IdSemillero = null;
-            usuario.Activo = true;
+            var lider = new Usuario
+            {
+                Nombre = nombre,
+                Cedula = cedula,
+                Correo = correo,
+                Clave = clave,
+                Rol = "Lider",
+                FechaNacimiento = string.IsNullOrEmpty(fechaNacimiento) ? (DateTime?)null : DateTime.Parse(fechaNacimiento),
+                Genero = genero,
+                Celular = celular,
+                Programa = programa,
+                IdSemillero = null,
+                Activo = true
+            };
 
-            usuarios.InsertOne(usuario);
+
+            usuarios.InsertOne(lider);
 
             // Enviar correo con credenciales
             string cuerpo = $@"<!DOCTYPE html>
@@ -310,22 +326,23 @@ namespace GEPS.Controllers
         <!-- BODY -->
         <tr>
           <td style='padding:32px;'>
-            <p style='font-size:15px;color:#333;margin:0 0 6px;'>Hola <strong style='color:#0d2f5e;'>{usuario.Nombre}</strong>,</p>
+            <p style='font-size:15px;color:#333;margin:0 0 6px;'>Hola <strong style='color:#0d2f5e;'>{nombre}</strong>,</p>
             <p style='font-size:14px;color:#666;margin:0 0 24px;'>El administrador ha creado tus credenciales de acceso al sistema GEPS. A continuación encontrarás tus datos de ingreso:</p>
             <!-- CREDENCIALES -->
-            <table width='100%' cellpadding='0' cellspacing='0' style='background:#ecf0f1;border-radius:8px;overflow:hidden;margin-bottom:24px;'>
-              <tr><td style='padding:14px 16px;background:#1a5276;font-size:13px;font-weight:700;color:white;'>Correo / Usuario</td></tr>
-              <tr><td style='padding:12px 16px;'><span style='font-size:15px;font-weight:900;color:#0d2f5e;letter-spacing:1px;font-family:monospace;'>{usuario.Correo}</span></td></tr>
-            </table>
-            <table width='100%' cellpadding='0' cellspacing='0'>
-              <tr>
-                <td style='padding:8px 16px;text-align:right;width:45%;font-size:13px;font-weight:700;color:#1a5276;'>Cédula:</td>
-                <td style='padding:8px 16px;text-align:left;font-size:15px;font-weight:900;color:#0d2f5e;letter-spacing:2px;font-family:monospace;'>{usuario.Cedula}</td>
-              </tr>
-              <tr>
-                <td style='padding:8px 16px;text-align:right;font-size:13px;font-weight:700;color:#1a5276;'>Contraseña:</td>
-                <td style='padding:8px 16px;text-align:left;font-size:15px;font-weight:900;color:#0d2f5e;letter-spacing:2px;font-family:monospace;'>{clave}</td>
-              </tr>
+            <table width='100%' cellpadding='0' cellspacing='0' style='background:linear-gradient(135deg,#f0f7ff,#e8f5ee);border:1.5px solid #4fc3a1;border-radius:12px;margin-bottom:20px;'>
+              <tr><td style='padding:24px 16px;text-align:center;'>
+                <div style='font-size:11px;font-weight:700;letter-spacing:2px;color:#1a5276;text-transform:uppercase;margin-bottom:16px;'>Credenciales de acceso</div>
+                <table width='100%' cellpadding='0' cellspacing='0'>
+                  <tr>
+                    <td style='padding:8px 16px;text-align:right;width:45%;font-size:13px;font-weight:700;color:#1a5276;'>Cédula:</td>
+                    <td style='padding:8px 16px;text-align:left;font-size:15px;font-weight:900;color:#0d2f5e;letter-spacing:2px;font-family:monospace;'>{cedula}</td>
+                  </tr>
+                  <tr>
+                    <td style='padding:8px 16px;text-align:right;font-size:13px;font-weight:700;color:#1a5276;'>Contraseña:</td>
+                    <td style='padding:8px 16px;text-align:left;font-size:15px;font-weight:900;color:#0d2f5e;letter-spacing:2px;font-family:monospace;'>{clave}</td>
+                  </tr>
+                </table>
+              </td></tr>
             </table>
             <!-- RECOMENDACION -->
             <table width='100%' cellpadding='0' cellspacing='0' style='background:#fff8e1;border-left:3px solid #f59e0b;border-radius:0 8px 8px 0;margin-bottom:24px;'>
@@ -349,7 +366,8 @@ namespace GEPS.Controllers
 </body>
 </html>";
 
-            ServicioCorreo.Enviar(usuario.Correo, "Credenciales de acceso – GEPS", cuerpo);
+
+            ServicioCorreo.Enviar(correo, "Credenciales de acceso – GEPS", cuerpo);
 
             TempData["Exito"] = $"Líder creado correctamente. Clave asignada: {clave}";
             return RedirectToAction("Lideres");

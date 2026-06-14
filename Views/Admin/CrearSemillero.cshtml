@@ -19,33 +19,25 @@
         </div>
     }
 
-    @Html.ValidationSummary(true, "Por favor completa todos los campos requeridos:", new { @class = "alert-geps-danger", style = "margin-bottom:20px;" })
-
     <form action="/Admin/CrearSemillero" method="post" class="form-geps" novalidate>
         @Html.AntiForgeryToken()
 
-        <label>Nombre del semillero *</label>
+        <label>Nombre del semillero</label>
         <input type="text"
                name="Nombre"
                placeholder="Ej: InvesTIC"
-               value="@(Model?.Nombre)"
-               required />
-        @Html.ValidationMessageFor(m => m.Nombre)
+               value="@(Model?.Nombre)" />
 
-        <label>Línea investigativa *</label>
+        <label>Línea investigativa</label>
         <input type="text"
                name="LineaInvestigativa"
                placeholder="Ej: Tecnología e Innovación"
-               value="@(Model?.LineaInvestigativa)"
-               required />
-        @Html.ValidationMessageFor(m => m.LineaInvestigativa)
+               value="@(Model?.LineaInvestigativa)" />
 
-        <label>Descripción *</label>
+        <label>Descripción</label>
         <textarea name="Descripcion"
                   rows="3"
-                  placeholder="Descripción del semillero..."
-                  required>@(Model?.Descripcion)</textarea>
-        @Html.ValidationMessageFor(m => m.Descripcion)
+                  placeholder="Descripción del semillero...">@(Model?.Descripcion)</textarea>
 
         <div style="display:flex; gap:12px; margin-top:8px;">
             <button type="submit" class="btn-primary-geps">
