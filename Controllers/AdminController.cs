@@ -229,11 +229,10 @@ namespace GEPS.Controllers
             if (!EsAdmin()) return RedirectToAction("Index", "Login");
 
             // Validar campos obligatorios
-            if (string.IsNullOrEmpty(nombre) ||
-                string.IsNullOrEmpty(cedula) ||
-                string.IsNullOrEmpty(correo))
+            if (string.IsNullOrEmpty(nombre) || string.IsNullOrEmpty(cedula) || string.IsNullOrEmpty(correo) || string.IsNullOrEmpty(fechaNacimiento) || string.IsNullOrEmpty(genero)
+                || string.IsNullOrEmpty(celular) || string.IsNullOrEmpty(programa))
             {
-                ViewBag.Error = "Nombre, cédula y correo son obligatorios.";
+                ViewBag.Error = "Todos los campos son obligatorios.";
                 return View();
             }
 
@@ -561,7 +560,7 @@ namespace GEPS.Controllers
                         var lider = usuarios.Find(
                             Builders<Usuario>.Filter.And(
                                 Builders<Usuario>.Filter.Eq("rol", "Lider"),
-                                Builders<Usuario>.Filter.Eq("idSemillero", s.Id)
+                                Builders<Usuario>.Filter.Eq("idSemillero", ObjectId.Parse(s.Id))
                             )
                         ).FirstOrDefault();
 
@@ -572,17 +571,17 @@ namespace GEPS.Controllers
                             var dbProyectos = ConexionMongo.ObtenerDB()
                                 .GetCollection<MongoDB.Bson.BsonDocument>("Proyectos");
                             totalProyectos = (int)dbProyectos.CountDocuments(
-                                Builders<MongoDB.Bson.BsonDocument>.Filter.Eq("idSemillero", s.Id)
+                                Builders<MongoDB.Bson.BsonDocument>.Filter.Eq("idSemillero", ObjectId.Parse(s.Id))
                             );
                         }
                         catch { }
 
                         var campos = new List<(string, string)>
                 {
-                    ("Línea investigativa", s.LineaInvestigativa ?? "—"),
+                    ("Línea de investigación", s.LineaInvestigativa ?? "—"),
                     ("Descripción",         s.Descripcion ?? "—"),
                     ("Fecha de creación",   s.FechaCreacion.ToString("dd/MM/yyyy")),
-                    ("Líder asignado",      lider != null ? $"{lider.Nombre}  |  Cédula: {lider.Cedula}" : "Sin asignar"),
+                    ("Líder asignado",      lider != null ? $"{lider.Nombre}" : "Sin asignar"),
                     ("Total de proyectos",  totalProyectos.ToString()),
                     ("Estado",              s.Activo ? "Activo" : "Inactivo"),
                 };
@@ -665,7 +664,7 @@ namespace GEPS.Controllers
             if (!EsAdmin()) return RedirectToAction("Index", "Login");
 
             var lider = usuarios.Find(
-                Builders<Usuario>.Filter.Eq("_id", MongoDB.Bson.ObjectId.Parse(id))
+                Builders<Usuario>.Filter.Eq("_id", ObjectId.Parse(id))
             ).FirstOrDefault();
 
             if (lider == null) return RedirectToAction("Lideres");
@@ -681,7 +680,8 @@ namespace GEPS.Controllers
             if (!EsAdmin()) return RedirectToAction("Index", "Login");
 
             // Validar campos obligatorios
-            if (string.IsNullOrEmpty(nombre) || string.IsNullOrEmpty(correo))
+            if (string.IsNullOrEmpty(nombre) || string.IsNullOrEmpty(correo) || string.IsNullOrEmpty(fechaNacimiento) || string.IsNullOrEmpty(genero)
+               || string.IsNullOrEmpty(celular) || string.IsNullOrEmpty(programa))
             {
                 ViewBag.Error = "El nombre y el correo son obligatorios.";
                 var lider = usuarios.Find(
@@ -759,7 +759,7 @@ namespace GEPS.Controllers
         {
             if (!EsAdmin()) return RedirectToAction("Index", "Login");
 
-            var filtro = Builders<Usuario>.Filter.Eq("_id", MongoDB.Bson.ObjectId.Parse(id));
+            var filtro = Builders<Usuario>.Filter.Eq("_id", ObjectId.Parse(id));
             var lider = usuarios.Find(filtro).FirstOrDefault();
 
             if (lider != null)
