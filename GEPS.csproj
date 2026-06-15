@@ -233,6 +233,7 @@
     <Compile Include="Models\Reunion.cs" />
     <Compile Include="Models\Semillero.cs" />
     <Compile Include="Models\ServicioCorreo.cs" />
+    <Compile Include="Models\ServicioGemini.cs" />
     <Compile Include="Models\Usuario.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

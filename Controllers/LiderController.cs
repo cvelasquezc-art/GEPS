@@ -4,6 +4,7 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using static GEPS.Models.Proyecto;
@@ -1104,6 +1105,28 @@ namespace GEPS.Controllers
             c.Border = iTextSharp.text.Rectangle.BOTTOM_BORDER;
             c.BorderColor = new iTextSharp.text.BaseColor(220, 220, 220);
             tabla.AddCell(c);
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> SugerirObjetivoProyecto(string titulo)
+        {
+            if (!EsLider()) return Json(new { error = "No autorizado" });
+
+            if (string.IsNullOrEmpty(titulo))
+                return Json(new { error = "El título es requerido." });
+
+            string prompt = $@"Genera un objetivo general profesional y conciso (máximo 3 líneas) para un semillero de investigación  con este título:'{titulo}' 
+               Responde SOLO con el texto del objetivo, sin comillas ni explicaciones adicionales.";
+
+            try
+            {
+                string objetivo = await ServicioGemini.GenerarTexto(prompt);
+                return Json(new { objetivo });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = "No se pudo generar el objetivo: " + ex.Message });
+            }
         }
       }
     }

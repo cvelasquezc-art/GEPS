@@ -26,9 +26,9 @@
             @Html.AntiForgeryToken()
 
             <label>Nombre del evento *</label>
-            <input type="text" name="Nombre" id="inputNombre"
+            <input type="text" name="Nombre"
                    placeholder="Ej: Congreso TIC 2026" />
-            <div id="nombreFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
+            <div style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
 
             <label>Proyecto relacionado *</label>
             <select name="idProyecto" id="inputProyecto">
@@ -79,21 +79,10 @@
         </form>
     </div>
 </div>
-
 <script>
     document.querySelector('form').addEventListener('submit', function(e) {
-        var nombre     = document.getElementById('inputNombre');
-        var nombreFb   = document.getElementById('nombreFeedback');
         var proyecto   = document.getElementById('inputProyecto');
         var proyectoFb = document.getElementById('proyectoFeedback');
-
-        if (nombre.value.trim() === '') {
-            e.preventDefault();
-            nombreFb.textContent = 'El nombre es obligatorio.';
-            nombreFb.style.display = 'block';
-        } else {
-            nombreFb.style.display = 'none';
-        }
 
         if (proyecto.value === '') {
             e.preventDefault();

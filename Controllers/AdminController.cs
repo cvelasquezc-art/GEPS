@@ -4,6 +4,7 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.Security;
 
@@ -75,10 +76,9 @@ namespace GEPS.Controllers
         {
             if (!EsAdmin()) return RedirectToAction("Index", "Login");
 
-            if (string.IsNullOrEmpty(semillero.Nombre) ||
-                string.IsNullOrEmpty(semillero.LineaInvestigativa))
+            if (string.IsNullOrEmpty(semillero.Nombre) || string.IsNullOrEmpty(semillero.LineaInvestigativa) || string.IsNullOrEmpty(semillero.Descripcion))
             {
-                ViewBag.Error = "El nombre y la línea investigativa son obligatorios.";
+                ViewBag.Error = "Todos los campos son obligatorios.";
                 return View(semillero);
             }
 
@@ -124,9 +124,10 @@ namespace GEPS.Controllers
             if (!EsAdmin()) return RedirectToAction("Index", "Login");
 
             if (string.IsNullOrEmpty(semillero.Nombre) ||
-                string.IsNullOrEmpty(semillero.LineaInvestigativa))
+                string.IsNullOrEmpty(semillero.LineaInvestigativa) ||
+                string.IsNullOrEmpty(semillero.Descripcion))
             {
-                ViewBag.Error = "El nombre y la línea investigativa son obligatorios.";
+                ViewBag.Error = "Todos los campos son obligatorios.";
                 return View(semillero);
             }
 
@@ -569,9 +570,9 @@ namespace GEPS.Controllers
                         try
                         {
                             var dbProyectos = ConexionMongo.ObtenerDB()
-                                .GetCollection<MongoDB.Bson.BsonDocument>("Proyectos");
+                                .GetCollection<BsonDocument>("Proyectos");
                             totalProyectos = (int)dbProyectos.CountDocuments(
-                                Builders<MongoDB.Bson.BsonDocument>.Filter.Eq("idSemillero", ObjectId.Parse(s.Id))
+                                Builders<BsonDocument>.Filter.Eq("idSemillero", ObjectId.Parse(s.Id))
                             );
                         }
                         catch { }
@@ -788,6 +789,28 @@ namespace GEPS.Controllers
             }
 
             return RedirectToAction("Lideres");
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> SugerirDescripcionSemillero(string nombre, string lineaInvestigativa)
+        {
+            if (!EsAdmin()) return Json(new { error = "No autorizado" });
+
+            if (string.IsNullOrEmpty(nombre) || string.IsNullOrEmpty(lineaInvestigativa))
+                return Json(new { error = "Nombre y línea investigativa son requeridos." });
+
+            string prompt = $@"Genera una descripción profesional y concisa (máximo 3 líneas) para un semillero de investigación universitario con estos datos: Nombre: {nombre}
+            Línea investigativa: {lineaInvestigativa} Responde solo con el texto de la descripción, sin comillas ni explicaciones adicionales.";
+
+            try
+            {
+                string descripcion = await ServicioGemini.GenerarTexto(prompt);
+                return Json(new { descripcion });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = "No se pudo generar la descripción: " + ex.Message });
+            }
         }
     }
 }

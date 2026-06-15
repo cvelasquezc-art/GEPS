@@ -19,35 +19,78 @@
         </div>
     }
 
-    <form action="/Admin/CrearSemillero" method="post" class="form-geps" novalidate>
-        @Html.AntiForgeryToken()
+<form action="/Admin/CrearSemillero" method="post" class="form-geps" novalidate>
+    @Html.AntiForgeryToken()
 
-        <label>Nombre del semillero</label>
-        <input type="text"
-               name="Nombre"
-               placeholder="Ej: InvesTIC"
-               value="@(Model?.Nombre)" />
+    <label>Nombre del semillero</label>
+    <input type="text"
+           name="Nombre"
+           placeholder="Ej: InvesTIC"
+           value="@(Model?.Nombre)" />
 
-        <label>Línea investigativa</label>
-        <input type="text"
-               name="LineaInvestigativa"
-               placeholder="Ej: Tecnología e Innovación"
-               value="@(Model?.LineaInvestigativa)" />
+    <label>Línea investigativa</label>
+    <input type="text"
+           name="LineaInvestigativa"
+           placeholder="Ej: Tecnología e Innovación"
+           value="@(Model?.LineaInvestigativa)" />
 
-        <label>Descripción</label>
-        <textarea name="Descripcion"
-                  rows="3"
-                  placeholder="Descripción del semillero...">@(Model?.Descripcion)</textarea>
+    <label>Descripción</label>
+    <textarea name="Descripcion"
+              id="inputDescripcion"
+              rows="3"
+              placeholder="Descripción del semillero...">@(Model?.Descripcion)</textarea>
+    <button type="button" onclick="generarDescripcion()"
+            id="btnGenerarDesc"
+            style="background:linear-gradient(90deg,#4fc3a1,#1e8449); color:white; border:none; border-radius:8px; padding:7px 14px; font-size:12px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; margin-top:-12px; margin-bottom:16px;">
+        <i class="bi bi-stars"></i> Generar con IA
+    </button>
 
-        <div style="display:flex; gap:12px; margin-top:8px;">
-            <button type="submit" class="btn-primary-geps">
-                <i class="bi bi-check-lg"></i> Crear semillero
-            </button>
-            <a href="/Admin/Semilleros" class="btn-danger-geps">
-                <i class="bi bi-x-lg"></i> Cancelar
-            </a>
-        </div>
+    <div style="display:flex; gap:12px; margin-top:8px;">
+        <button type="submit" class="btn-primary-geps">
+            <i class="bi bi-check-lg"></i> Crear semillero
+        </button>
+        <a href="/Admin/Semilleros" class="btn-danger-geps">
+            <i class="bi bi-x-lg"></i> Cancelar
+        </a>
+    </div>
 
-    </form>
+</form>
 </div>
+<script>
+    async function generarDescripcion() {
+        var nombre = document.querySelector('input[name="Nombre"]').value;
+        var linea = document.querySelector('input[name="LineaInvestigativa"]').value;
+        var btn = document.getElementById('btnGenerarDesc');
+        var textarea = document.getElementById('inputDescripcion');
+
+        if (!nombre || !linea) {
+            alert('Completa primero el nombre y la línea investigativa.');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Generando...';
+
+        try {
+            const response = await fetch('/Admin/SugerirDescripcionSemillero', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `nombre=${encodeURIComponent(nombre)}&lineaInvestigativa=${encodeURIComponent(linea)}`
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                alert(data.error);
+            } else {
+                textarea.value = data.descripcion;
+            }
+        } catch (e) {
+            alert('Error al generar la descripción: ' + e.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-stars"></i> Generar con IA';
+        }
+    }
+</script>
 
