@@ -103,10 +103,20 @@
                                     else
                                     {
                                         var semilleroAsignado = (ViewBag.Semilleros as List<GEPS.Models.Semillero>)
-                                            .FirstOrDefault(s => s.Id == lider.IdSemillero);
-                                        <span style="background:#d5f5e3; color:#1e8449; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; white-space:nowrap; display:inline-flex; align-items:center; gap:4px;">
-                                            <i class="bi bi-check-circle"></i> @(semilleroAsignado != null ? semilleroAsignado.Nombre : "Asignado")
-                                        </span>
+                                               .FirstOrDefault(s => s.Id == lider.IdSemillero);
+
+                                        if (semilleroAsignado != null)
+                                        {
+                                            <span style="background:#d5f5e3; color:#1e8449; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; white-space:nowrap; display:inline-flex; align-items:center; gap:4px;">
+                                                <i class="bi bi-check-circle"></i> @semilleroAsignado.Nombre
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span style="background:#fef9e7; color:#d4ac0d; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; white-space:nowrap; display:inline-flex; align-items:center; gap:4px;">
+                                                <i class="bi bi-clock"></i> Sin asignar
+                                            </span>
+                                        }
                                     }
                                 </td>
                                 <td style="padding:14px 16px; text-align:center;">
