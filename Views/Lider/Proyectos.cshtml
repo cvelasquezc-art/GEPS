@@ -65,20 +65,20 @@
                             <td style="padding:14px 16px; color:#555; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">@p.Objetivo</td>
                             <td style="padding:14px 16px; color:#555; text-align:center;">@p.DuracionMeses mes(es)</td>
                             <td style="padding:14px 16px; text-align:center;">
-                                <span style="background:#e8f4fd; color:#1a5276; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600;">
+                                <span style="background: #e8f4fd; color: #1a5276; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px;">
                                     @p.Fases.Count fase(s)
                                 </span>
                             </td>
                             <td style="padding:14px 16px; text-align:center;">
                                 @if (p.Estado == "En ejecución")
                                 {
-                                    <span style="background:#d5f5e3; color:#1e8449; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600;">
+                                    <span style="background: #d5f5e3; color: #1e8449; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px;">
                                         <i class="bi bi-play-circle"></i> En ejecución
                                     </span>
                                 }
                                 else
                                 {
-                                    <span style="background:#fde8e8; color:#c0392b; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600;">
+                                    <span style="background: #fde8e8; color: #c0392b; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px;">
                                         <i class="bi bi-check-circle"></i> Terminado
                                     </span>
                                 }
