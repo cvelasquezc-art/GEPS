@@ -1,0 +1,156 @@
+﻿@model List<GEPS.Models.Semillero>
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewBag.Title = "Semilleros";
+}
+
+<div style="padding: 8px 0 24px;">
+
+    <div style="margin-bottom:28px;">
+        <h2 style="font-size:22px; font-weight:700; color:#0d2f5e; margin-bottom:4px;">
+            <i class="bi bi-diagram-3"></i> Semilleros
+        </h2>
+        <p style="font-size:13px; color:#888; margin:0;">Gestión de semilleros de investigación</p>
+        <div style="width:40px; height:3px; background:#4fc3a1; border-radius:2px; margin-top:10px;"></div>
+    </div>
+
+    @if (TempData["Exito"] != null)
+    {
+        <div style="background:#d5f5e3; color:#1e8449; border-radius:10px; padding:12px 16px; font-size:13px; margin-bottom:20px; border-left:4px solid #1e8449;">
+            <i class="bi bi-check-circle"></i> @TempData["Exito"]
+        </div>
+    }
+
+    <div style="background:white; border-radius:16px; padding:24px 28px; box-shadow:0 2px 16px rgba(0,0,0,0.07); border:1px solid #eee;">
+
+        <!-- Encabezado con botón y filtros -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+
+            <div style="display:flex; gap:8px;">
+                <button onclick="filtrar('todos')" id="btn-todos"
+                        style="padding:7px 16px; border-radius:8px; border:1.5px solid #0d2f5e; background:#0d2f5e; color:white; font-size:13px; font-weight:600; cursor:pointer;">
+                    Todos
+                </button>
+                <button onclick="filtrar('activos')" id="btn-activos"
+                        style="padding:7px 16px; border-radius:8px; border:1.5px solid #e8e8e8; background:white; color:#555; font-size:13px; font-weight:500; cursor:pointer;">
+                    <i class="bi bi-check-circle"></i> Activos
+                </button>
+                <button onclick="filtrar('inactivos')" id="btn-inactivos"
+                        style="padding:7px 16px; border-radius:8px; border:1.5px solid #e8e8e8; background:white; color:#555; font-size:13px; font-weight:500; cursor:pointer;">
+                    <i class="bi bi-x-circle"></i> Inactivos
+                </button>
+            </div>
+
+            <a href="/Admin/CrearSemillero"
+               style="background:linear-gradient(90deg,#0d2f5e,#1a5276); color:white; border:none; border-radius:8px; padding:9px 18px; font-size:13px; font-weight:600; display:inline-flex; align-items:center; gap:6px; text-decoration:none;">
+                <i class="bi bi-plus-circle"></i> Nuevo semillero
+            </a>
+
+        </div>
+
+        @if (Model.Count == 0)
+        {
+            <div style="text-align:center; padding:60px 20px; color:#aaa;">
+                <i class="bi bi-inbox" style="font-size:48px; display:block; margin-bottom:12px;"></i>
+                <p style="font-size:14px;">No hay semilleros registrados aún.</p>
+                <a href="/Admin/CrearSemillero"
+                   style="background:linear-gradient(90deg,#0d2f5e,#1a5276); color:white; border:none; border-radius:8px; padding:9px 18px; font-size:13px; font-weight:600; display:inline-flex; align-items:center; gap:6px; text-decoration:none; margin-top:12px;">
+                    <i class="bi bi-plus-circle"></i> Crear primer semillero
+                </a>
+            </div>
+        }
+        else
+        {
+            <table style="width:100%; border-collapse:collapse; font-size:13px;" id="tablaSemilleros">
+                <thead>
+                    <tr style="background:linear-gradient(90deg,#0d2f5e,#1a5276);">
+                        <th style="padding:12px 16px; color:white; font-weight:600; text-align:left; border-radius:8px 0 0 0;">Nombre</th>
+                        <th style="padding:12px 16px; color:white; font-weight:600; text-align:left;">Línea investigativa</th>
+                        <th style="padding:12px 16px; color:white; font-weight:600; text-align:left;">Descripción</th>
+                        <th style="padding:12px 16px; color:white; font-weight:600; text-align:left;">Fecha creación</th>
+                        <th style="padding:12px 16px; color:white; font-weight:600; text-align:center;">Estado</th>
+                        <th style="padding:12px 16px; color:white; font-weight:600; text-align:center; border-radius:0 8px 0 0;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var s in Model)
+                    {
+                        <tr class="fila-semillero @(s.Activo ? "activo" : "inactivo")"
+                            style="border-bottom:1px solid #f0f0f0; transition:background 0.15s;">
+                            <td style="padding:14px 16px; font-weight:600; color:#0d2f5e;">@s.Nombre</td>
+                            <td style="padding:14px 16px; color:#555;">@s.LineaInvestigativa</td>
+                            <td style="padding:14px 16px; color:#888; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">@s.Descripcion</td>
+                            <td style="padding:14px 16px; color:#666;">@s.FechaCreacion.ToString("dd/MM/yyyy")</td>
+                            <td style="padding:14px 16px; text-align:center;">
+                                @if (s.Activo)
+                                {
+                                    <span style="background:#d5f5e3; color:#1e8449; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600;">
+                                        <i class="bi bi-check-circle"></i> Activo
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span style="background:#fde8e8; color:#c0392b; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600;">
+                                        <i class="bi bi-x-circle"></i> Inactivo
+                                    </span>
+                                }
+                            </td>
+                            <td style="padding:14px 16px; text-align:center;">
+                                <div style="display:flex; gap:6px; justify-content:center;">
+                                    <a href="/Admin/EditarSemillero/@s.Id"
+                                       style="background:linear-gradient(90deg,#b7770d,#d4ac0d); color:white; border:none; border-radius:7px; padding:6px 12px; font-size:12px; font-weight:600; display:inline-flex; align-items:center; gap:4px; text-decoration:none;">
+                                        <i class="bi bi-pencil"></i> Editar
+                                    </a>
+                                    <a href="/Admin/CambiarEstadoSemillero/@s.Id"
+                                       style="background:@(s.Activo ? "linear-gradient(90deg,#922b21,#e74c3c)" : "linear-gradient(90deg,#1e8449,#27ae60)"); color:white; border:none; border-radius:7px; padding:6px 12px; font-size:12px; font-weight:600; display:inline-flex; align-items:center; gap:4px; text-decoration:none;"
+                                       onclick="return confirm('@(s.Activo ? "¿Deshabilitar este semillero?" : "¿Habilitar este semillero?")')">
+                                        <i class="bi @(s.Activo ? "bi-toggle-off" : "bi-toggle-on")"></i>
+                                        @(s.Activo ? "Deshabilitar" : "Habilitar")
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div id="sinResultados" style="display:none; text-align:center; padding:40px; color:#aaa;">
+                <i class="bi bi-search" style="font-size:36px; display:block; margin-bottom:10px;"></i>
+                <p style="font-size:13px;">No hay semilleros con ese filtro.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    function filtrar(tipo) {
+        const filas = document.querySelectorAll('.fila-semillero');
+        const sinResultados = document.getElementById('sinResultados');
+        let visibles = 0;
+
+        filas.forEach(function (fila) {
+            if (tipo === 'todos') {
+                fila.style.display = '';
+                visibles++;
+            } else if (tipo === 'activos' && fila.classList.contains('activo')) {
+                fila.style.display = '';
+                visibles++;
+            } else if (tipo === 'inactivos' && fila.classList.contains('inactivo')) {
+                fila.style.display = '';
+                visibles++;
+            } else {
+                fila.style.display = 'none';
+            }
+        });
+
+        sinResultados.style.display = visibles === 0 ? 'block' : 'none';
+
+        // Actualizar botones activos
+        document.getElementById('btn-todos').style.background = tipo === 'todos' ? '#0d2f5e' : 'white';
+        document.getElementById('btn-todos').style.color = tipo === 'todos' ? 'white' : '#555';
+        document.getElementById('btn-activos').style.background = tipo === 'activos' ? '#1e8449' : 'white';
+        document.getElementById('btn-activos').style.color = tipo === 'activos' ? 'white' : '#555';
+        document.getElementById('btn-inactivos').style.background = tipo === 'inactivos' ? '#e74c3c' : 'white';
+        document.getElementById('btn-inactivos').style.color = tipo === 'inactivos' ? 'white' : '#555';
+    }
+</script>

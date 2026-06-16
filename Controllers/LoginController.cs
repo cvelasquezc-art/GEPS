@@ -1,7 +1,6 @@
 ﻿using GEPS.Models;
 using MongoDB.Driver;
 using System;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 
@@ -10,12 +9,12 @@ namespace GEPS.Controllers
     [AllowAnonymous]
     public class LoginController : Controller
     {
-        private IMongoCollection<Usuario> _usuarios;
-
+        private IMongoCollection<Usuario> usuarios;
+ 
         public LoginController()
         {
             var db = ConexionMongo.ObtenerDB();
-            _usuarios = db.GetCollection<Usuario>("Usuarios");
+            usuarios = db.GetCollection<Usuario>("Usuarios");
         }
 
         // GET: Login
@@ -49,7 +48,7 @@ namespace GEPS.Controllers
                 Builders<Usuario>.Filter.Eq("activo", true)
             );
 
-            var usuario = _usuarios.Find(filtro).FirstOrDefault();
+            var usuario = usuarios.Find(filtro).FirstOrDefault();
 
             if (usuario == null)
             {
@@ -82,16 +81,15 @@ namespace GEPS.Controllers
         public ActionResult Salir()
         {
             FormsAuthentication.SignOut();
+            Session.Clear();
             Session.Abandon();
-
-            var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, "");
-            cookie.Expires = DateTime.Now.AddYears(-1);
-            Response.Cookies.Add(cookie);
 
             return RedirectToAction("Index", "Login");
         }
 
-        // ── PASO 1: Olvidé contraseña ──
+
+
+        // PASO 1: Olvidé contraseña
         public ActionResult OlvideContrasena()
         {
             return View();
@@ -109,7 +107,7 @@ namespace GEPS.Controllers
             }
 
             var filtro = Builders<Usuario>.Filter.Eq("cedula", cedula);
-            var usuario = _usuarios.Find(filtro).FirstOrDefault();
+            var usuario = usuarios.Find(filtro).FirstOrDefault();
 
             if (usuario == null)
             {
@@ -123,7 +121,7 @@ namespace GEPS.Controllers
             var update = Builders<Usuario>.Update
                 .Set("codigoRecuperacion", codigo)
                 .Set("codigoExpira", DateTime.Now.AddMinutes(10));
-            _usuarios.UpdateOne(filtro, update);
+            usuarios.UpdateOne(filtro, update);
 
             string cuerpo = $@"
 <!DOCTYPE html>
@@ -192,7 +190,7 @@ namespace GEPS.Controllers
             return RedirectToAction("VerificarCodigo");
         }
 
-        // ── PASO 2: Verificar código ──
+        // PASO 2: Verificar código
         public ActionResult VerificarCodigo()
         {
             if (Session["CedulaRecuperacion"] == null)
@@ -209,7 +207,7 @@ namespace GEPS.Controllers
                 return RedirectToAction("OlvideContrasena");
 
             var filtro = Builders<Usuario>.Filter.Eq("cedula", cedula);
-            var usuario = _usuarios.Find(filtro).FirstOrDefault();
+            var usuario = usuarios.Find(filtro).FirstOrDefault();
 
             if (usuario == null || usuario.CodigoRecuperacion != codigo)
             {
@@ -227,7 +225,7 @@ namespace GEPS.Controllers
             return RedirectToAction("NuevaContrasena");
         }
 
-        // ── PASO 3: Nueva contraseña ──
+        // PASO 3: Nueva contraseña
         public ActionResult NuevaContrasena()
         {
             if (Session["CedulaRecuperacion"] == null ||
@@ -257,7 +255,7 @@ namespace GEPS.Controllers
                 .Unset("codigoRecuperacion")
                 .Unset("codigoExpira");
 
-            _usuarios.UpdateOne(filtro, update);
+            usuarios.UpdateOne(filtro, update);
 
             Session.Remove("CedulaRecuperacion");
             Session.Remove("CodigoVerificado");

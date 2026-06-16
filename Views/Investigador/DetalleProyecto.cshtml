@@ -1,0 +1,128 @@
+﻿@model GEPS.Models.Proyecto
+@{
+    Layout = "~/Views/Shared/_LayoutInvestigador.cshtml";
+    ViewBag.Title = "Detalle Proyecto";
+}
+
+<div style="padding: 8px 0 24px;">
+
+    <div style="margin-bottom:24px; display:flex; align-items:center; justify-content:space-between;">
+        <div>
+            <h2 style="font-size:22px; font-weight:700; color:#0d2f5e; margin-bottom:4px;">
+                <i class="bi bi-kanban"></i> @Model.Titulo
+            </h2>
+            <p style="font-size:13px; color:#888; margin:0;">Detalle del proyecto de investigación</p>
+            <div style="width:40px; height:3px; background:#4fc3a1; border-radius:2px; margin-top:10px;"></div>
+        </div>
+        <a href="/Investigador/Proyectos"
+           style="background:linear-gradient(90deg,#0d2f5e,#1a5276); color:white; border:none; border-radius:8px; padding:9px 18px; font-size:13px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+    </div>
+
+    <!-- Info general -->
+    <div style="background:white; border-radius:16px; padding:28px; box-shadow:0 2px 16px rgba(0,0,0,0.07); border:1px solid #eee; margin-bottom:24px;">
+        <h5 style="font-size:14px; font-weight:700; color:#0d2f5e; margin-bottom:20px; padding-bottom:12px; border-bottom:1px solid #f0f0f0;">
+            <i class="bi bi-info-circle"></i> Información General
+        </h5>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;">
+            <div>
+                <div style="font-size:11px; font-weight:700; color:#aaa; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px;">Objetivo</div>
+                <div style="font-size:14px; color:#333;">@Model.Objetivo</div>
+            </div>
+            <div>
+                <div style="font-size:11px; font-weight:700; color:#aaa; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px;">Duración</div>
+                <div style="font-size:14px; color:#333;">@Model.DuracionMeses mes(es)</div>
+            </div>
+            <div>
+                <div style="font-size:11px; font-weight:700; color:#aaa; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px;">Fecha de Inicio</div>
+                <div style="font-size:14px; color:#333;">@Model.FechaInicio.ToString("dd/MM/yyyy")</div>
+            </div>
+            <div>
+                <div style="font-size:11px; font-weight:700; color:#aaa; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px;">Estado</div>
+                @if (Model.Estado == "En ejecución")
+                {
+                    <span style="background:#d5f5e3; color:#1e8449; padding:5px 12px; border-radius:20px; font-size:12px; font-weight:700;">
+                        <i class="bi bi-play-circle"></i> @Model.Estado
+                    </span>
+                }
+                else if (Model.Estado == "Finalizado")
+                {
+                    <span style="background:#e8f4fd; color:#1a5276; padding:5px 12px; border-radius:20px; font-size:12px; font-weight:700;">
+                        <i class="bi bi-check-circle"></i> @Model.Estado
+                    </span>
+                }
+                else
+                {
+                    <span style="background:#fde8e8; color:#c0392b; padding:5px 12px; border-radius:20px; font-size:12px; font-weight:700;">
+                        <i class="bi bi-pause-circle"></i> @Model.Estado
+                    </span>
+                }
+            </div>
+            <div>
+                <div style="font-size:11px; font-weight:700; color:#aaa; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px;">Total de Fases</div>
+                <div style="font-size:14px; color:#333;">@Model.Fases.Count fase(s)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fases y actividades -->
+    <div style="background:white; border-radius:16px; padding:28px; box-shadow:0 2px 16px rgba(0,0,0,0.07); border:1px solid #eee;">
+        <h5 style="font-size:14px; font-weight:700; color:#0d2f5e; margin-bottom:20px; padding-bottom:12px; border-bottom:1px solid #f0f0f0;">
+            <i class="bi bi-list-check"></i> Fases y Actividades
+        </h5>
+
+        @if (Model.Fases.Count == 0)
+        {
+            <p style="font-size:13px; color:#aaa; text-align:center; padding:30px 0; margin:0;">
+                <i class="bi bi-info-circle"></i> Este proyecto aún no tiene fases registradas.
+            </p>
+        }
+        else
+        {
+            for (int i = 0; i < Model.Fases.Count; i++)
+            {
+                var fase = Model.Fases[i];
+                <div style="border:1px solid #e8e8e8; border-radius:12px; margin-bottom:16px; overflow:hidden;">
+                    <div style="background:linear-gradient(90deg,#0d2f5e,#1a5276); padding:12px 18px; display:flex; align-items:center; justify-content:space-between;">
+                        <div style="color:white; font-weight:700; font-size:14px;">
+                            <i class="bi bi-layers"></i> Fase @(i+1): @fase.Nombre
+                        </div>
+                        <span style="background:rgba(255,255,255,0.15); color:white; font-size:11px; padding:3px 10px; border-radius:12px;">
+                            @fase.DuracionMeses mes(es)
+                        </span>
+                    </div>
+
+                    @if (fase.Actividades.Count == 0)
+                    {
+                        <div style="padding:16px 18px;">
+                            <p style="font-size:12px; color:#aaa; margin:0;"><i class="bi bi-info-circle"></i> Sin actividades registradas.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <table style="width:100%; border-collapse:collapse; font-size:13px;">
+                            <thead>
+                                <tr style="background:#f8fbff;">
+                                    <th style="padding:10px 18px; color:#1a5276; font-weight:600; text-align:left;">Actividad</th>
+                                    <th style="padding:10px 18px; color:#1a5276; font-weight:600; text-align:left;">Duración</th>
+                                    <th style="padding:10px 18px; color:#1a5276; font-weight:600; text-align:left;">Fecha entrega</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var act in fase.Actividades)
+                                {
+                                    <tr style="border-top:1px solid #f0f0f0;">
+                                        <td style="padding:10px 18px; color:#333;">@act.Nombre</td>
+                                        <td style="padding:10px 18px; color:#666;">@act.DuracionDias día(s)</td>
+                                        <td style="padding:10px 18px; color:#666;">@act.FechaEntrega.ToString("dd/MM/yyyy")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            }
+        }
+    </div>
+</div>

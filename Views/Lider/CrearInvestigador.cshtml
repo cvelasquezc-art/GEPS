@@ -1,0 +1,285 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutLider.cshtml";
+    ViewBag.Title = "Crear Investigador";
+}
+
+<div style="padding: 8px 0 24px;">
+
+    <div style="margin-bottom:28px;">
+        <h2 style="font-size:22px; font-weight:700; color:#0d2f5e; margin-bottom:4px;">
+            <i class="bi bi-person-plus"></i> Crear investigador
+        </h2>
+        <p style="font-size:13px; color:#888; margin:0;">Registrar credenciales para un nuevo investigador del semillero</p>
+        <div style="width:40px; height:3px; background:#4fc3a1; border-radius:2px; margin-top:10px;"></div>
+    </div>
+
+    <div style="background:white; border-radius:16px; padding:32px; box-shadow:0 2px 16px rgba(0,0,0,0.07); border:1px solid #eee; max-width:600px;">
+
+        @if (ViewBag.Error != null)
+        {
+            <div style="background:#fde8e8; color:#c0392b; border-radius:10px; padding:12px 16px; font-size:13px; margin-bottom:20px; border-left:4px solid #c0392b;">
+                <i class="bi bi-exclamation-circle"></i> @ViewBag.Error
+            </div>
+        }
+
+        <div style="background:#e8f4fd; border-radius:10px; padding:14px 16px; font-size:13px; color:#1a5276; margin-bottom:24px; border-left:4px solid #1a5276;">
+            <i class="bi bi-info-circle"></i>
+            La contraseña se genera automáticamente con el formato <strong>GEPS + últimos 4 dígitos de la cédula</strong> y se envía al correo del investigador.
+        </div>
+
+        <form action="/Lider/CrearInvestigador" method="post" class="form-geps" novalidate id="formCrearInvestigador">
+            @Html.AntiForgeryToken()
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div>
+                    <label>Nombre completo *</label>
+                    <input type="text" name="nombre" id="inputNombre" placeholder="Ej: Carlos Pérez" />
+                    <div id="nombreFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
+                </div>
+                <div>
+                    <label>Cédula *</label>
+                    <input type="text" name="cedula" id="inputCedula" placeholder="10 dígitos" maxlength="10" />
+                    <div id="cedulaFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:4px; display:none;"></div>
+                    <div style="font-size:11px; color:#bbb; margin-bottom:12px; text-align:right;">
+                        <span id="contador">0</span>/10 dígitos
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div>
+                    <label>Correo electrónico *</label>
+                    <input type="email" name="correo" id="inputCorreo" placeholder="correo@gmail.com" />
+                    <div id="correoFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
+                </div>
+                <div>
+                    <label>Celular *</label>
+                    <input type="text" name="celular" id="inputCelular" placeholder="Ej: 3001234567" />
+                    <div id="celularFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
+                    <div style="font-size:11px; color:#bbb; margin-bottom:12px; text-align:right;">
+                        <span id="contadorCelular">0</span>/10 dígitos
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div>
+                    <label>Fecha de nacimiento *</label>
+                    <input type="date" name="fechaNacimiento" max="2010-12-31" />
+                </div>
+                <div>
+                    <label>Género</label>
+                    <select name="genero">
+                        <option value="">-- Selecciona --</option>
+                        <option value="Masculino">Masculino</option>
+                        <option value="Femenino">Femenino</option>
+                    </select>
+                </div>
+            </div>
+
+            <label>Programa académico *</label>
+            <input type="text" name="programa" id="inputPrograma" placeholder="Ej: Ingeniería de Sistemas" />
+            <div id="programaFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
+
+            <div style="display:flex; gap:12px; margin-top:8px;">
+                <button type="submit"
+                        style="background:linear-gradient(90deg,#b7770d,#d4ac0d); color:white; border:none; border-radius:8px; padding:10px 20px; font-size:13px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                    <i class="bi bi-check-lg"></i> Crear investigador
+                </button>
+                <a href="/Lider/Investigadores"
+                   style="background:white; color:#555; border:1.5px solid #e8e8e8; border-radius:8px; padding:10px 20px; font-size:13px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                    <i class="bi bi-x-lg"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    var inputCedula = document.getElementById('inputCedula');
+    var contador = document.getElementById('contador');
+    var cedulaFb = document.getElementById('cedulaFeedback');
+
+    var inputNombre = document.getElementById('inputNombre');
+    var nombreFb = document.getElementById('nombreFeedback');
+
+    var inputCorreo = document.getElementById('inputCorreo');
+    var correoFb = document.getElementById('correoFeedback');
+
+    var inputCelular = document.getElementById('inputCelular');
+    var contadorCelular = document.getElementById('contadorCelular');
+    var celularFb = document.getElementById('celularFeedback');
+
+    var inputPrograma = document.getElementById('inputPrograma');
+    var programaFb = document.getElementById('programaFeedback');
+
+    // Expresión regular: letras (con tildes y ñ) y espacios
+    var soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]*$/;
+
+    // Expresión regular: correo válido básico
+    var correoValido = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+
+    // ──────────────────────────────
+    //  CÉDULA — solo números, 10 dígitos
+    // ──────────────────────────────
+    inputCedula.addEventListener('keypress', function (e) {
+        if (e.key < '0' || e.key > '9') {
+            e.preventDefault();
+            cedulaFb.textContent = 'Solo se permiten numeros.';
+            cedulaFb.style.display = 'block';
+        }
+    });
+
+    inputCedula.addEventListener('input', function () {
+        var val = this.value.replace(/[^0-9]/g, '');
+        this.value = val;
+        contador.textContent = val.length;
+        if (val.length === 10) {
+            cedulaFb.style.display = 'none';
+            this.style.borderColor = '#1e8449';
+        } else {
+            this.style.borderColor = '#e8e8e8';
+        }
+    });
+
+    inputCedula.addEventListener('blur', function () {
+        if (this.value.length > 0 && this.value.length < 10) {
+            cedulaFb.textContent = 'La cedula debe tener exactamente 10 digitos.';
+            cedulaFb.style.display = 'block';
+        }
+    });
+
+    // ──────────────────────────────
+    //  NOMBRE — solo letras y espacios
+    // ──────────────────────────────
+    inputNombre.addEventListener('keypress', function (e) {
+        if (!soloLetras.test(e.key)) {
+            e.preventDefault();
+            nombreFb.textContent = 'Solo se permiten letras y espacios.';
+            nombreFb.style.display = 'block';
+        }
+    });
+
+    inputNombre.addEventListener('input', function () {
+        var val = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]/g, '');
+        this.value = val;
+        if (val.trim() !== '') {
+            nombreFb.style.display = 'none';
+            this.style.borderColor = '#1e8449';
+        } else {
+            this.style.borderColor = '#e8e8e8';
+        }
+    });
+
+    // ──────────────────────────────
+    //  CORREO — formato válido en tiempo real
+    // ──────────────────────────────
+    inputCorreo.addEventListener('input', function () {
+        if (correoValido.test(this.value.trim())) {
+            correoFb.style.display = 'none';
+            this.style.borderColor = '#1e8449';
+        } else {
+            this.style.borderColor = '#e8e8e8';
+        }
+    });
+
+    inputCorreo.addEventListener('blur', function () {
+        if (this.value.trim() !== '' && !correoValido.test(this.value.trim())) {
+            correoFb.textContent = 'Ingresa un correo valido.';
+            correoFb.style.display = 'block';
+        }
+    });
+
+    // ──────────────────────────────
+    //  CELULAR — solo números, 10 dígitos
+    // ──────────────────────────────
+    inputCelular.addEventListener('keypress', function (e) {
+        if (e.key < '0' || e.key > '9') {
+            e.preventDefault();
+            celularFb.textContent = 'Solo se permiten numeros.';
+            celularFb.style.display = 'block';
+        }
+    });
+
+    inputCelular.addEventListener('input', function () {
+        var val = this.value.replace(/[^0-9]/g, '');
+        this.value = val.substring(0, 10); // máximo 10 dígitos
+        contadorCelular.textContent = val.length;
+        if (this.value.length === 10) {
+            celularFb.style.display = 'none';
+            this.style.borderColor = '#1e8449';
+        } else {
+            this.style.borderColor = '#e8e8e8';
+        }
+    });
+
+    inputCelular.addEventListener('blur', function () {
+        if (this.value.length > 0 && this.value.length < 10) {
+            celularFb.textContent = 'El celular debe tener exactamente 10 digitos.';
+            celularFb.style.display = 'block';
+        }
+    });
+
+    // ──────────────────────────────
+    //  PROGRAMA ACADÉMICO — solo letras y espacios
+    // ──────────────────────────────
+    inputPrograma.addEventListener('keypress', function (e) {
+        if (!soloLetras.test(e.key)) {
+            e.preventDefault();
+            programaFb.textContent = 'Solo se permiten letras y espacios.';
+            programaFb.style.display = 'block';
+        }
+    });
+
+    inputPrograma.addEventListener('input', function () {
+        var val = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]/g, '');
+        this.value = val;
+        if (val.trim() !== '') {
+            programaFb.style.display = 'none';
+            this.style.borderColor = '#1e8449';
+        } else {
+            this.style.borderColor = '#e8e8e8';
+        }
+    });
+
+    // ──────────────────────────────
+    //  VALIDACIÓN AL ENVIAR
+    // ──────────────────────────────
+    document.getElementById('formCrearInvestigador').addEventListener('submit', function (e) {
+        if (inputNombre.value.trim() === '') {
+            e.preventDefault();
+            nombreFb.textContent = 'El nombre es obligatorio.';
+            nombreFb.style.display = 'block';
+        } else {
+            nombreFb.style.display = 'none';
+        }
+
+        if (inputCedula.value.length !== 10) {
+            e.preventDefault();
+            cedulaFb.textContent = 'La cedula debe tener exactamente 10 digitos.';
+            cedulaFb.style.display = 'block';
+        }
+
+        if (inputCorreo.value.trim() === '' || !correoValido.test(inputCorreo.value.trim())) {
+            e.preventDefault();
+            correoFb.textContent = 'Ingresa un correo valido.';
+            correoFb.style.display = 'block';
+        } else {
+            correoFb.style.display = 'none';
+        }
+
+        if (inputCelular.value.length !== 10) {
+            e.preventDefault();
+            celularFb.textContent = 'El celular debe tener exactamente 10 digitos.';
+            celularFb.style.display = 'block';
+        }
+
+        if (inputPrograma.value.trim() === '') {
+            e.preventDefault();
+            programaFb.textContent = 'El programa academico es obligatorio.';
+            programaFb.style.display = 'block';
+        } else {
+            programaFb.style.display = 'none';
+        }
+    });
+</script>

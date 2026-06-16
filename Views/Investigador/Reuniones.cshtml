@@ -1,0 +1,184 @@
+﻿@model List<GEPS.Models.Reunion>
+@{
+    Layout = "~/Views/Shared/_LayoutInvestigador.cshtml";
+    ViewBag.Title = "Reuniones";
+    var proyectos = ViewBag.Proyectos as List<GEPS.Models.Proyecto>;
+}
+
+<div style="padding: 8px 0 24px;">
+
+    <div style="margin-bottom:28px;">
+        <h2 style="font-size:22px; font-weight:700; color:#0d2f5e; margin-bottom:4px;">
+            <i class="bi bi-camera-video"></i> Reuniones
+        </h2>
+        <p style="font-size:13px; color:#888; margin:0;">Reuniones programadas para los proyectos de tu semillero</p>
+        <div style="width:40px; height:3px; background:#4fc3a1; border-radius:2px; margin-top:10px;"></div>
+    </div>
+
+    <div style="background:white; border-radius:16px; padding:24px; box-shadow:0 2px 16px rgba(0,0,0,0.07); border:1px solid #eee;">
+
+        @if (Model.Count == 0)
+        {
+            <div style="text-align:center; padding:60px 20px;">
+                <div style="width:64px; height:64px; background:#f0f4f8; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
+                    <i class="bi bi-camera-video" style="font-size:28px; color:#aaa;"></i>
+                </div>
+                <p style="font-size:14px; color:#aaa; margin:0;">No hay reuniones programadas en tu semillero.</p>
+            </div>
+        }
+        else
+        {
+            <!-- Filtros -->
+            <div style="display:flex; gap:12px; margin-bottom:20px; flex-wrap:wrap; align-items:end;">
+                <div>
+                    <label style="font-size:12px; font-weight:600; color:#555; display:block; margin-bottom:4px;">Día</label>
+                    <select id="filtroDia" onchange="aplicarFiltrosReuniones()" style="padding:8px 12px; border:1.5px solid #e8e8e8; border-radius:8px; font-size:13px;">
+                        <option value="">Todos</option>
+                        @for (int d = 1; d <= 31; d++)
+                        {
+                            <option value="@d">@d</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size:12px; font-weight:600; color:#555; display:block; margin-bottom:4px;">Mes</label>
+                    <select id="filtroMes" onchange="aplicarFiltrosReuniones()" style="padding:8px 12px; border:1.5px solid #e8e8e8; border-radius:8px; font-size:13px;">
+                        <option value="">Todos</option>
+                        <option value="1">Enero</option>
+                        <option value="2">Febrero</option>
+                        <option value="3">Marzo</option>
+                        <option value="4">Abril</option>
+                        <option value="5">Mayo</option>
+                        <option value="6">Junio</option>
+                        <option value="7">Julio</option>
+                        <option value="8">Agosto</option>
+                        <option value="9">Septiembre</option>
+                        <option value="10">Octubre</option>
+                        <option value="11">Noviembre</option>
+                        <option value="12">Diciembre</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size:12px; font-weight:600; color:#555; display:block; margin-bottom:4px;">Año</label>
+                    <select id="filtroAnio" onchange="aplicarFiltrosReuniones()" style="padding:8px 12px; border:1.5px solid #e8e8e8; border-radius:8px; font-size:13px;">
+                        <option value="">Todos</option>
+                        @{
+                            var aniosReuniones = Model.Select(r => r.Fecha.Year).Distinct().OrderByDescending(y => y).ToList();
+                        }
+                        @foreach (var anio in aniosReuniones)
+                        {
+                            <option value="@anio">@anio</option>
+                        }
+                    </select>
+                </div>
+                <button onclick="limpiarFiltrosReuniones()"
+                        style="background:white; color:#555; border:1.5px solid #e8e8e8; border-radius:8px; padding:8px 14px; font-size:13px; font-weight:600; cursor:pointer; height:38px;">
+                    <i class="bi bi-x-circle"></i> Limpiar
+                </button>
+            </div>
+
+            <div id="sinResultadosReuniones" style="display:none; text-align:center; padding:40px 20px; color:#aaa;">
+                <i class="bi bi-search" style="font-size:36px; display:block; margin-bottom:8px;"></i>
+                <p style="font-size:14px;">No hay reuniones que coincidan con el filtro.</p>
+            </div>
+
+            <table style="width:100%; border-collapse:collapse; font-size:13px;">
+                <thead>
+                    <tr style="background:linear-gradient(90deg,#0d2f5e,#1a5276); color:white;">
+                        <th style="padding:12px 16px; font-weight:600; border-radius:8px 0 0 0;">Motivo</th>
+                        <th style="padding:12px 16px; font-weight:600;">Proyecto</th>
+                        <th style="padding:12px 16px; font-weight:600;">Fecha</th>
+                        <th style="padding:12px 16px; font-weight:600;">Hora</th>
+                        <th style="padding:12px 16px; font-weight:600;">Lugar</th>
+                        <th style="padding:12px 16px; font-weight:600; text-align:center;">Estado</th>
+                        <th style="padding:12px 16px; font-weight:600; border-radius:0 8px 0 0;">Enlace</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model)
+                    {
+                        var proyecto = proyectos?.FirstOrDefault(p => p.Id == r.IdProyecto);
+                        <tr class="fila-reunion"
+                            data-dia="@r.Fecha.Day"
+                            data-mes="@r.Fecha.Month"
+                            data-anio="@r.Fecha.Year"
+                            style="border-bottom:1px solid #f0f0f0;">
+                            <td style="padding:12px 16px; color:#0d2f5e; font-weight:600;">@r.Motivo</td>
+                            <td style="padding:12px 16px; color:#555;">@(proyecto != null ? proyecto.Titulo : "—")</td>
+                            <td style="padding:12px 16px; color:#666;">@r.Fecha.ToString("dd/MM/yyyy")</td>
+                            <td style="padding:12px 16px; color:#666;">@r.Hora</td>
+                            <td style="padding:12px 16px; color:#666;">@(string.IsNullOrEmpty(r.Lugar) ? "—" : r.Lugar)</td>
+                            <td style="padding:12px 16px; text-align:center;">
+                                @if (r.Estado == "Programada")
+                                {
+                                    <span style="background:#e8f4fd; color:#1a5276; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600;">
+                                        <i class="bi bi-clock"></i> Programada
+                                    </span>
+                                }
+                                else if (r.Estado == "En ejecución")
+                                {
+                                    <span style="background:#d5f5e3; color:#1e8449; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600;">
+                                        <i class="bi bi-play-circle"></i> En ejecución
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span style="background:#f0f0f0; color:#888; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600;">
+                                        <i class="bi bi-check-circle"></i> Finalizada
+                                    </span>
+                                }
+                            </td>
+                            <td style="padding:12px 16px;">
+                                @if (!string.IsNullOrEmpty(r.Enlace))
+                                {
+                                    <a href="@r.Enlace" target="_blank"
+                                       style="background:linear-gradient(90deg,#4fc3a1,#1e8449); color:white; border-radius:7px; padding:6px 12px; font-size:12px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:5px;">
+                                        <i class="bi bi-box-arrow-up-right"></i> Unirse
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span style="color:#aaa; font-size:12px;">—</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+<script>
+    function aplicarFiltrosReuniones() {
+        var dia  = document.getElementById('filtroDia').value;
+        var mes  = document.getElementById('filtroMes').value;
+        var anio = document.getElementById('filtroAnio').value;
+
+        var filas = document.querySelectorAll('.fila-reunion');
+        var visibles = 0;
+
+        filas.forEach(function (fila) {
+            var coincide = true;
+
+            if (dia !== '' && fila.dataset.dia !== dia) coincide = false;
+            if (mes !== '' && fila.dataset.mes !== mes) coincide = false;
+            if (anio !== '' && fila.dataset.anio !== anio) coincide = false;
+
+            fila.style.display = coincide ? '' : 'none';
+            if (coincide) visibles++;
+        });
+
+        var sinResultados = document.getElementById('sinResultadosReuniones');
+        if (sinResultados) {
+            sinResultados.style.display = visibles === 0 ? 'block' : 'none';
+        }
+    }
+
+    function limpiarFiltrosReuniones() {
+        document.getElementById('filtroDia').value = '';
+        document.getElementById('filtroMes').value = '';
+        document.getElementById('filtroAnio').value = '';
+        aplicarFiltrosReuniones();
+    }
+</script>

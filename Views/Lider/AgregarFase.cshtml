@@ -1,0 +1,110 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutLider.cshtml";
+    ViewBag.Title = "Agregar Fase";
+}
+
+<div style="padding: 8px 0 24px;">
+
+    <div style="margin-bottom:28px;">
+        <h2 style="font-size:22px; font-weight:700; color:#0d2f5e; margin-bottom:4px;">
+            <i class="bi bi-plus-circle"></i> Agregar fase
+        </h2>
+        <p style="font-size:13px; color:#888; margin:0;">Agregar una nueva fase al proyecto</p>
+        <div style="width:40px; height:3px; background:#4fc3a1; border-radius:2px; margin-top:10px;"></div>
+    </div>
+
+    <div style="background:white; border-radius:16px; padding:32px; box-shadow:0 2px 16px rgba(0,0,0,0.07); border:1px solid #eee; max-width:500px;">
+
+        @if (ViewBag.Error != null)
+        {
+            <div style="background:#fde8e8; color:#c0392b; border-radius:10px; padding:12px 16px; font-size:13px; margin-bottom:20px; border-left:4px solid #c0392b;">
+                <i class="bi bi-exclamation-circle"></i> @ViewBag.Error
+            </div>
+        }
+
+    <form action="/Lider/AgregarFase" method="post" class="form-geps" novalidate id="formAgregarFase">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="idProyecto" value="@ViewBag.IdProyecto" />
+
+        <label>Nombre de la fase *</label>
+        <input type="text"
+               name="nombreFase"
+               placeholder="Ej: Análisis, Diseño, Desarrollo..." />
+        <div style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
+
+        <label>Duración (meses) *</label>
+        <select name="duracionMeses" id="inputDuracionFase">
+            <option value="">-- Selecciona --</option>
+            @for (int m = 1; m <= 12; m++)
+            {
+                <option value="@m">@m mes(es)</option>
+            }
+        </select>
+        <div id="duracionFaseFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
+
+        <div style="display:flex; gap:12px; margin-top:8px;">
+            <button type="submit"
+                    style="background:linear-gradient(90deg,#0d2f5e,#1a5276); color:white; border:none; border-radius:8px; padding:10px 20px; font-size:13px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                <i class="bi bi-check-lg"></i> Agregar fase
+            </button>
+            <a href="/Lider/DetalleProyecto/@ViewBag.IdProyecto"
+               style="background:white; color:#555; border:1.5px solid #e8e8e8; border-radius:8px; padding:10px 20px; font-size:13px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                <i class="bi bi-x-lg"></i> Cancelar
+            </a>
+        </div>
+    </form>
+    </div>
+</div>
+
+<script>
+    var inputNombreFase = document.getElementById('inputNombreFase');
+    var nombreFaseFb = document.getElementById('nombreFaseFeedback');
+
+    var inputDuracionFase = document.getElementById('inputDuracionFase');
+    var duracionFaseFb = document.getElementById('duracionFaseFeedback');
+
+    var soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]*$/;
+
+    // ──────────────────────────────
+    //  NOMBRE — solo letras y espacios
+    // ──────────────────────────────
+    inputNombreFase.addEventListener('keypress', function (e) {
+        if (!soloLetras.test(e.key)) {
+            e.preventDefault();
+            nombreFaseFb.textContent = 'Solo se permiten letras y espacios.';
+            nombreFaseFb.style.display = 'block';
+        }
+    });
+
+    inputNombreFase.addEventListener('input', function () {
+        var val = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]/g, '');
+        this.value = val;
+        if (val.trim() !== '') {
+            nombreFaseFb.style.display = 'none';
+            this.style.borderColor = '#1e8449';
+        } else {
+            this.style.borderColor = '#e8e8e8';
+        }
+    });
+
+    // ──────────────────────────────
+    //  VALIDACIÓN AL ENVIAR
+    // ──────────────────────────────
+    document.getElementById('formAgregarFase').addEventListener('submit', function (e) {
+        if (inputNombreFase.value.trim() === '') {
+            e.preventDefault();
+            nombreFaseFb.textContent = 'El nombre de la fase es obligatorio.';
+            nombreFaseFb.style.display = 'block';
+        } else {
+            nombreFaseFb.style.display = 'none';
+        }
+
+        if (inputDuracionFase.value === '') {
+            e.preventDefault();
+            duracionFaseFb.textContent = 'Selecciona la duracion de la fase.';
+            duracionFaseFb.style.display = 'block';
+        } else {
+            duracionFaseFb.style.display = 'none';
+        }
+    });
+</script>

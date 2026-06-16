@@ -45,8 +45,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BouncyCastle.Cryptography, Version=2.0.0.0, Culture=neutral, PublicKeyToken=072edcf4a5328938, processorArchitecture=MSIL">
+      <HintPath>packages\BouncyCastle.Cryptography.2.6.2\lib\net461\BouncyCastle.Cryptography.dll</HintPath>
+    </Reference>
     <Reference Include="DnsClient, Version=1.6.1.0, Culture=neutral, PublicKeyToken=4574bb5573c51424, processorArchitecture=MSIL">
       <HintPath>packages\DnsClient.1.6.1\lib\net471\DnsClient.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp, Version=5.5.13.5, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>packages\iTextSharp.5.5.13.5\lib\net461\itextsharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Bcl.AsyncInterfaces.8.0.0\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
@@ -222,7 +228,12 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\ConexionMongo.cs" />
+    <Compile Include="Models\Evento.cs" />
+    <Compile Include="Models\Proyecto.cs" />
+    <Compile Include="Models\Reunion.cs" />
+    <Compile Include="Models\Semillero.cs" />
     <Compile Include="Models\ServicioCorreo.cs" />
+    <Compile Include="Models\ServicioGemini.cs" />
     <Compile Include="Models\Usuario.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -257,8 +268,6 @@
     </Content>
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Login\Index.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Investigador\Index.cshtml" />
@@ -266,6 +275,37 @@
     <Content Include="Views\Login\OlvideContrasena.cshtml" />
     <Content Include="Views\Login\VerificarCodigo.cshtml" />
     <Content Include="Views\Login\NuevaContrasena.cshtml" />
+    <Content Include="Views\Shared\_LayoutAdmin.cshtml" />
+    <Content Include="Views\Admin\Semilleros.cshtml" />
+    <Content Include="Views\Admin\CrearSemillero.cshtml" />
+    <Content Include="Views\Admin\EditarSemillero.cshtml" />
+    <Content Include="Views\Admin\Lideres.cshtml" />
+    <Content Include="Views\Admin\CrearLider.cshtml" />
+    <Content Include="Views\Admin\Reporte.cshtml" />
+    <Content Include="Views\Admin\EditarLider.cshtml" />
+    <Content Include="Views\Shared\_LayoutLider.cshtml" />
+    <Content Include="Views\Lider\Investigadores.cshtml" />
+    <Content Include="Views\Lider\CrearInvestigador.cshtml" />
+    <Content Include="Views\Lider\EditarInvestigador.cshtml" />
+    <Content Include="Views\Lider\Proyectos.cshtml" />
+    <Content Include="Views\Lider\CrearProyecto.cshtml" />
+    <Content Include="Views\Lider\EditarProyecto.cshtml" />
+    <Content Include="Views\Lider\DetalleProyecto.cshtml" />
+    <Content Include="Views\Lider\AgregarFase.cshtml" />
+    <Content Include="Views\Lider\Reuniones.cshtml" />
+    <Content Include="Views\Lider\CrearReunion.cshtml" />
+    <Content Include="Views\Lider\EditarReunion.cshtml" />
+    <Content Include="Views\Lider\Eventos.cshtml" />
+    <Content Include="Views\Lider\CrearEvento.cshtml" />
+    <Content Include="Views\Lider\EditarEvento.cshtml" />
+    <Content Include="Views\Lider\Reporte.cshtml" />
+    <Content Include="Views\Investigador\Semillero.cshtml" />
+    <Content Include="Views\Investigador\Proyectos.cshtml" />
+    <Content Include="Views\Investigador\DetalleProyecto.cshtml" />
+    <Content Include="Views\Investigador\Reuniones.cshtml" />
+    <Content Include="Views\Investigador\Eventos.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Shared\_LayoutInvestigador.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

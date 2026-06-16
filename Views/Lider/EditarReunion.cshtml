@@ -1,0 +1,203 @@
+﻿@model GEPS.Models.Reunion
+@{
+    Layout = "~/Views/Shared/_LayoutLider.cshtml";
+    ViewBag.Title = "Editar Reunión";
+}
+
+<div style="padding: 8px 0 24px;">
+
+    <div style="margin-bottom:28px;">
+        <h2 style="font-size:22px; font-weight:700; color:#0d2f5e; margin-bottom:4px;">
+            <i class="bi bi-pencil"></i> Editar reunión
+        </h2>
+        <p style="font-size:13px; color:#888; margin:0;">Modificar datos de la reunión</p>
+        <div style="width:40px; height:3px; background:#4fc3a1; border-radius:2px; margin-top:10px;"></div>
+    </div>
+
+    <div style="background:white; border-radius:16px; padding:32px; box-shadow:0 2px 16px rgba(0,0,0,0.07); border:1px solid #eee; max-width:600px;">
+
+        @if (ViewBag.Error != null)
+        {
+            <div style="background:#fde8e8; color:#c0392b; border-radius:10px; padding:12px 16px; font-size:13px; margin-bottom:20px; border-left:4px solid #c0392b;">
+                <i class="bi bi-exclamation-circle"></i> @ViewBag.Error
+            </div>
+        }
+
+    <form action="/Lider/EditarReunion/@Model.Id" method="post" class="form-geps" id="formEditarReunion">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.Id" />
+
+        <label>Motivo de la reunión *</label>
+        <input type="text" name="Motivo" id="inputMotivo" value="@Model.Motivo"
+               placeholder="Motivo de la reunión" />
+        <div id="motivoFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
+
+        <label>Proyecto relacionado *</label>
+        <select name="IdProyecto" id="inputProyecto">
+            <option value="">-- Selecciona un proyecto --</option>
+            @foreach (var p in ViewBag.Proyectos as List<GEPS.Models.Proyecto>)
+            {
+                <option value="@p.Id" @(p.Id == Model.IdProyecto ? "selected" : "")>
+                    @p.Titulo
+                </option>
+            }
+        </select>
+        <div id="proyectoFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div>
+                <label>Fecha *</label>
+                <input type="date" name="Fecha" id="inputFecha"
+                       value="@Model.Fecha.ToString("yyyy-MM-dd")" />
+                <div id="fechaFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
+            </div>
+            <div>
+                <label>Hora *</label>
+                <select name="Hora" id="inputHora">
+                    <option value="">-- Selecciona --</option>
+                    <option value="08:00" @(Model.Hora == "08:00" ? "selected" : "")>8:00 am - 9:00 am</option>
+                    <option value="09:00" @(Model.Hora == "09:00" ? "selected" : "")>9:00 am - 10:00 am</option>
+                    <option value="10:00" @(Model.Hora == "10:00" ? "selected" : "")>10:00 am - 11:00 am</option>
+                    <option value="11:00" @(Model.Hora == "11:00" ? "selected" : "")>11:00 am - 12:00 pm</option>
+                    <option value="12:00" @(Model.Hora == "12:00" ? "selected" : "")>12:00 pm - 1:00 pm</option>
+                    <option value="13:00" @(Model.Hora == "13:00" ? "selected" : "")>1:00 pm - 2:00 pm</option>
+                    <option value="14:00" @(Model.Hora == "14:00" ? "selected" : "")>2:00 pm - 3:00 pm</option>
+                    <option value="15:00" @(Model.Hora == "15:00" ? "selected" : "")>3:00 pm - 4:00 pm</option>
+                    <option value="16:00" @(Model.Hora == "16:00" ? "selected" : "")>4:00 pm - 5:00 pm</option>
+                    <option value="17:00" @(Model.Hora == "17:00" ? "selected" : "")>5:00 pm - 6:00 pm</option>
+                    <option value="18:00" @(Model.Hora == "18:00" ? "selected" : "")>6:00 pm - 7:00 pm</option>
+                    <option value="19:00" @(Model.Hora == "19:00" ? "selected" : "")>7:00 pm - 8:00 pm</option>
+                </select>
+                <div id="horaFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
+            </div>
+        </div>
+
+        <label>Lugar</label>
+        <input type="text" name="Lugar" id="inputLugar" value="@Model.Lugar"
+               placeholder="Ej: Sala 1, Virtual" />
+        <div id="lugarFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
+
+        <label>Enlace (opcional)</label>
+        <input type="text" name="Enlace" value="@Model.Enlace"
+               placeholder="https://meet.google.com/..." />
+
+        <div style="display:flex; gap:12px; margin-top:8px;">
+            <button type="submit"
+                    style="background:linear-gradient(90deg,#b7770d,#d4ac0d); color:white; border:none; border-radius:8px; padding:10px 20px; font-size:13px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                <i class="bi bi-check-lg"></i> Guardar cambios
+            </button>
+            <a href="/Lider/Reuniones"
+               style="background:white; color:#555; border:1.5px solid #e8e8e8; border-radius:8px; padding:10px 20px; font-size:13px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                <i class="bi bi-x-lg"></i> Cancelar
+            </a>
+        </div>
+    </form>
+    </div>
+</div>
+
+<script>
+    var inputMotivo   = document.getElementById('inputMotivo');
+    var motivoFb      = document.getElementById('motivoFeedback');
+
+    var inputProyecto = document.getElementById('inputProyecto');
+    var proyectoFb    = document.getElementById('proyectoFeedback');
+
+    var inputFecha    = document.getElementById('inputFecha');
+    var fechaFb       = document.getElementById('fechaFeedback');
+
+    var inputHora     = document.getElementById('inputHora');
+    var horaFb        = document.getElementById('horaFeedback');
+
+    var inputLugar    = document.getElementById('inputLugar');
+    var lugarFb       = document.getElementById('lugarFeedback');
+
+    // Rangos de fecha por proyecto (inyectados desde el servidor)
+    var rangosProyectos = {
+        @foreach (var p in ViewBag.Proyectos as List<GEPS.Models.Proyecto>)
+        {
+            @:"@p.Id": { min: "@p.FechaInicio.ToString("yyyy-MM-dd")", max: "@p.FechaFin.ToString("yyyy-MM-dd")" },
+        }
+    };
+
+    // ──────────────────────────────
+    //  AJUSTAR min/max DE FECHA SEGÚN PROYECTO
+    // ──────────────────────────────
+    inputProyecto.addEventListener('change', function () {
+        var rango = rangosProyectos[this.value];
+        if (rango) {
+            inputFecha.min = rango.min;
+            inputFecha.max = rango.max;
+        } else {
+            inputFecha.removeAttribute('min');
+            inputFecha.removeAttribute('max');
+        }
+        proyectoFb.style.display = 'none';
+    });
+
+    // ──────────────────────────────
+    //  VALIDAR DÍA HÁBIL (L-V) AL ELEGIR FECHA
+    // ──────────────────────────────
+    inputFecha.addEventListener('change', function () {
+        var fecha = new Date(this.value + 'T00:00:00');
+        var dia = fecha.getDay(); // 0 = domingo, 6 = sabado
+        if (dia === 0 || dia === 6) {
+            fechaFb.textContent = 'Solo se permiten fechas de lunes a viernes.';
+            fechaFb.style.display = 'block';
+        } else {
+            fechaFb.style.display = 'none';
+        }
+    });
+
+    // ──────────────────────────────
+    //  VALIDACIÓN AL ENVIAR
+    // ──────────────────────────────
+    document.getElementById('formCrearReunion').addEventListener('submit', function(e) {
+        if (inputMotivo.value.trim() === '') {
+            e.preventDefault();
+            motivoFb.textContent = 'El motivo es obligatorio.';
+            motivoFb.style.display = 'block';
+        } else {
+            motivoFb.style.display = 'none';
+        }
+
+        if (inputProyecto.value === '') {
+            e.preventDefault();
+            proyectoFb.textContent = 'Selecciona un proyecto.';
+            proyectoFb.style.display = 'block';
+        } else {
+            proyectoFb.style.display = 'none';
+        }
+
+        if (inputFecha.value === '') {
+            e.preventDefault();
+            fechaFb.textContent = 'La fecha es obligatoria.';
+            fechaFb.style.display = 'block';
+        } else {
+            var fecha = new Date(inputFecha.value + 'T00:00:00');
+            var dia = fecha.getDay();
+            if (dia === 0 || dia === 6) {
+                e.preventDefault();
+                fechaFb.textContent = 'Solo se permiten fechas de lunes a viernes.';
+                fechaFb.style.display = 'block';
+            } else {
+                fechaFb.style.display = 'none';
+            }
+        }
+
+        if (inputHora.value === '') {
+            e.preventDefault();
+            horaFb.textContent = 'Selecciona un horario.';
+            horaFb.style.display = 'block';
+        } else {
+            horaFb.style.display = 'none';
+        }
+
+        if (inputLugar.value.trim() === '') {
+            e.preventDefault();
+            lugarFb.textContent = 'El lugar es obligatorio.';
+            lugarFb.style.display = 'block';
+        } else {
+            lugarFb.style.display = 'none';
+        }
+    });
+</script>
