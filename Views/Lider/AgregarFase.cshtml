@@ -22,33 +22,89 @@
             </div>
         }
 
-        <form action="/Lider/AgregarFase" method="post" class="form-geps" novalidate>
-            @Html.AntiForgeryToken()
-            <input type="hidden" name="idProyecto" value="@ViewBag.IdProyecto" />
+    <form action="/Lider/AgregarFase" method="post" class="form-geps" novalidate id="formAgregarFase">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="idProyecto" value="@ViewBag.IdProyecto" />
 
-            <label>Nombre de la fase *</label>
-            <input type="text"
-                   name="nombreFase"
-                   placeholder="Ej: Análisis, Diseño, Desarrollo..." />
-            <div style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
+        <label>Nombre de la fase *</label>
+        <input type="text"
+               name="nombreFase"
+               placeholder="Ej: Análisis, Diseño, Desarrollo..." />
+        <div style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
 
-            <label>Duración (meses)</label>
-            <input type="number"
-                   name="duracionMeses"
-                   min="1"
-                   max="10"
-                   placeholder="Ej: 2" />
+        <label>Duración (meses) *</label>
+        <select name="duracionMeses" id="inputDuracionFase">
+            <option value="">-- Selecciona --</option>
+            @for (int m = 1; m <= 12; m++)
+            {
+                <option value="@m">@m mes(es)</option>
+            }
+        </select>
+        <div id="duracionFaseFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
 
-            <div style="display:flex; gap:12px; margin-top:8px;">
-                <button type="submit"
-                        style="background:linear-gradient(90deg,#0d2f5e,#1a5276); color:white; border:none; border-radius:8px; padding:10px 20px; font-size:13px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px;">
-                    <i class="bi bi-check-lg"></i> Agregar fase
-                </button>
-                <a href="/Lider/DetalleProyecto/@ViewBag.IdProyecto"
-                   style="background:white; color:#555; border:1.5px solid #e8e8e8; border-radius:8px; padding:10px 20px; font-size:13px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
-                    <i class="bi bi-x-lg"></i> Cancelar
-                </a>
-            </div>
-        </form>
+        <div style="display:flex; gap:12px; margin-top:8px;">
+            <button type="submit"
+                    style="background:linear-gradient(90deg,#0d2f5e,#1a5276); color:white; border:none; border-radius:8px; padding:10px 20px; font-size:13px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                <i class="bi bi-check-lg"></i> Agregar fase
+            </button>
+            <a href="/Lider/DetalleProyecto/@ViewBag.IdProyecto"
+               style="background:white; color:#555; border:1.5px solid #e8e8e8; border-radius:8px; padding:10px 20px; font-size:13px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                <i class="bi bi-x-lg"></i> Cancelar
+            </a>
+        </div>
+    </form>
     </div>
 </div>
+
+<script>
+    var inputNombreFase = document.getElementById('inputNombreFase');
+    var nombreFaseFb = document.getElementById('nombreFaseFeedback');
+
+    var inputDuracionFase = document.getElementById('inputDuracionFase');
+    var duracionFaseFb = document.getElementById('duracionFaseFeedback');
+
+    var soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]*$/;
+
+    // ──────────────────────────────
+    //  NOMBRE — solo letras y espacios
+    // ──────────────────────────────
+    inputNombreFase.addEventListener('keypress', function (e) {
+        if (!soloLetras.test(e.key)) {
+            e.preventDefault();
+            nombreFaseFb.textContent = 'Solo se permiten letras y espacios.';
+            nombreFaseFb.style.display = 'block';
+        }
+    });
+
+    inputNombreFase.addEventListener('input', function () {
+        var val = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]/g, '');
+        this.value = val;
+        if (val.trim() !== '') {
+            nombreFaseFb.style.display = 'none';
+            this.style.borderColor = '#1e8449';
+        } else {
+            this.style.borderColor = '#e8e8e8';
+        }
+    });
+
+    // ──────────────────────────────
+    //  VALIDACIÓN AL ENVIAR
+    // ──────────────────────────────
+    document.getElementById('formAgregarFase').addEventListener('submit', function (e) {
+        if (inputNombreFase.value.trim() === '') {
+            e.preventDefault();
+            nombreFaseFb.textContent = 'El nombre de la fase es obligatorio.';
+            nombreFaseFb.style.display = 'block';
+        } else {
+            nombreFaseFb.style.display = 'none';
+        }
+
+        if (inputDuracionFase.value === '') {
+            e.preventDefault();
+            duracionFaseFb.textContent = 'Selecciona la duracion de la fase.';
+            duracionFaseFb.style.display = 'block';
+        } else {
+            duracionFaseFb.style.display = 'none';
+        }
+    });
+</script>

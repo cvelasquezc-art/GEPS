@@ -23,89 +23,204 @@
             </div>
         }
 
-        <form action="/Admin/EditarLider" method="post" class="form-geps" novalidate>
-            @Html.AntiForgeryToken()
-            <input type="hidden" name="id" value="@Model.Id" />
+    <form action="/Admin/EditarLider" method="post" class="form-geps" novalidate id="formEditarLider">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.Id" />
 
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-                <div>
-                    <label>Nombre completo *</label>
-                    <input type="text" name="nombre" id="inputNombre"
-                           placeholder="Nombre completo"
-                           value="@Model.Nombre" />
-                    <div id="nombreFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
-                </div>
-                <div>
-                    <label>Cédula</label>
-                    <input type="text" value="@Model.Cedula" disabled
-                           style="background:#f5f5f5; color:#999; cursor:not-allowed;" />
-                    <small style="font-size:11px; color:#aaa; display:block; margin-top:-12px; margin-bottom:16px;">
-                        La cédula no se puede modificar.
-                    </small>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div>
+                <label>Nombre completo *</label>
+                <input type="text" name="nombre" id="inputNombre"
+                       placeholder="Nombre completo"
+                       value="@Model.Nombre" />
+                <div id="nombreFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
+            </div>
+            <div>
+                <label>Cédula</label>
+                <input type="text" value="@Model.Cedula" disabled
+                       style="background:#f5f5f5; color:#999; cursor:not-allowed;" />
+                <small style="font-size:11px; color:#aaa; display:block; margin-top:-12px; margin-bottom:16px;">
+                    La cédula no se puede modificar.
+                </small>
+            </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div>
+                <label>Correo electrónico *</label>
+                <input type="email" name="correo" id="inputCorreo"
+                       placeholder="correo@gmail.com"
+                       value="@Model.Correo" />
+                <div id="correoFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
+            </div>
+            <div>
+                <label>Celular *</label>
+                <input type="text" name="celular" id="inputCelular"
+                       placeholder="Ej: 3001234567"
+                       value="@Model.Celular" />
+                <div id="celularFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
+                <div style="font-size:11px; color:#bbb; margin-bottom:12px; text-align:right;">
+                    <span id="contadorCelular">0</span>/10 dígitos
                 </div>
             </div>
+        </div>
 
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-                <div>
-                    <label>Correo electrónico *</label>
-                    <input type="email" name="correo" id="inputCorreo"
-                           placeholder="correo@gmail.com"
-                           value="@Model.Correo" />
-                    <div id="correoFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
-                </div>
-                <div>
-                    <label>Celular</label>
-                    <input type="text" name="celular"
-                           placeholder="Ej: 3001234567"
-                           value="@Model.Celular" />
-                </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div>
+                <label>Fecha de nacimiento *</label>
+                <input type="date" name="fechaNacimiento" max="2010-12-31"
+                       value="@(Model.FechaNacimiento.HasValue ? Model.FechaNacimiento.Value.ToString("yyyy-MM-dd") : "")" />
             </div>
-
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-                <div>
-                    <label>Fecha de nacimiento</label>
-                    <input type="date" name="fechaNacimiento"
-                           value="@(Model.FechaNacimiento.HasValue ? Model.FechaNacimiento.Value.ToString("yyyy-MM-dd") : "")" />
-                </div>
-                <div>
-                    <label>Género</label>
-                    <select name="genero">
-                        <option value="">-- Selecciona --</option>
-                        <option value="Masculino" @(Model.Genero == "Masculino" ? "selected" : "")>Masculino</option>
-                        <option value="Femenino" @(Model.Genero == "Femenino" ? "selected" : "")>Femenino</option>
-                        <option value="Otro" @(Model.Genero == "Otro" ? "selected" : "")>Otro</option>
-                    </select>
-                </div>
+            <div>
+                <label>Género *</label>
+                <select name="genero">
+                    <option value="">-- Selecciona --</option>
+                    <option value="Masculino" @(Model.Genero == "Masculino" ? "selected" : "")>Masculino</option>
+                    <option value="Femenino" @(Model.Genero == "Femenino" ? "selected" : "")>Femenino</option>
+                </select>
             </div>
+        </div>
 
-            <label>Programa académico</label>
-            <input type="text" name="programa"
-                   placeholder="Ej: Ingeniería de Sistemas"
-                   value="@Model.Programa" />
+        <label>Programa académico *</label>
+        <input type="text" name="programa" id="inputPrograma"
+               placeholder="Ej: Ingeniería de Sistemas"
+               value="@Model.Programa" />
+        <div id="programaFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
 
-            <div style="display:flex; gap:12px; margin-top:8px;">
-                <button type="submit"
-                        style="background:linear-gradient(90deg,#b7770d,#d4ac0d); color:white; border:none; border-radius:8px; padding:10px 20px; font-size:13px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px;">
-                    <i class="bi bi-check-lg"></i> Guardar cambios
-                </button>
-                <a href="/Admin/Lideres"
-                   style="background:white; color:#555; border:1.5px solid #e8e8e8; border-radius:8px; padding:10px 20px; font-size:13px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
-                    <i class="bi bi-x-lg"></i> Cancelar
-                </a>
-            </div>
-        </form>
+        <div style="display:flex; gap:12px; margin-top:8px;">
+            <button type="submit"
+                    style="background:linear-gradient(90deg,#b7770d,#d4ac0d); color:white; border:none; border-radius:8px; padding:10px 20px; font-size:13px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                <i class="bi bi-check-lg"></i> Guardar cambios
+            </button>
+            <a href="/Admin/Lideres"
+               style="background:white; color:#555; border:1.5px solid #e8e8e8; border-radius:8px; padding:10px 20px; font-size:13px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                <i class="bi bi-x-lg"></i> Cancelar
+            </a>
+        </div>
+    </form>
     </div>
 </div>
 
 <script>
-    document.querySelector('form').addEventListener('submit', function (e) {
-        var nombre = document.getElementById('inputNombre');
-        var nombreFb = document.getElementById('nombreFeedback');
-        var correo = document.getElementById('inputCorreo');
-        var correoFb = document.getElementById('correoFeedback');
-        var at = String.fromCharCode(64);
 
-        if (nombre.value.trim() === '') {
+    var inputNombre = document.getElementById('inputNombre');
+    var nombreFb = document.getElementById('nombreFeedback');
+
+    var inputCorreo = document.getElementById('inputCorreo');
+    var correoFb = document.getElementById('correoFeedback');
+
+    var inputCelular = document.getElementById('inputCelular');
+    var contadorCelular = document.getElementById('contadorCelular');
+    var celularFb = document.getElementById('celularFeedback');
+
+    var inputPrograma = document.getElementById('inputPrograma');
+    var programaFb = document.getElementById('programaFeedback');
+
+    // Expresión regular: letras (con tildes y ñ) y espacios
+    var soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]*$/;
+
+    // Expresión regular: correo válido básico
+    var correoValido = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+
+    // ──────────────────────────────
+    //  NOMBRE — solo letras y espacios
+    // ──────────────────────────────
+    inputNombre.addEventListener('keypress', function (e) {
+        if (!soloLetras.test(e.key)) {
+            e.preventDefault();
+            nombreFb.textContent = 'Solo se permiten letras y espacios.';
+            nombreFb.style.display = 'block';
+        }
+    });
+
+    inputNombre.addEventListener('input', function () {
+        var val = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]/g, '');
+        this.value = val;
+        if (val.trim() !== '') {
+            nombreFb.style.display = 'none';
+            this.style.borderColor = '#1e8449';
+        } else {
+            this.style.borderColor = '#e8e8e8';
+        }
+    });
+
+    // ──────────────────────────────
+    //  CORREO — formato válido en tiempo real
+    // ──────────────────────────────
+    inputCorreo.addEventListener('blur', function () {
+        if (this.value.trim() !== '' && !correoValido.test(this.value.trim())) {
+            correoFb.textContent = 'Ingresa un correo valido.';
+            correoFb.style.display = 'block';
+        }
+    });
+
+    inputCorreo.addEventListener('input', function () {
+        if (correoValido.test(this.value.trim())) {
+            correoFb.style.display = 'none';
+            this.style.borderColor = '#1e8449';
+        } else {
+            this.style.borderColor = '#e8e8e8';
+        }
+    });
+
+
+    // ──────────────────────────────
+    //  CELULAR — solo números, 10 dígitos
+    // ──────────────────────────────
+    inputCelular.addEventListener('keypress', function (e) {
+        if (e.key < '0' || e.key > '9') {
+            e.preventDefault();
+            celularFb.textContent = 'Solo se permiten numeros.';
+            celularFb.style.display = 'block';
+        }
+    });
+
+    inputCelular.addEventListener('input', function () {
+        var val = this.value.replace(/[^0-9]/g, '');
+        this.value = val.substring(0, 10); // máximo 10 dígitos
+        contadorCelular.textContent = val.length;
+        if (this.value.length === 10) {
+            celularFb.style.display = 'none';
+            this.style.borderColor = '#1e8449';
+        } else {
+            this.style.borderColor = '#e8e8e8';
+        }
+    });
+
+    inputCelular.addEventListener('blur', function () {
+        if (this.value.length > 0 && this.value.length < 10) {
+            celularFb.textContent = 'El celular debe tener exactamente 10 digitos.';
+            celularFb.style.display = 'block';
+        }
+    });
+
+    // ──────────────────────────────
+    //  PROGRAMA ACADÉMICO — solo letras y espacios
+    // ──────────────────────────────
+    inputPrograma.addEventListener('keypress', function (e) {
+        if (!soloLetras.test(e.key)) {
+            e.preventDefault();
+            programaFb.textContent = 'Solo se permiten letras y espacios.';
+            programaFb.style.display = 'block';
+        }
+    });
+
+    inputPrograma.addEventListener('input', function () {
+        var val = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]/g, '');
+        this.value = val;
+        if (val.trim() !== '') {
+            programaFb.style.display = 'none';
+            this.style.borderColor = '#1e8449';
+        } else {
+            this.style.borderColor = '#e8e8e8';
+        }
+    });
+
+    // ──────────────────────────────
+    //  VALIDACIÓN AL ENVIAR
+    // ──────────────────────────────
+    document.getElementById('formEditarLider').addEventListener('submit', function (e) {
+        if (inputNombre.value.trim() === '') {
             e.preventDefault();
             nombreFb.textContent = 'El nombre es obligatorio.';
             nombreFb.style.display = 'block';
@@ -113,12 +228,26 @@
             nombreFb.style.display = 'none';
         }
 
-        if (correo.value.trim() === '' || correo.value.indexOf(at) === -1) {
+        if (inputCorreo.value.trim() === '' || !correoValido.test(inputCorreo.value.trim())) {
             e.preventDefault();
-            correoFb.textContent = 'Ingresa un correo válido.';
+            correoFb.textContent = 'Ingresa un correo valido.';
             correoFb.style.display = 'block';
         } else {
             correoFb.style.display = 'none';
+        }
+
+        if (inputCelular.value.length !== 10) {
+            e.preventDefault();
+            celularFb.textContent = 'El celular debe tener exactamente 10 digitos.';
+            celularFb.style.display = 'block';
+        }
+
+        if (inputPrograma.value.trim() === '') {
+            e.preventDefault();
+            programaFb.textContent = 'El programa academico es obligatorio.';
+            programaFb.style.display = 'block';
+        } else {
+            programaFb.style.display = 'none';
         }
     });
 </script>

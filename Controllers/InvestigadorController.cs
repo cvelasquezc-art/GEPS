@@ -1,6 +1,7 @@
 ﻿using GEPS.Models;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Security;
@@ -165,6 +166,20 @@ namespace GEPS.Controllers
             return View(proyecto);
         }
 
+        private string CalcularEstadoReunion(DateTime fecha, string hora)
+        {
+            if (!TimeSpan.TryParse(hora, out TimeSpan horaInicio))
+                return "Programada";
+
+            DateTime inicio = fecha.Date.Add(horaInicio);
+            DateTime fin = inicio.AddHours(1);
+            DateTime ahora = DateTime.Now;
+
+            if (ahora < inicio) return "Programada";
+            if (ahora >= inicio && ahora < fin) return "En ejecución";
+            return "Finalizada";
+        }
+
         // ══════════════════════════════════════
         //  REUNIONES — LISTAR (solo lectura)
         // ══════════════════════════════════════
@@ -185,6 +200,18 @@ namespace GEPS.Controllers
                     Builders<Reunion>.Filter.Eq("activo", true)
                 )
             ).SortByDescending(r => r.Fecha).ToList();
+
+            foreach (var r in lista)
+            {
+                string estadoActual = CalcularEstadoReunion(r.Fecha, r.Hora);
+                if (r.Estado != estadoActual)
+                {
+                    var filtro = Builders<Reunion>.Filter.Eq("_id", ObjectId.Parse(r.Id));
+                    var update = Builders<Reunion>.Update.Set("estado", estadoActual);
+                    reuniones.UpdateOne(filtro, update);
+                    r.Estado = estadoActual;
+                }
+            }
 
             // Para mostrar el nombre del proyecto en la vista
             ViewBag.Proyectos = proyectos.Find(

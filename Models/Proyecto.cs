@@ -23,6 +23,9 @@ namespace GEPS.Models
         [BsonElement("fechaInicio")]
         public DateTime FechaInicio { get; set; }
 
+        [BsonElement("fechaFin")]
+        public DateTime FechaFin { get; set; }
+
         [BsonElement("estado")]
         public string Estado { get; set; }
 

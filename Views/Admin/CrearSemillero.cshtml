@@ -19,47 +19,52 @@
         </div>
     }
 
-<form action="/Admin/CrearSemillero" method="post" class="form-geps" novalidate>
-    @Html.AntiForgeryToken()
+    <form action="/Admin/CrearSemillero" method="post" class="form-geps" novalidate>
+        @Html.AntiForgeryToken()
 
-    <label>Nombre del semillero</label>
-    <input type="text"
-           name="Nombre"
-           placeholder="Ej: InvesTIC"
-           value="@(Model?.Nombre)" />
+        <label>Nombre del semillero</label>
+        <input type="text"
+               name="Nombre"
+               id="inputNombre"
+               placeholder="Ej: InvesTIC"
+               value="@(Model?.Nombre)" />
+        <div id="nombreFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
 
-    <label>Línea investigativa</label>
-    <input type="text"
-           name="LineaInvestigativa"
-           placeholder="Ej: Tecnología e Innovación"
-           value="@(Model?.LineaInvestigativa)" />
+        <label>Línea investigativa</label>
+        <input type="text"
+               name="LineaInvestigativa"
+               id="inputLinea"
+               placeholder="Ej: Tecnología e Innovación"
+               value="@(Model?.LineaInvestigativa)" />
+        <div id="lineaFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
 
-    <label>Descripción</label>
-    <textarea name="Descripcion"
-              id="inputDescripcion"
-              rows="3"
-              placeholder="Descripción del semillero...">@(Model?.Descripcion)</textarea>
-    <button type="button" onclick="generarDescripcion()"
-            id="btnGenerarDesc"
-            style="background:linear-gradient(90deg,#4fc3a1,#1e8449); color:white; border:none; border-radius:8px; padding:7px 14px; font-size:12px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; margin-top:-12px; margin-bottom:16px;">
-        <i class="bi bi-stars"></i> Generar con IA
-    </button>
-
-    <div style="display:flex; gap:12px; margin-top:8px;">
-        <button type="submit" class="btn-primary-geps">
-            <i class="bi bi-check-lg"></i> Crear semillero
+        <label>Descripción</label>
+        <textarea name="Descripcion"
+                  id="inputDescripcion"
+                  rows="3"
+                  placeholder="Descripción del semillero...">@(Model?.Descripcion)</textarea>
+        <div id="descripcionFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
+        <button type="button" onclick="generarDescripcion()"
+                id="btnGenerarDesc"
+                style="background:linear-gradient(90deg,#4fc3a1,#1e8449); color:white; border:none; border-radius:8px; padding:7px 14px; font-size:12px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; margin-top:-12px; margin-bottom:16px;">
+            <i class="bi bi-stars"></i> Generar con IA
         </button>
-        <a href="/Admin/Semilleros" class="btn-danger-geps">
-            <i class="bi bi-x-lg"></i> Cancelar
-        </a>
-    </div>
 
-</form>
+        <div style="display:flex; gap:12px; margin-top:8px;">
+            <button type="submit" class="btn-primary-geps">
+                <i class="bi bi-check-lg"></i> Crear semillero
+            </button>
+            <a href="/Admin/Semilleros" class="btn-danger-geps">
+                <i class="bi bi-x-lg"></i> Cancelar
+            </a>
+        </div>
+
+    </form>
 </div>
 <script>
     async function generarDescripcion() {
-        var nombre = document.querySelector('input[name="Nombre"]').value;
-        var linea = document.querySelector('input[name="LineaInvestigativa"]').value;
+        var nombre = document.getElementById('inputNombre').value;
+        var linea = document.getElementById('inputLinea').value;
         var btn = document.getElementById('btnGenerarDesc');
         var textarea = document.getElementById('inputDescripcion');
 
@@ -92,5 +97,98 @@
             btn.innerHTML = '<i class="bi bi-stars"></i> Generar con IA';
         }
     }
-</script>
 
+    var inputNombre = document.getElementById('inputNombre');
+    var nombreFb = document.getElementById('nombreFeedback');
+
+    var inputLinea = document.getElementById('inputLinea');
+    var lineaFb = document.getElementById('lineaFeedback');
+
+    var inputDescripcion = document.getElementById('inputDescripcion');
+    var descripcionFb = document.getElementById('descripcionFeedback');
+
+    var soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]*$/;
+
+    inputNombre.addEventListener('keypress', function (e) {
+        if (!soloLetras.test(e.key)) {
+            e.preventDefault();
+            nombreFb.textContent = 'Solo se permiten letras y espacios.';
+            nombreFb.style.display = 'block';
+        }
+    });
+
+    inputNombre.addEventListener('input', function () {
+        var val = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]/g, '');
+        this.value = val;
+        if (val.trim() !== '') {
+            nombreFb.style.display = 'none';
+            this.style.borderColor = '#1e8449';
+        } else {
+            this.style.borderColor = '#e8e8e8';
+        }
+    });
+
+    inputLinea.addEventListener('keypress', function (e) {
+        if (!soloLetras.test(e.key)) {
+            e.preventDefault();
+            lineaFb.textContent = 'Solo se permiten letras y espacios.';
+            lineaFb.style.display = 'block';
+        }
+    });
+
+    inputLinea.addEventListener('input', function () {
+        var val = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]/g, '');
+        this.value = val;
+        if (val.trim() !== '') {
+            lineaFb.style.display = 'none';
+            this.style.borderColor = '#1e8449';
+        } else {
+            this.style.borderColor = '#e8e8e8';
+        }
+    });
+
+    inputDescripcion.addEventListener('keypress', function (e) {
+        if (!soloLetras.test(e.key)) {
+            e.preventDefault();
+            descripcionFb.textContent = 'Solo se permiten letras y espacios.';
+            descripcionFb.style.display = 'block';
+        }
+    });
+
+    inputDescripcion.addEventListener('input', function () {
+        var val = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]/g, '');
+        this.value = val;
+        if (val.trim() !== '') {
+            descripcionFb.style.display = 'none';
+            this.style.borderColor = '#1e8449';
+        } else {
+            this.style.borderColor = '#e8e8e8';
+        }
+    });
+
+    document.getElementById('formCrearSemillero').addEventListener('submit', function (e) {
+        if (inputNombre.value.trim() === '') {
+            e.preventDefault();
+            nombreFb.textContent = 'El nombre del semillero es obligatorio.';
+            nombreFb.style.display = 'block';
+        } else {
+            nombreFb.style.display = 'none';
+        }
+
+        if (inputLinea.value.trim() === '') {
+            e.preventDefault();
+            lineaFb.textContent = 'La linea investigativa es obligatoria.';
+            lineaFb.style.display = 'block';
+        } else {
+            lineaFb.style.display = 'none';
+        }
+
+        if (inputDescripcion.value.trim() === '') {
+            e.preventDefault();
+            descripcionFb.textContent = 'La descripción es obligatoria.';
+            descripcionFb.style.display = 'block';
+        } else {
+            descripcionFb.style.display = 'none';
+        }
+    });
+</script>

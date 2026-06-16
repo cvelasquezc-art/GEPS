@@ -16,16 +16,24 @@
 
     <div style="background:white; border-radius:16px; padding:32px; box-shadow:0 2px 16px rgba(0,0,0,0.07); border:1px solid #eee; max-width:600px;">
 
-        <form action="/Lider/EditarEvento/@Model.Id" method="post" class="form-geps">
+        @if (ViewBag.Error != null)
+        {
+            <div style="background:#fde8e8; color:#c0392b; border-radius:10px; padding:12px 16px; font-size:13px; margin-bottom:20px; border-left:4px solid #c0392b;">
+                <i class="bi bi-exclamation-circle"></i> @ViewBag.Error
+            </div>
+        }
+
+        <form action="/Lider/EditarEvento/@Model.Id" method="post" class="form-geps" id="formEditarEvento">
             @Html.AntiForgeryToken()
             <input type="hidden" name="id" value="@Model.Id" />
 
-            <label>Nombre del evento</label>
-            <input type="text" name="Nombre" value="@Model.Nombre"
+            <label>Nombre del evento *</label>
+            <input type="text" name="Nombre" id="inputNombre" value="@Model.Nombre"
                    placeholder="Nombre del evento" />
+            <div id="nombreFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
 
             <label>Proyecto relacionado</label>
-            <select name="idProyecto">
+            <select name="idProyecto" id="inputProyecto">
                 <option value="">-- Selecciona un proyecto --</option>
                 @foreach (var p in ViewBag.Proyectos as List<GEPS.Models.Proyecto>)
                 {
@@ -35,16 +43,18 @@
                     </option>
                 }
             </select>
+            <div id="proyectoFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                 <div>
-                    <label>Fecha</label>
-                    <input type="date" name="Fecha"
+                    <label>Fecha *</label>
+                    <input type="date" name="Fecha" id="inputFecha"
                            value="@Model.Fecha.ToString("yyyy-MM-dd")" />
+                    <div id="fechaFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
                 </div>
                 <div>
-                    <label>Tipo</label>
-                    <select name="Tipo">
+                    <label>Tipo *</label>
+                    <select name="Tipo" id="inputTipo">
                         <option value="">-- Selecciona --</option>
                         <option value="Ponencia" @(Model.Tipo == "Ponencia" ? "selected" : "")>Ponencia</option>
                         <option value="Exposición" @(Model.Tipo == "Exposición" ? "selected" : "")>Exposición</option>
@@ -53,17 +63,20 @@
                         <option value="Taller" @(Model.Tipo == "Taller" ? "selected" : "")>Taller</option>
                         <option value="Otro" @(Model.Tipo == "Otro" ? "selected" : "")>Otro</option>
                     </select>
+                    <div id="tipoFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
                 </div>
             </div>
 
-            <label>Lugar</label>
-            <input type="text" name="Lugar" value="@Model.Lugar"
+            <label>Lugar *</label>
+            <input type="text" name="Lugar" id="inputLugar" value="@Model.Lugar"
                    placeholder="Lugar del evento" />
+            <div id="lugarFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
 
-            <label>Nombre del organizador</label>
-            <input type="text" name="NombreOrganizador"
+            <label>Nombre del organizador *</label>
+            <input type="text" name="NombreOrganizador" id="inputOrganizador"
                    value="@Model.NombreOrganizador"
                    placeholder="Nombre del organizador" />
+            <div id="organizadorFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
 
             <div style="display:flex; gap:12px; margin-top:8px;">
                 <button type="submit"
@@ -78,3 +91,112 @@
         </form>
     </div>
 </div>
+
+<script>
+    var inputNombre     = document.getElementById('inputNombre');
+    var nombreFb        = document.getElementById('nombreFeedback');
+
+    var inputProyecto   = document.getElementById('inputProyecto');
+    var proyectoFb      = document.getElementById('proyectoFeedback');
+
+    var inputFecha      = document.getElementById('inputFecha');
+    var fechaFb         = document.getElementById('fechaFeedback');
+
+    var inputTipo       = document.getElementById('inputTipo');
+    var tipoFb          = document.getElementById('tipoFeedback');
+
+    var inputLugar      = document.getElementById('inputLugar');
+    var lugarFb         = document.getElementById('lugarFeedback');
+
+    var inputOrganizador = document.getElementById('inputOrganizador');
+    var organizadorFb    = document.getElementById('organizadorFeedback');
+
+    var soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]*$/;
+
+    // Rangos de fecha por proyecto
+    var rangosProyectos = {
+        @foreach (var p in ViewBag.Proyectos as List<GEPS.Models.Proyecto>)
+        {
+            @:"@p.Id": { min: "@p.FechaInicio.ToString("yyyy-MM-dd")", max: "@p.FechaFin.ToString("yyyy-MM-dd")" },
+        }
+    };
+
+    inputProyecto.addEventListener('change', function () {
+        var rango = rangosProyectos[this.value];
+        if (rango) {
+            inputFecha.min = rango.min;
+            inputFecha.max = rango.max;
+        } else {
+            inputFecha.removeAttribute('min');
+            inputFecha.removeAttribute('max');
+        }
+        proyectoFb.style.display = 'none';
+    });
+
+    // ──────────────────────────────
+    //  LUGAR Y ORGANIZADOR — solo letras y espacios
+    // ──────────────────────────────
+    [inputLugar, inputOrganizador].forEach(function (campo) {
+        campo.addEventListener('keypress', function (e) {
+            if (!soloLetras.test(e.key)) {
+                e.preventDefault();
+            }
+        });
+        campo.addEventListener('input', function () {
+            this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]/g, '');
+        });
+    });
+
+    // ──────────────────────────────
+    //  VALIDACIÓN AL ENVIAR
+    // ──────────────────────────────
+    document.getElementById('formCrearEvento').addEventListener('submit', function(e) {
+        if (inputNombre.value.trim() === '') {
+            e.preventDefault();
+            nombreFb.textContent = 'El nombre del evento es obligatorio.';
+            nombreFb.style.display = 'block';
+        } else {
+            nombreFb.style.display = 'none';
+        }
+
+        if (inputProyecto.value === '') {
+            e.preventDefault();
+            proyectoFb.textContent = 'Selecciona un proyecto.';
+            proyectoFb.style.display = 'block';
+        } else {
+            proyectoFb.style.display = 'none';
+        }
+
+        if (inputFecha.value === '') {
+            e.preventDefault();
+            fechaFb.textContent = 'La fecha es obligatoria.';
+            fechaFb.style.display = 'block';
+        } else {
+            fechaFb.style.display = 'none';
+        }
+
+        if (inputTipo.value === '') {
+            e.preventDefault();
+            tipoFb.textContent = 'Selecciona el tipo de evento.';
+            tipoFb.style.display = 'block';
+        } else {
+            tipoFb.style.display = 'none';
+        }
+
+        if (inputLugar.value.trim() === '') {
+            e.preventDefault();
+            lugarFb.textContent = 'El lugar es obligatorio.';
+            lugarFb.style.display = 'block';
+        } else {
+            lugarFb.style.display = 'none';
+        }
+
+        if (inputOrganizador.value.trim() === '') {
+            e.preventDefault();
+            organizadorFb.textContent = 'El nombre del organizador es obligatorio.';
+            organizadorFb.style.display = 'block';
+        } else {
+            organizadorFb.style.display = 'none';
+        }
+    });
+</script>

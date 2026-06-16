@@ -22,13 +22,13 @@
             </div>
         }
 
-        <form action="/Lider/CrearEvento" method="post" class="form-geps" novalidate>
+        <form action="/Lider/CrearEvento" method="post" class="form-geps" novalidate id="formCrearEvento">
             @Html.AntiForgeryToken()
 
             <label>Nombre del evento *</label>
-            <input type="text" name="Nombre"
+            <input type="text" name="Nombre" id="inputNombre"
                    placeholder="Ej: Congreso TIC 2026" />
-            <div style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
+            <div id="nombreFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
 
             <label>Proyecto relacionado *</label>
             <select name="idProyecto" id="inputProyecto">
@@ -42,12 +42,13 @@
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                 <div>
-                    <label>Fecha</label>
-                    <input type="date" name="Fecha" />
+                    <label>Fecha *</label>
+                    <input type="date" name="Fecha" id="inputFecha" />
+                    <div id="fechaFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
                 </div>
                 <div>
-                    <label>Tipo</label>
-                    <select name="Tipo">
+                    <label>Tipo *</label>
+                    <select name="Tipo" id="inputTipo">
                         <option value="">-- Selecciona --</option>
                         <option value="Ponencia">Ponencia</option>
                         <option value="Exposición">Exposición</option>
@@ -56,15 +57,18 @@
                         <option value="Taller">Taller</option>
                         <option value="Otro">Otro</option>
                     </select>
+                    <div id="tipoFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
                 </div>
             </div>
 
-            <label>Lugar</label>
-            <input type="text" name="Lugar" placeholder="Ej: Bogotá, Auditorio SENA" />
+            <label>Lugar *</label>
+            <input type="text" name="Lugar" id="inputLugar" placeholder="Ej: Bogotá, Auditorio SENA" />
+            <div id="lugarFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
 
-            <label>Nombre del organizador</label>
-            <input type="text" name="NombreOrganizador"
+            <label>Nombre del organizador *</label>
+            <input type="text" name="NombreOrganizador" id="inputOrganizador"
                    placeholder="Ej: Universidad Nacional" />
+            <div id="organizadorFeedback" style="font-size:12px; color:#c0392b; margin-top:-12px; margin-bottom:12px; display:none;"></div>
 
             <div style="display:flex; gap:12px; margin-top:8px;">
                 <button type="submit"
@@ -79,17 +83,112 @@
         </form>
     </div>
 </div>
-<script>
-    document.querySelector('form').addEventListener('submit', function(e) {
-        var proyecto   = document.getElementById('inputProyecto');
-        var proyectoFb = document.getElementById('proyectoFeedback');
 
-        if (proyecto.value === '') {
+<script>
+    var inputNombre     = document.getElementById('inputNombre');
+    var nombreFb        = document.getElementById('nombreFeedback');
+
+    var inputProyecto   = document.getElementById('inputProyecto');
+    var proyectoFb      = document.getElementById('proyectoFeedback');
+
+    var inputFecha      = document.getElementById('inputFecha');
+    var fechaFb         = document.getElementById('fechaFeedback');
+
+    var inputTipo       = document.getElementById('inputTipo');
+    var tipoFb          = document.getElementById('tipoFeedback');
+
+    var inputLugar      = document.getElementById('inputLugar');
+    var lugarFb         = document.getElementById('lugarFeedback');
+
+    var inputOrganizador = document.getElementById('inputOrganizador');
+    var organizadorFb    = document.getElementById('organizadorFeedback');
+
+    var soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]*$/;
+
+    // Rangos de fecha por proyecto
+    var rangosProyectos = {
+        @foreach (var p in ViewBag.Proyectos as List<GEPS.Models.Proyecto>)
+        {
+            @:"@p.Id": { min: "@p.FechaInicio.ToString("yyyy-MM-dd")", max: "@p.FechaFin.ToString("yyyy-MM-dd")" },
+        }
+    };
+
+    inputProyecto.addEventListener('change', function () {
+        var rango = rangosProyectos[this.value];
+        if (rango) {
+            inputFecha.min = rango.min;
+            inputFecha.max = rango.max;
+        } else {
+            inputFecha.removeAttribute('min');
+            inputFecha.removeAttribute('max');
+        }
+        proyectoFb.style.display = 'none';
+    });
+
+    // ──────────────────────────────
+    //  LUGAR Y ORGANIZADOR — solo letras y espacios
+    // ──────────────────────────────
+    [inputLugar, inputOrganizador].forEach(function (campo) {
+        campo.addEventListener('keypress', function (e) {
+            if (!soloLetras.test(e.key)) {
+                e.preventDefault();
+            }
+        });
+        campo.addEventListener('input', function () {
+            this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]/g, '');
+        });
+    });
+
+    // ──────────────────────────────
+    //  VALIDACIÓN AL ENVIAR
+    // ──────────────────────────────
+    document.getElementById('formCrearEvento').addEventListener('submit', function(e) {
+        if (inputNombre.value.trim() === '') {
+            e.preventDefault();
+            nombreFb.textContent = 'El nombre del evento es obligatorio.';
+            nombreFb.style.display = 'block';
+        } else {
+            nombreFb.style.display = 'none';
+        }
+
+        if (inputProyecto.value === '') {
             e.preventDefault();
             proyectoFb.textContent = 'Selecciona un proyecto.';
             proyectoFb.style.display = 'block';
         } else {
             proyectoFb.style.display = 'none';
+        }
+
+        if (inputFecha.value === '') {
+            e.preventDefault();
+            fechaFb.textContent = 'La fecha es obligatoria.';
+            fechaFb.style.display = 'block';
+        } else {
+            fechaFb.style.display = 'none';
+        }
+
+        if (inputTipo.value === '') {
+            e.preventDefault();
+            tipoFb.textContent = 'Selecciona el tipo de evento.';
+            tipoFb.style.display = 'block';
+        } else {
+            tipoFb.style.display = 'none';
+        }
+
+        if (inputLugar.value.trim() === '') {
+            e.preventDefault();
+            lugarFb.textContent = 'El lugar es obligatorio.';
+            lugarFb.style.display = 'block';
+        } else {
+            lugarFb.style.display = 'none';
+        }
+
+        if (inputOrganizador.value.trim() === '') {
+            e.preventDefault();
+            organizadorFb.textContent = 'El nombre del organizador es obligatorio.';
+            organizadorFb.style.display = 'block';
+        } else {
+            organizadorFb.style.display = 'none';
         }
     });
 </script>

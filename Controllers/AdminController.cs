@@ -128,7 +128,10 @@ namespace GEPS.Controllers
                 string.IsNullOrEmpty(semillero.Descripcion))
             {
                 ViewBag.Error = "Todos los campos son obligatorios.";
-                return View(semillero);
+                var Semillero = semilleros.Find(
+               Builders<Semillero>.Filter.Eq("_id", ObjectId.Parse(semillero.Id))
+           ).FirstOrDefault();
+                return View(Semillero);
             }
 
             var filtro = Builders<Semillero>.Filter.Eq("_id", ObjectId.Parse(semillero.Id));
@@ -244,7 +247,7 @@ namespace GEPS.Controllers
                 return View();
             }
 
-            // Validar celular — solo si se ingresó
+            // Validar celular 10 dígitos numéricos
             if (!string.IsNullOrEmpty(celular))
             {
                 if (celular.Length != 10 || !celular.All(char.IsDigit))
@@ -369,7 +372,7 @@ namespace GEPS.Controllers
 
             ServicioCorreo.Enviar(correo, "Credenciales de acceso – GEPS", cuerpo);
 
-            TempData["Exito"] = $"Líder creado correctamente. Clave asignada: {clave}";
+            TempData["Exito"] = $"Líder creado correctamente.";
             return RedirectToAction("Lideres");
         }
 
@@ -684,7 +687,7 @@ namespace GEPS.Controllers
             if (string.IsNullOrEmpty(nombre) || string.IsNullOrEmpty(correo) || string.IsNullOrEmpty(fechaNacimiento) || string.IsNullOrEmpty(genero)
                || string.IsNullOrEmpty(celular) || string.IsNullOrEmpty(programa))
             {
-                ViewBag.Error = "El nombre y el correo son obligatorios.";
+                ViewBag.Error = "Todos los campos son obligatorios.";
                 var lider = usuarios.Find(
                     Builders<Usuario>.Filter.Eq("_id", ObjectId.Parse(id))
                 ).FirstOrDefault();
@@ -799,7 +802,7 @@ namespace GEPS.Controllers
             if (string.IsNullOrEmpty(nombre) || string.IsNullOrEmpty(lineaInvestigativa))
                 return Json(new { error = "Nombre y línea investigativa son requeridos." });
 
-            string prompt = $@"Genera una descripción profesional y concisa (máximo 3 líneas) para un semillero de investigación universitario con estos datos: Nombre: {nombre}
+            string prompt = $@"Genera una descripción profesional y concisa (máximo 3 líneas) para un semillero de investigación del sena con estos datos: Nombre: {nombre}
             Línea investigativa: {lineaInvestigativa} Responde solo con el texto de la descripción, sin comillas ni explicaciones adicionales.";
 
             try

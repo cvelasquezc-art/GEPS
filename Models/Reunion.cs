@@ -28,6 +28,9 @@ namespace GEPS.Models
         [BsonElement("activo")]
         public bool Activo { get; set; }
 
+        [BsonElement("estado")]
+        public string Estado { get; set; }
+
         [BsonElement("idProyecto")]
         [BsonRepresentation(BsonType.ObjectId)]
         public string IdProyecto { get; set; }
