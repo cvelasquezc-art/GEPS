@@ -468,6 +468,16 @@ namespace GEPS.Controllers
             return View(proyecto);
         }
 
+        private DateTime CalcularFechaInicioFase(Proyecto proyecto, int indiceFase)
+        {
+            DateTime fechaInicio = proyecto.FechaInicio;
+            for (int i = 0; i < indiceFase; i++)
+            {
+                fechaInicio = fechaInicio.AddMonths(proyecto.Fases[i].DuracionMeses);
+            }
+            return fechaInicio;
+        }
+
         // ══════════════════════════════════════
         //  FASES — AGREGAR
         // ══════════════════════════════════════
@@ -480,28 +490,35 @@ namespace GEPS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AgregarFase(string idProyecto, string nombreFase, int duracionMeses)
+        public ActionResult AgregarFase(string idProyecto, string nombreFase, string duracionMeses)
         {
             if (!EsLider()) return RedirectToAction("Index", "Login");
 
-            if (string.IsNullOrEmpty(nombreFase) || duracionMeses < 1 || duracionMeses > 12)
+            if (string.IsNullOrEmpty(nombreFase) || string.IsNullOrEmpty(duracionMeses))
             {
-                ViewBag.Error = "El nombre de la fase es obligatorio y la duración debe estar entre 1 y 12 meses.";
+                ViewBag.Error = "El nombre de la fase y la duración son obligatorios.";
+                ViewBag.IdProyecto = idProyecto;
+                return View();
+            }
+
+            if (!int.TryParse(duracionMeses, out int duracion) || duracion < 1 || duracion > 12)
+            {
+                ViewBag.Error = "La duración debe estar entre 1 y 12 meses.";
                 ViewBag.IdProyecto = idProyecto;
                 return View();
             }
 
             var proyecto = proyectos.Find(
                 Builders<Proyecto>.Filter.Eq("_id", ObjectId.Parse(idProyecto))
-                    ).FirstOrDefault();
+            ).FirstOrDefault();
 
             if (proyecto == null) return RedirectToAction("Proyectos");
 
             int duracionAcumulada = proyecto.Fases.Sum(f => f.DuracionMeses);
 
-            if (duracionAcumulada + duracionMeses > proyecto.DuracionMeses)
+            if (duracionAcumulada + duracion > proyecto.DuracionMeses)
             {
-                ViewBag.Error = $"La suma de duraciones de las fases ({duracionAcumulada + duracionMeses} meses) no puede superar la duración del proyecto ({proyecto.DuracionMeses} meses).";
+                ViewBag.Error = $"La suma de duraciones de las fases ({duracionAcumulada + duracion} meses) no puede superar la duración del proyecto ({proyecto.DuracionMeses} meses).";
                 ViewBag.IdProyecto = idProyecto;
                 return View();
             }
@@ -509,7 +526,7 @@ namespace GEPS.Controllers
             var fase = new Fase
             {
                 Nombre = nombreFase,
-                DuracionMeses = duracionMeses,
+                DuracionMeses = duracion,
                 Actividades = new List<Actividad>()
             };
 
@@ -527,15 +544,48 @@ namespace GEPS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AgregarActividad(string idProyecto, int indiceFase,
-            string nombreActividad, int duracionDias, DateTime fechaEntrega)
+    string nombreActividad, string fechaEntrega)
         {
             if (!EsLider()) return RedirectToAction("Index", "Login");
+
+            if (string.IsNullOrEmpty(nombreActividad) || string.IsNullOrEmpty(fechaEntrega))
+            {
+                TempData["Error"] = "Todos los campos de la actividad son obligatorios.";
+                return RedirectToAction("DetalleProyecto", new { id = idProyecto });
+            }
+
+            if (!DateTime.TryParse(fechaEntrega, out DateTime fecha))
+            {
+                TempData["Error"] = "La fecha de entrega no es válida.";
+                return RedirectToAction("DetalleProyecto", new { id = idProyecto });
+            }
+
+            var proyecto = proyectos.Find(
+                Builders<Proyecto>.Filter.Eq("_id", ObjectId.Parse(idProyecto))
+            ).FirstOrDefault();
+
+            if (proyecto == null) return RedirectToAction("Proyectos");
+
+            if (indiceFase < 0 || indiceFase >= proyecto.Fases.Count)
+                return RedirectToAction("DetalleProyecto", new { id = idProyecto });
+
+            DateTime inicioFase = CalcularFechaInicioFase(proyecto, indiceFase);
+            DateTime finFase = inicioFase.AddMonths(proyecto.Fases[indiceFase].DuracionMeses);
+
+            if (fecha.Date < inicioFase.Date || fecha.Date > finFase.Date)
+            {
+                TempData["Error"] = $"La fecha de entrega debe estar entre {inicioFase:dd/MM/yyyy} y {finFase:dd/MM/yyyy} (rango de la fase).";
+                return RedirectToAction("DetalleProyecto", new { id = idProyecto });
+            }
+
+            int duracionDias = (fecha.Date - inicioFase.Date).Days;
+            if (duracionDias < 1) duracionDias = 1;
 
             var actividad = new Actividad
             {
                 Nombre = nombreActividad,
                 DuracionDias = duracionDias,
-                FechaEntrega = fechaEntrega
+                FechaEntrega = fecha
             };
 
             var filtro = Builders<Proyecto>.Filter.Eq("_id", ObjectId.Parse(idProyecto));
@@ -787,7 +837,7 @@ namespace GEPS.Controllers
             // Validar que no exista otra reunión en el mismo proyecto, misma fecha y hora
             var conflicto = reuniones.Find(
                 Builders<Reunion>.Filter.And(
-                    Builders<Reunion>.Filter.Eq("idProyecto", reunion.IdProyecto),
+                    Builders<Reunion>.Filter.Eq("idProyecto", ObjectId.Parse(reunion.IdProyecto)),
                     Builders<Reunion>.Filter.Eq("fecha", reunion.Fecha.Date),
                     Builders<Reunion>.Filter.Eq("hora", reunion.Hora),
                     Builders<Reunion>.Filter.Eq("activo", true)
@@ -880,7 +930,7 @@ namespace GEPS.Controllers
             // Validar conflicto excluyendo la propia reunión
             var conflicto = reuniones.Find(
                 Builders<Reunion>.Filter.And(
-                    Builders<Reunion>.Filter.Eq("idProyecto", reunion.IdProyecto),
+                    Builders<Reunion>.Filter.Eq("idProyecto", ObjectId.Parse(reunion.IdProyecto)),
                     Builders<Reunion>.Filter.Eq("fecha", reunion.Fecha.Date),
                     Builders<Reunion>.Filter.Eq("hora", reunion.Hora),
                     Builders<Reunion>.Filter.Eq("activo", true),
@@ -902,7 +952,7 @@ namespace GEPS.Controllers
                 .Set("lugar", reunion.Lugar)
                 .Set("enlace", reunion.Enlace)
                 .Set("motivo", reunion.Motivo)
-                .Set("idProyecto", reunion.IdProyecto)
+                .Set("idProyecto", ObjectId.Parse(reunion.IdProyecto))
                 .Set("estado", CalcularEstadoReunion(reunion.Fecha, reunion.Hora));
 
             reuniones.UpdateOne(filtro, update);
@@ -1012,7 +1062,7 @@ namespace GEPS.Controllers
             // Validar que no exista otro evento en el mismo proyecto, en la misma fecha
             var conflicto = eventos.Find(
                 Builders<Evento>.Filter.And(
-                    Builders<Evento>.Filter.AnyEq("proyectos", idProyecto),
+                    Builders<Evento>.Filter.AnyEq("proyectos", ObjectId.Parse(idProyecto)),
                     Builders<Evento>.Filter.Eq("fecha", evento.Fecha.Date),
                     Builders<Evento>.Filter.Eq("activo", true)
                 )
@@ -1097,7 +1147,7 @@ namespace GEPS.Controllers
             // Validar conflicto excluyendo el propio evento
             var conflicto = eventos.Find(
                 Builders<Evento>.Filter.And(
-                    Builders<Evento>.Filter.AnyEq("proyectos", idProyecto),
+                    Builders<Evento>.Filter.AnyEq("proyectos", ObjectId.Parse(idProyecto)),
                     Builders<Evento>.Filter.Eq("fecha", evento.Fecha.Date),
                     Builders<Evento>.Filter.Eq("activo", true),
                     Builders<Evento>.Filter.Ne("_id", ObjectId.Parse(id))
@@ -1118,7 +1168,7 @@ namespace GEPS.Controllers
                 .Set("lugar", evento.Lugar)
                 .Set("tipo", evento.Tipo)
                 .Set("nombreOrganizador", evento.NombreOrganizador)
-                .Set("proyectos", new List<string> { idProyecto });
+                .Set("proyectos", new List<ObjectId> { ObjectId.Parse(idProyecto) });
 
             eventos.UpdateOne(filtro, update);
 
