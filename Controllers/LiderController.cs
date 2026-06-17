@@ -111,6 +111,10 @@ namespace GEPS.Controllers
             if (!EsLider()) return RedirectToAction("Index", "Login");
 
             var lider = ObtenerLiderActual();
+            if (lider.IdSemillero == null)
+            {
+                return RedirectToAction("Index", "Lider");
+            }
             var lista = usuarios.Find(
                 Builders<Usuario>.Filter.And(
                     Builders<Usuario>.Filter.Eq("rol", "Investigador"),
@@ -349,6 +353,10 @@ namespace GEPS.Controllers
             if (!EsLider()) return RedirectToAction("Index", "Login");
 
             var lider = ObtenerLiderActual();
+            if (lider.IdSemillero == null)
+            {
+                return RedirectToAction("Index", "Lider");
+            }
             if (lider == null || string.IsNullOrEmpty(lider.IdSemillero))
                 return RedirectToAction("Index");
 
@@ -747,6 +755,10 @@ namespace GEPS.Controllers
             if (!EsLider()) return RedirectToAction("Index", "Login");
 
             var lider = ObtenerLiderActual();
+            if (lider.IdSemillero == null)
+            {
+                return RedirectToAction("Index", "Lider");
+            }
             var idsProyectos = proyectos.Find(
                 Builders<Proyecto>.Filter.Eq("idSemillero", ObjectId.Parse(lider.IdSemillero))
             ).ToList().Select(p => ObjectId.Parse(p.Id)).ToList();
@@ -992,6 +1004,10 @@ namespace GEPS.Controllers
             if (!EsLider()) return RedirectToAction("Index", "Login");
 
             var lider = ObtenerLiderActual();
+            if (lider.IdSemillero == null)
+            {
+                return RedirectToAction("Index", "Lider");
+            }
             var idsProyectos = proyectos.Find(
                 Builders<Proyecto>.Filter.Eq("idSemillero", ObjectId.Parse(lider.IdSemillero))
             ).ToList().Select(p => ObjectId.Parse(p.Id)).ToList();
@@ -1013,7 +1029,6 @@ namespace GEPS.Controllers
         public ActionResult CrearEvento()
         {
             if (!EsLider()) return RedirectToAction("Index", "Login");
-
             var lider = ObtenerLiderActual();
             ViewBag.Proyectos = proyectos.Find(
                 Builders<Proyecto>.Filter.Eq("idSemillero", ObjectId.Parse(lider.IdSemillero))
@@ -1207,6 +1222,11 @@ namespace GEPS.Controllers
             if (!EsLider()) return RedirectToAction("Index", "Login");
 
             var lider = ObtenerLiderActual();
+            if( lider.IdSemillero == null )
+            {
+                return RedirectToAction("Index", "Lider");
+            }
+
             var semillero = semilleros.Find(
                 Builders<Semillero>.Filter.Eq("_id", ObjectId.Parse(lider.IdSemillero))
             ).FirstOrDefault();
