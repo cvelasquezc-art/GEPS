@@ -1,0 +1,1605 @@
+{
+  "info": {
+    "_postman_id": "b146c00c-ec0c-453e-afb1-36567579cfbf",
+    "name": "GEPS_Pruebas",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "55904196",
+    "_collection_link": "https://go.postman.co/collection/55904196-b146c00c-ec0c-453e-afb1-36567579cfbf?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "01_Login",
+      "item": [
+        {
+          "name": "00_Obtener_Token_Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const html = pm.response.text();\r",
+                  "console.log(\"Longitud del HTML:\", html.length);\r",
+                  "console.log(\"¿Contiene RequestVerificationToken?\", html.includes(\"RequestVerificationToken\"));\r",
+                  "\r",
+                  "const match = html.match(/name=\"__RequestVerificationToken\"[\\s\\S]*?value=\"([^\"]+)\"/);\r",
+                  "\r",
+                  "if (match && match[1]) {\r",
+                  "    pm.environment.set(\"token\", match[1]);\r",
+                  "    console.log(\"Token guardado:\", match[1]);\r",
+                  "} else {\r",
+                  "    console.log(\"No se encontró el token con el regex\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "packages": {},
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Login/Index",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Login",
+                "Index"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CP-01_Login_Admin",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "__RequestVerificationToken",
+                  "value": "{{token}}",
+                  "type": "text",
+                  "uuid": "4b20d6d3-2ab4-43f8-ba2c-02b7266d895a"
+                },
+                {
+                  "key": "cedula",
+                  "value": "1001234567",
+                  "type": "text",
+                  "uuid": "d9a3b57b-3367-4ab7-b81c-4988d4426d6e"
+                },
+                {
+                  "key": "clave",
+                  "value": "GEPS4567",
+                  "type": "text",
+                  "uuid": "62815087-de19-49b3-8930-32ccbfc2b526"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/Login/Index",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Login",
+                "Index"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CP-02_Login_Lider",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "__RequestVerificationToken",
+                  "value": "{{token}}",
+                  "type": "text",
+                  "uuid": "d10b5cbb-4712-428a-b178-c2003c2ac366"
+                },
+                {
+                  "key": "cedula",
+                  "value": "1002345678",
+                  "type": "text",
+                  "uuid": "c87fd430-d7e1-4a35-a088-dd9ad1df3a92"
+                },
+                {
+                  "key": "clave",
+                  "value": "GEPS5678",
+                  "type": "text",
+                  "uuid": "c1b15cfe-4416-4d59-b6e8-240e075df790"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/Login/Index",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Login",
+                "Index"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CP-03_Login_Investigador",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "__RequestVerificationToken",
+                  "value": "{{token}}",
+                  "type": "text",
+                  "uuid": "25fae8f0-d1ef-4ad6-899f-f340e041e43f"
+                },
+                {
+                  "key": "cedula",
+                  "value": "3434546434",
+                  "type": "text",
+                  "uuid": "52167219-38f5-4bf0-8e1e-efd211341683"
+                },
+                {
+                  "key": "clave",
+                  "value": "GEPS6434",
+                  "type": "text",
+                  "uuid": "6fd6ee30-6828-49f8-9549-b1aa2a97c266"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/Login/Index",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Login",
+                "Index"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CP-04_Login_Clave_Incorrecta",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "__RequestVerificationToken",
+                  "value": "{{token}}",
+                  "type": "text",
+                  "uuid": "25fae8f0-d1ef-4ad6-899f-f340e041e43f"
+                },
+                {
+                  "key": "cedula",
+                  "value": "1003456789",
+                  "type": "text",
+                  "uuid": "52167219-38f5-4bf0-8e1e-efd211341683"
+                },
+                {
+                  "key": "clave",
+                  "value": "GEPS678473772",
+                  "type": "text",
+                  "uuid": "6fd6ee30-6828-49f8-9549-b1aa2a97c266"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/Login/Index",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Login",
+                "Index"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02_Acceso_Sin_Sesion",
+      "item": [
+        {
+          "name": "CP-05_Ruta_Protegida_Sin_Sesion",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Admin/Index",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Admin",
+                "Index"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03_Recuperacion",
+      "item": [
+        {
+          "name": "00_Token_OlvideContrasena",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const html = pm.response.text();\r",
+                  "const match = html.match(/name=\"__RequestVerificationToken\"[\\s\\S]*?value=\"([^\"]+)\"/);\r",
+                  "\r",
+                  "if (match && match[1]) {\r",
+                  "    pm.environment.set(\"token\", match[1]);\r",
+                  "    console.log(\"Token guardado:\", match[1]);\r",
+                  "} else {\r",
+                  "    console.log(\"No se encontró el token\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Login/OlvideContrasena",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Login",
+                "OlvideContrasena"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CP-06_Solicitar_Recuperacion",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "__RequestVerificationToken",
+                  "value": "{{token}}",
+                  "type": "text",
+                  "uuid": "f72b8ce3-4b08-4586-a3d4-a54afcd326ce"
+                },
+                {
+                  "key": "cedula",
+                  "value": "1001234567",
+                  "type": "text",
+                  "uuid": "5e911a12-572e-4ac8-978a-8e098ade22e8"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/Login/OlvideContrasena",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Login",
+                "OlvideContrasena"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "00_Token_VerificarCodigo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const html = pm.response.text();\r",
+                  "const match = html.match(/name=\"__RequestVerificationToken\"[\\s\\S]*?value=\"([^\"]+)\"/);\r",
+                  "\r",
+                  "if (match && match[1]) {\r",
+                  "    pm.environment.set(\"token\", match[1]);\r",
+                  "    console.log(\"Token guardado:\", match[1]);\r",
+                  "} else {\r",
+                  "    console.log(\"No se encontró el token\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Login/VerificarCodigo",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Login",
+                "VerificarCodigo"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CP-07_Verificar_Codigo",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "__RequestVerificationToken",
+                  "value": "{{token}}",
+                  "type": "text",
+                  "uuid": "ea1e8d0c-ad54-4616-a57b-cb98bb8b9955"
+                },
+                {
+                  "key": "codigo",
+                  "value": "896775",
+                  "type": "text",
+                  "uuid": "78ba9cf8-c079-4097-bf56-8ce682e00cfb"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/Login/VerificarCodigo",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Login",
+                "VerificarCodigo"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "00_Token_NuevaContrasena",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const html = pm.response.text();\r",
+                  "const match = html.match(/name=\"__RequestVerificationToken\"[\\s\\S]*?value=\"([^\"]+)\"/);\r",
+                  "\r",
+                  "if (match && match[1]) {\r",
+                  "    pm.environment.set(\"token\", match[1]);\r",
+                  "    console.log(\"Token guardado:\", match[1]);\r",
+                  "} else {\r",
+                  "    console.log(\"No se encontró el token\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Login/NuevaContrasena",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Login",
+                "NuevaContrasena"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CP-08_Nueva_Contrasena",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "__RequestVerificationToken",
+                  "value": "{{token}}",
+                  "type": "text",
+                  "uuid": "e8aa96d3-746d-4701-bdf9-e93836b80835"
+                },
+                {
+                  "key": "clave",
+                  "value": "GEPS4567",
+                  "type": "text",
+                  "uuid": "f732ed8d-0e07-40e1-b3c5-b7e9a20f7908"
+                },
+                {
+                  "key": "confirmarClave",
+                  "value": "GEPS4567",
+                  "type": "text",
+                  "uuid": "d4cb3805-6bb9-4237-b64f-1fbec9b8ed09"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/Login/NuevaContrasena",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Login",
+                "NuevaContrasena"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CP-15_Reporte_PDF_Todos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Admin/DescargarReporte",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Admin",
+                "DescargarReporte"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "04_Admin_Semilleros",
+      "item": [
+        {
+          "name": "00_Token_CrearSemillero",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const html = pm.response.text();\r",
+                  "const match = html.match(/name=\"__RequestVerificationToken\"[\\s\\S]*?value=\"([^\"]+)\"/);\r",
+                  "\r",
+                  "if (match && match[1]) {\r",
+                  "    pm.environment.set(\"token\", match[1]);\r",
+                  "    console.log(\"Token guardado:\", match[1]);\r",
+                  "} else {\r",
+                  "    console.log(\"No se encontró el token\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Admin/CrearSemillero",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Admin",
+                "CrearSemillero"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CP-09_Crear_Semillero",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "__RequestVerificationToken",
+                  "value": "{{token}}",
+                  "type": "text",
+                  "uuid": "58de1bd2-d3fe-4fd2-94ce-c064efc8d1a9"
+                },
+                {
+                  "key": "nombre",
+                  "value": "SemilleroPrueba",
+                  "type": "text",
+                  "uuid": "5cf38ac2-3a84-4f34-ade2-5be5a5f69a67"
+                },
+                {
+                  "key": "lineaInvestigativa",
+                  "value": "Pruebas Automatizadas",
+                  "type": "text",
+                  "uuid": "108305b1-57be-4827-b590-6309b79808f2"
+                },
+                {
+                  "key": "descripcion",
+                  "value": "Semillero creado desde Postman para pruebas",
+                  "type": "text",
+                  "uuid": "81e69adc-18af-4152-9def-8ef80dbc164a"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/Admin/CrearSemillero",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Admin",
+                "CrearSemillero"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "00_Token_EditarSemillero",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const html = pm.response.text();\r",
+                  "const match = html.match(/name=\"__RequestVerificationToken\"[\\s\\S]*?value=\"([^\"]+)\"/);\r",
+                  "\r",
+                  "if (match && match[1]) {\r",
+                  "    pm.environment.set(\"token\", match[1]);\r",
+                  "    console.log(\"Token guardado:\", match[1]);\r",
+                  "} else {\r",
+                  "    console.log(\"No se encontró el token\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Admin/EditarSemillero/6a3026fb0e54b2ca199adf81",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Admin",
+                "EditarSemillero",
+                "6a3026fb0e54b2ca199adf81"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CP-10_Editar_Semillero",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "__RequestVerificationToken",
+                  "value": "{{token}}",
+                  "type": "text",
+                  "uuid": "95f141a5-7347-4c1a-9575-6fb0165aa49a"
+                },
+                {
+                  "key": "id",
+                  "value": "6a3026fb0e54b2ca199adf81",
+                  "type": "text",
+                  "uuid": "3f4c45fb-57af-42c9-9bcf-142e0ead9935"
+                },
+                {
+                  "key": "nombre",
+                  "value": "SemilleroPruebaEditado",
+                  "type": "text",
+                  "uuid": "a28e1f82-c6cf-438d-882b-0496988aa77a"
+                },
+                {
+                  "key": "lineaInvestigativa",
+                  "value": "Pruebas Automatizadas Editado",
+                  "type": "text",
+                  "uuid": "3d46d691-5a98-476b-a813-516d12d61de5"
+                },
+                {
+                  "key": "Descripcion",
+                  "value": "Descripción editada desde Postman",
+                  "type": "text",
+                  "uuid": "e32e2496-c9eb-4477-b336-bc6c561018e6"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/Admin/EditarSemillero",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Admin",
+                "EditarSemillero"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CP-11_Deshabilitar_Semillero",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Admin/CambiarEstadoSemillero/6a3026fb0e54b2ca199adf81",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Admin",
+                "CambiarEstadoSemillero",
+                "6a3026fb0e54b2ca199adf81"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CP-12_Habilitar_Semillero",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Admin/CambiarEstadoSemillero/6a3026fb0e54b2ca199adf81",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Admin",
+                "CambiarEstadoSemillero",
+                "6a3026fb0e54b2ca199adf81"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "00_Token_CrearLider",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const html = pm.response.text();\r",
+                  "const match = html.match(/name=\"__RequestVerificationToken\"[\\s\\S]*?value=\"([^\"]+)\"/);\r",
+                  "\r",
+                  "if (match && match[1]) {\r",
+                  "    pm.environment.set(\"token\", match[1]);\r",
+                  "    console.log(\"Token guardado:\", match[1]);\r",
+                  "} else {\r",
+                  "    console.log(\"No se encontró el token\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Admin/CrearLider",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Admin",
+                "CrearLider"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CP-13_Crear_Lider",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "__RequestVerificationToken",
+                  "value": "{{token}}",
+                  "type": "text",
+                  "uuid": "c35c3ed3-aaff-4abf-ad8a-4657f1fb67d4"
+                },
+                {
+                  "key": "nombre",
+                  "value": "Lider Prueba Postman",
+                  "type": "text",
+                  "uuid": "16ae1c84-5aef-42ca-a112-71a00ecce302"
+                },
+                {
+                  "key": "cedula",
+                  "value": "1009998887",
+                  "type": "text",
+                  "uuid": "54fc370d-02e2-4043-9fe7-8a09e520d1f1"
+                },
+                {
+                  "key": "correo",
+                  "value": "jeanjuliio@gmail.com",
+                  "type": "text",
+                  "uuid": "82a91d5b-fbf7-4e2d-b9eb-ae56dd51d764"
+                },
+                {
+                  "key": "celular",
+                  "value": "3009998887",
+                  "type": "text",
+                  "uuid": "d91a18d5-d6ab-4dd2-853a-d5e061f4e911"
+                },
+                {
+                  "key": "fechaNacimiento",
+                  "value": "1995-01-01",
+                  "type": "text",
+                  "uuid": "43c927a9-2ccc-4f8b-9821-32d0087a3eba"
+                },
+                {
+                  "key": "genero",
+                  "value": "Masculino",
+                  "type": "text",
+                  "uuid": "c79e4ff8-43fe-4c0b-bf74-b4370f84cfc6"
+                },
+                {
+                  "key": "programa",
+                  "value": "Ingeniería de Sistemas",
+                  "type": "text",
+                  "uuid": "cc108e83-689b-4f1a-a473-ba2e96e1956b"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/Admin/CrearLider",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Admin",
+                "CrearLider"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CP-14_Asignar_Lider",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "__RequestVerificationToken",
+                  "value": "{{token}}",
+                  "type": "text",
+                  "uuid": "daab4bdc-2bf6-4179-8846-d846182b1b25"
+                },
+                {
+                  "key": "idLider",
+                  "value": "6a3087e1967d5528e1cda043",
+                  "type": "text",
+                  "uuid": "c077bcef-767c-45e8-9359-f9c2fab0ee3e"
+                },
+                {
+                  "key": "idSemillero",
+                  "value": "6a3026fb0e54b2ca199adf81",
+                  "type": "text",
+                  "uuid": "dc7e0955-a088-4f00-bb9e-e5cd0164c4a2"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/Admin/AsignarLider",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Admin",
+                "AsignarLider"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CP-16_Reporte_PDF_Semillero",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Admin/DescargarReporte?idSemillero=6a3026fb0e54b2ca199adf81",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Admin",
+                "DescargarReporte"
+              ],
+              "query": [
+                {
+                  "key": "idSemillero",
+                  "value": "6a3026fb0e54b2ca199adf81"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "05_Lider_Proyectos",
+      "item": [
+        {
+          "name": "00_Token_CrearProyecto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const html = pm.response.text();\r",
+                  "const match = html.match(/name=\"__RequestVerificationToken\"[\\s\\S]*?value=\"([^\"]+)\"/);\r",
+                  "\r",
+                  "if (match && match[1]) {\r",
+                  "    pm.environment.set(\"token\", match[1]);\r",
+                  "    console.log(\"Token guardado:\", match[1]);\r",
+                  "} else {\r",
+                  "    console.log(\"No se encontró el token\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Lider/CrearProyecto",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Lider",
+                "CrearProyecto"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CP-17_Crear_Proyecto",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "__RequestVerificationToken",
+                  "value": "{{token}}",
+                  "type": "text",
+                  "uuid": "ae2678d4-23b2-4b6d-b801-cc37bde9d549"
+                },
+                {
+                  "key": "titulo",
+                  "value": "Proyecto Prueba Postman",
+                  "type": "text",
+                  "uuid": "3b5bfdc5-6b5f-4fb3-882b-eb73e358ae9e"
+                },
+                {
+                  "key": "objetivo",
+                  "value": "Validar funcionamiento del sistema GEPS",
+                  "type": "text",
+                  "uuid": "20a0155f-6f9e-42a5-bc25-9b4b47dd6ef0"
+                },
+                {
+                  "key": "duracionMeses",
+                  "value": "3",
+                  "type": "text",
+                  "uuid": "40f3318f-2f46-413a-a31d-10dca245f55a"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/Lider/CrearProyecto",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Lider",
+                "CrearProyecto"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CP-18_Cambiar_Estado_Proyecto",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "__RequestVerificationToken",
+                  "value": "{{token}}",
+                  "type": "text",
+                  "uuid": "bf3b40ba-dc73-433c-afbf-cb58bd7de8f3"
+                },
+                {
+                  "key": "id",
+                  "value": "6a308e31967d5528e1cda044",
+                  "type": "text",
+                  "uuid": "72a47bb1-f684-4606-b6cb-334b0e098ae4"
+                },
+                {
+                  "key": "estado",
+                  "value": "En ejecución",
+                  "type": "text",
+                  "uuid": "532e6e27-26c6-4547-b6f5-b145549f8937"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/Lider/CambiarEstadoProyecto",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Lider",
+                "CambiarEstadoProyecto"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "00_Token_AgregarFase",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const html = pm.response.text();\r",
+                  "const match = html.match(/name=\"__RequestVerificationToken\"[\\s\\S]*?value=\"([^\"]+)\"/);\r",
+                  "\r",
+                  "if (match && match[1]) {\r",
+                  "    pm.environment.set(\"token\", match[1]);\r",
+                  "    console.log(\"Token guardado:\", match[1]);\r",
+                  "} else {\r",
+                  "    console.log(\"No se encontró el token\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Lider/AgregarFase/6a308e31967d5528e1cda044",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Lider",
+                "AgregarFase",
+                "6a308e31967d5528e1cda044"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CP-19_Agregar_Fase",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "__RequestVerificationToken",
+                  "value": "{{token}}",
+                  "type": "text",
+                  "uuid": "c1d1cfe9-0504-49b0-b51a-c68b27d7d75d"
+                },
+                {
+                  "key": "idProyecto",
+                  "value": "6a308e31967d5528e1cda044",
+                  "type": "text",
+                  "uuid": "d7406163-27df-4b93-9021-f315a85e17b2"
+                },
+                {
+                  "key": "nombreFase",
+                  "value": "Fase Prueba Postman",
+                  "type": "text",
+                  "uuid": "edbdef6b-71e4-4cbf-985f-d5e8de68a51b"
+                },
+                {
+                  "key": "duracionMeses",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "e55e45ba-ef32-4cf0-a8b7-71d5bef670fa"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/Lider/AgregarFase",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Lider",
+                "AgregarFase"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CP-20_Agregar_Actividad",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "__RequestVerificationToken",
+                  "value": "{{token}}",
+                  "type": "text",
+                  "uuid": "25b52266-377d-47d2-81c9-947b545e23b8"
+                },
+                {
+                  "key": "idProyecto",
+                  "value": "6a308e31967d5528e1cda044",
+                  "type": "text",
+                  "uuid": "8d4f37a2-4600-410d-a1fa-c6e9b1a77621"
+                },
+                {
+                  "key": "indiceFase",
+                  "value": "0",
+                  "type": "text",
+                  "uuid": "cf9deb40-f31c-4c6b-ba68-dcb7e1de99f3"
+                },
+                {
+                  "key": "nombreActividad",
+                  "value": "Actividad Prueba Postman",
+                  "type": "text",
+                  "uuid": "11c8ddcd-e957-4d1f-9724-7deb69027520"
+                },
+                {
+                  "key": "duracionDias",
+                  "value": "5",
+                  "type": "text",
+                  "uuid": "9edb8008-3549-4fb4-92f1-2f73691ccb78"
+                },
+                {
+                  "key": "fechaEntrega",
+                  "value": "2026-07-30",
+                  "type": "text",
+                  "uuid": "2ee41710-1457-4851-b854-5bf424dbb997"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/Lider/AgregarActividad",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Lider",
+                "AgregarActividad"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "00_Token_CrearReunion",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const html = pm.response.text();\r",
+                  "const match = html.match(/name=\"__RequestVerificationToken\"[\\s\\S]*?value=\"([^\"]+)\"/);\r",
+                  "\r",
+                  "if (match && match[1]) {\r",
+                  "    pm.environment.set(\"token\", match[1]);\r",
+                  "    console.log(\"Token guardado:\", match[1]);\r",
+                  "} else {\r",
+                  "    console.log(\"No se encontró el token\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": []
+            },
+            "url": {
+              "raw": "{{base_url}}/Lider/CrearReunion",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Lider",
+                "CrearReunion"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CP-21_Crear_Reunion",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "__RequestVerificationToken",
+                  "value": "{{token}}",
+                  "type": "text",
+                  "uuid": "0705e242-c6bc-47ce-8696-5dacd5b467d1"
+                },
+                {
+                  "key": "Motivo",
+                  "value": "Reunion Prueba Postman",
+                  "type": "text",
+                  "uuid": "aec9fa5b-3442-430a-b6d7-c51cfc7e5e99"
+                },
+                {
+                  "key": "IdProyecto",
+                  "value": "6a308e31967d5528e1cda044",
+                  "type": "text",
+                  "uuid": "8662492e-7764-49f2-b908-3f5b02c4ff24"
+                },
+                {
+                  "key": "Fecha",
+                  "value": "15/07/2026",
+                  "type": "text",
+                  "uuid": "59cfc7aa-79b1-461b-824f-9c9d899d51b1"
+                },
+                {
+                  "key": "Hora",
+                  "value": "10:00",
+                  "type": "text",
+                  "uuid": "171b57ce-bfe1-46a9-9a3c-29548c2cb77b"
+                },
+                {
+                  "key": "Lugar",
+                  "value": "Sala Virtual",
+                  "type": "text",
+                  "uuid": "9583e766-0f67-419c-8b90-f665b69dceed"
+                },
+                {
+                  "key": "Enlace",
+                  "value": "https://meet.google.com/prueba",
+                  "type": "text",
+                  "uuid": "914d854f-f97e-4591-a414-b65f28f64419"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/Lider/CrearReunion",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Lider",
+                "CrearReunion"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "06_Lider_Eventos",
+      "item": [
+        {
+          "name": "00_Token_CrearEvento",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const html = pm.response.text();\r",
+                  "const match = html.match(/name=\"__RequestVerificationToken\"[\\s\\S]*?value=\"([^\"]+)\"/);\r",
+                  "\r",
+                  "if (match && match[1]) {\r",
+                  "    pm.environment.set(\"token\", match[1]);\r",
+                  "    console.log(\"Token guardado:\", match[1]);\r",
+                  "} else {\r",
+                  "    console.log(\"No se encontró el token\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Lider/CrearEvento",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Lider",
+                "CrearEvento"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CP-22_Crear_Evento",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "__RequestVerificationToken",
+                  "value": "{{token}}",
+                  "type": "text",
+                  "uuid": "8fe8cd2c-1873-486a-8f79-11b177e032c6"
+                },
+                {
+                  "key": "Nombre",
+                  "value": "Evento Prueba Postman",
+                  "type": "text",
+                  "uuid": "20e8d413-276f-46c4-bd33-439a2771965b"
+                },
+                {
+                  "key": "idProyecto",
+                  "value": "6a308e31967d5528e1cda044",
+                  "type": "text",
+                  "uuid": "495001c4-973c-41af-822c-0f04f1a96d10"
+                },
+                {
+                  "key": "Fecha",
+                  "value": "15/07/2026",
+                  "type": "text",
+                  "uuid": "0583c40d-8b27-465b-af07-5deb249cd521"
+                },
+                {
+                  "key": "Tipo",
+                  "value": "Congreso",
+                  "type": "text",
+                  "uuid": "15005c51-aef0-4209-8096-8f3766a18c54"
+                },
+                {
+                  "key": "Lugar",
+                  "value": "Cartagena",
+                  "type": "text",
+                  "uuid": "97b1e22e-4407-4ea5-abad-540d03b9e400"
+                },
+                {
+                  "key": "NombreOrganizador",
+                  "value": "SENA",
+                  "type": "text",
+                  "uuid": "c1ac2daa-38cd-4ed8-96c1-e011235b1d16"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/Lider/CrearEvento",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Lider",
+                "CrearEvento"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "07_IA_Gemini",
+      "item": [
+        {
+          "name": "CP-23_Generar_Descripcion_IA",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "nombre",
+                  "value": "InvesTIC",
+                  "type": "text",
+                  "uuid": "53d38c92-272b-4a42-94ce-bdc83b06bd73"
+                },
+                {
+                  "key": "lineaInvestigativa",
+                  "value": "Tecnología e Innovación",
+                  "type": "text",
+                  "uuid": "345f125a-a3fe-449a-8e0c-6b67642e26bf"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/Admin/SugerirDescripcionSemillero",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Admin",
+                "SugerirDescripcionSemillero"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CP-24_Generar_Objetivo_IA",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "titulo",
+                  "value": "Proyecto TIC",
+                  "type": "text",
+                  "uuid": "0a2d466a-b3bc-48a6-930c-199ce0918bc5"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/Lider/SugerirObjetivoProyecto?=",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Lider",
+                "SugerirObjetivoProyecto"
+              ],
+              "query": [
+                {
+                  "key": "",
+                  "value": "",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "08_Lider_Reporte",
+      "item": [
+        {
+          "name": "CP-25_Reporte_PDF_Lider",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Lider/DescargarReporte",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Lider",
+                "DescargarReporte"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "09_Investigador",
+      "item": [
+        {
+          "name": "CP-26_Consultar_Reuniones",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Investigador/Reuniones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Investigador",
+                "Reuniones"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CP-27_Consultar_Eventos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Investigador/Eventos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Investigador",
+                "Eventos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CP-28_Consultar_Proyectos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Investigador/Proyectos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Investigador",
+                "Proyectos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CP-29_Consultar_Semillero",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Investigador/Semillero",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Investigador",
+                "Semillero"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CP-30_Informacion_Semillero",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Investigador/Semillero",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "Investigador",
+                "Semillero"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
